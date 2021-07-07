@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="320dp"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/lldesign"
+    android:gravity="center">
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp">
+        <ImageView
+            android:layout_marginTop="30dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/launch"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="We're better than ever"
+            android:textStyle="bold"
+            android:layout_marginTop="25dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ff00"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:id="@+id/tvAttenDate"
+            android:gravity="center"
+            android:text="New version available"
+            />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="right"
+            android:paddingRight="10dp">
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/tvSkip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/color1"
+                android:text="Skip>>"
+                ></TextView>
+        </LinearLayout>
+
+        <Button
+            android:layout_width="320dp"
+            android:layout_height="60dp"
+            android:background="@color/color1"
+            android:text="UPDATE NOW"
+            android:textColor="@android:color/white"
+            android:id="@+id/btnOk"
+            android:textAllCaps="true"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:visibility="gone">
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

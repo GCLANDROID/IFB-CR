@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.LoginActivity"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bk"
+        ></LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/llgradientdesign"
+        android:orientation="vertical"
+        android:gravity="bottom"
+        android:padding="10dp">
+        <TextView
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:textColor="@android:color/black"
+            android:text="Login Here!"
+            android:textSize="22sp"
+            android:fontFamily="serif-monospace"
+            ></TextView>
+        <EditText
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:id="@+id/etUserID"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:hint="Enter your user id"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#D6D4D4"></EditText>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"></LinearLayout>
+
+        <EditText
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:inputType="textPassword"
+            android:id="@+id/etPassword"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:hint="Enter your password"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#D6D4D4"></EditText>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"></LinearLayout>
+        <EditText
+            android:singleLine="true"
+            android:id="@+id/etSecurityCode"
+            android:imeOptions="actionDone"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:hint="Enter your security code"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#D6D4D4"></EditText>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black"></LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginTop="5dp"
+            android:gravity="right">
+            <TextView
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:fontFamily="serif-monospace"
+                android:id="@+id/tvForgot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:text="Forgot Password?Click here"></TextView>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
+            android:gravity="right">
+            <ImageView
+                android:id="@+id/imgLogin"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/forwardicon"></ImageView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

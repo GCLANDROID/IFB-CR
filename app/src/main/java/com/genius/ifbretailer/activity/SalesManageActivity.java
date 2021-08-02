@@ -173,6 +173,10 @@ public class SalesManageActivity extends AppCompatActivity {
     EditText b;
     int imgFlag;
     ArrayList<KeyPairBoolData> keyModelList = new ArrayList<>();
+    Spinner spCSD;
+    String csdSales;
+    ArrayList<String>csdSalesList=new ArrayList<>();
+    ArrayList<ModelSpinnerModel>modelcsdSaleslist=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -374,11 +378,39 @@ public class SalesManageActivity extends AppCompatActivity {
         progressDialog.setMessage("Uploading...");
         llSerialNumber = (LinearLayout) findViewById(R.id.llSerialNumber);
         llSave = (LinearLayout) findViewById(R.id.llSave);
+        spCSD=(Spinner)findViewById(R.id.spCSD);
+        csdSalesList.add("No");
+        csdSalesList.add("Yes");
+
+        modelcsdSaleslist.add(new ModelSpinnerModel("N","N",""));
+        modelcsdSaleslist.add(new ModelSpinnerModel("Y","Y",""));
+
+        ArrayAdapter<String> spinnerCSDArrayAdapter = new ArrayAdapter<String>
+                (SalesManageActivity.this, android.R.layout.simple_spinner_item,
+                        csdSalesList); //selected item will look like a spinner set from XML
+        spinnerCSDArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCSD.setAdapter(spinnerCSDArrayAdapter);
+
+
+
+
 
 
     }
 
     private void onClick() {
+
+        spCSD.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                csdSales=modelcsdSaleslist.get(i).getId();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -942,12 +974,10 @@ public class SalesManageActivity extends AppCompatActivity {
         llSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imgFlag==1) {
+
 
                     ssaleFunction();
-                }else {
-                    Toast.makeText(SalesManageActivity.this,"Please upload invoice copy",Toast.LENGTH_LONG).show();
-                }
+
             }
         });
 
@@ -2139,7 +2169,7 @@ public class SalesManageActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeDummySalesWithOutInvoiceCopy")
+        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeDummySalesWithOutInvoiceCSD")
                 .addMultipartParameter("TransNo", transNo)
                 .addMultipartParameter("AEMEmployeeID", userId)
                 .addMultipartParameter("SalesDate", salesDate)
@@ -2173,6 +2203,7 @@ public class SalesManageActivity extends AppCompatActivity {
                 .addMultipartParameter("Area", areaName)
                 .addMultipartParameter("SalesEntryFlag", saleFlag)
                 .addMultipartParameter("SerialNo", serailNumber)
+                .addMultipartParameter("CSD_Sales",csdSales)
                 .addMultipartParameter("SecurityCode", secirityCode)
 
                 .setTag("uploadTest")
@@ -2249,7 +2280,7 @@ public class SalesManageActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeDummySalesWithInvoiceCopy")
+        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeDummySalesWithInvoiceCSD")
                 .addMultipartParameter("TransNo", transNo)
                 .addMultipartParameter("AEMEmployeeID", userId)
                 .addMultipartParameter("SalesDate", salesDate)
@@ -2284,6 +2315,7 @@ public class SalesManageActivity extends AppCompatActivity {
                 .addMultipartParameter("SalesEntryFlag", saleFlag)
                 .addMultipartParameter("Invoicecopy", stringFile)
                 .addMultipartParameter("SerialNo", serailNumber)
+                .addMultipartParameter("CSD_Sales",csdSales)
                 .addMultipartParameter("SecurityCode", secirityCode)
 
                 .setTag("uploadTest")
@@ -2339,9 +2371,6 @@ public class SalesManageActivity extends AppCompatActivity {
                 serialNumberList.add(allEds.get(i).getText().toString());
                 serialNumber = serialNumberList.toString().replace("[", "").replace("]", "").concat(",");
                 Log.d("Value ", serialNumber);
-
-            } else {
-                Toast.makeText(SalesManageActivity.this,"Please enter 18 digits serial number",Toast.LENGTH_LONG).show();
 
             }
 

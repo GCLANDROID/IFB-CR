@@ -905,6 +905,34 @@
                         android:layout_marginBottom="2dp"
                         android:background="@android:color/black"></LinearLayout>
                 </LinearLayout>
+                <TextView
+                    android:text="CSD Sales"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp">
+
+                    <Spinner
+                        android:id="@+id/spCSD"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="20dp"></Spinner>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="2dp"
+                    android:background="@android:color/black"></LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

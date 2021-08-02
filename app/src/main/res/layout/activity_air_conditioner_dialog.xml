@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="350dp"
     android:layout_height="500dp"
-    android:background="@android:color/white"
     tools:context=".activity.AirConditionerDialogActivity"
 
     android:orientation="vertical">
@@ -43,11 +42,27 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/white"
                     android:textAppearance="?android:textAppearanceSmall"
                     android:textStyle="bold"
-                    android:text="CANCEL"
+                    android:text="CLEAR ALL"
                     android:id="@+id/tvCancel"
+                    android:layout_marginBottom="5dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:background="@drawable/lldesign5"
+                android:layout_marginRight="30dp"
+                android:id="@+id/llEdit">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:text="EDIT"
                     android:layout_marginBottom="5dp"/>
             </LinearLayout>
 
@@ -79,11 +94,17 @@
             android:padding="10dp"
             android:background="@android:color/white"
             android:id="@+id/llMain"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:orientation="vertical">
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/rvItem"></androidx.recyclerview.widget.RecyclerView>
+                android:id="@+id/rvGetItem"></androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/rvItem"
+                android:visibility="gone"></androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
 
         <LinearLayout
@@ -92,11 +113,7 @@
             android:orientation="vertical"
             android:gravity="center"
             android:id="@+id/llAgain">
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/nonstop"
-                />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

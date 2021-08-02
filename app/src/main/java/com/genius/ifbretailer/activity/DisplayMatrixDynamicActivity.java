@@ -1,6 +1,7 @@
 package com.genius.ifbretailer.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -29,8 +30,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -57,9 +59,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
-import okhttp3.OkHttpClient;
 
 
 public class DisplayMatrixDynamicActivity extends AppCompatActivity {
@@ -159,6 +162,20 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     String TLOthers = "IFBPC1000025" + "-" + "IFBCC000004" + "#" + "0";
 
 
+
+    //Waher Disher
+
+    EditText etWasherDisherOthers,etWasherDisherOnida,etWasherDisherGodrej,etWasherDisherPanasonic,etWasherDisherWhirlPool,etWasherDisherSamsung,etWasherDisherLg,etWasherDisherIfb;
+    TextView tvWasherDisherAdd;
+
+    String washerIfb = "IFBPC1000039" + "-" + "IFBCC000015" + "#" + "0";
+    String washerLg = "IFBPC1000039" + "-" + "IFBCC000001" + "#" + "0";
+    String washerSamSung = "IFBPC1000039" + "-" + "IFBCC000002" + "#" + "0";
+    String washerWhirlPool = "IFBPC1000039" + "-" + "IFBCC000005" + "#" + "0";
+    String washerPanasonic = "IFBPC1000039" + "-" + "IFBCC000007" + "#" + "0";
+    String washerGodrej = "IFBPC1000039" + "-" + "IFBCC000006" + "#" + "0";
+    String washerOnida = "IFBPC1000039" + "-" + "IFBCC000017" + "#" + "0";
+    String washerOthers = "IFBPC1000039" + "-" + "IFBCC000004" + "#" + "0";
     private static final String SERVER_PATH = "http://111.93.182.173/IFBiOSApi/api/";
 
     ProgressDialog progressDialog;
@@ -168,7 +185,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     String formattedDate;
 
     String modelId = "";
-    String category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers;
+    String category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers+","+washerIfb + "," + washerLg + "," + washerSamSung + "," + washerWhirlPool + "," + washerPanasonic + "," + washerGodrej + "," + washerOnida + "," + washerOthers ;
     String model = "0";
     PrefManager prefManager;
 
@@ -181,6 +198,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     String KAItem = "0";
     String FLUItem = "0";
     String tlItem = "0";
+    String washerDyerItem="0";
+
 
 
     String year, month;
@@ -189,7 +208,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     String showMonth, showYear;
     ImageView imgBack, imgHome;
 
-    AlertDialog alerDialog1, alertDialog, alertDialog2;
+    AlertDialog alerDialog1, alertDialog, alertDialog2,alertDialog3;
 
     String responseText, premonth, finalcialchecking;
 
@@ -200,6 +219,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     ArrayList<String> kitchenModel = new ArrayList<>();
     ArrayList<String> wmFluModel = new ArrayList<>();
     ArrayList<String> wmTLModel = new ArrayList<>();
+    ArrayList<String> dryerModel = new ArrayList<>();
 
     ProgressDialog pd;
     ImageView imgPic1, imgPic2, imgPic3;
@@ -214,6 +234,11 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     int pic2Flag = 0;
     int pic3Flag = 0;
     String acFlag;
+    ArrayList<String> sendACModelList=new ArrayList<>();
+    String previousMonthData="false";
+    int y;
+    ArrayList<String> modelArray=new ArrayList<>();
+    RecyclerView rvAirModelItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,8 +255,17 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
 
         prefManager = new PrefManager(getApplicationContext());
+        sendACModelList.clear();
+        prefManager.saveAirConditionerId("");
+        prefManager.saveClothsDryerId("");
+        prefManager.saveMicroOvenId("");
+        prefManager.saveDishWasherId("");
+        prefManager.SaveKAItemId("");
+        prefManager.saveWasherDryerId("");
+        prefManager.saveWashingFLUId("");
+        prefManager.saveWashingTLId("");
 
-        int y = Calendar.getInstance().get(Calendar.YEAR);
+         y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
         Log.d("year", year);
 
@@ -339,7 +373,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         etMicroIfb = (EditText) findViewById(R.id.etMicroIfb);
         String microifbsize = String.valueOf(prefManager.getMicroOvenIfbSize());
         Log.d("size", microifbsize);
-        etDishIFB.setText(microifbsize);
+        etMicroIfb.setText(microifbsize);
 
         etMicroLg = (EditText) findViewById(R.id.etMicroLg);
         etMicroSamsung = (EditText) findViewById(R.id.etMicroSamsung);
@@ -383,8 +417,6 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         String tlIfbSize = String.valueOf(prefManager.getWMTLIFBSize());
         Log.d("size", tlIfbSize);
         etTLIfb.setText(tlIfbSize);
-
-
         etTLLg = (EditText) findViewById(R.id.etTLLg);
         etTLSamsung = (EditText) findViewById(R.id.etTLSamsung);
         etTLBosch = (EditText) findViewById(R.id.etTLBosch);
@@ -394,6 +426,20 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         etTLOnida = (EditText) findViewById(R.id.etTLOnida);
         etTLOthers = (EditText) findViewById(R.id.etTLOthers);
 
+        //Washer Disher
+
+        etWasherDisherIfb = (EditText) findViewById(R.id.etWasherDisherIfb);
+        String washerdryerifbsize = String.valueOf(prefManager.getWasherDryerIfbSize());
+        Log.d("washerdryerifbsize",washerdryerifbsize);
+        etWasherDisherIfb.setText(washerdryerifbsize);
+
+        etWasherDisherLg = (EditText) findViewById(R.id.etWasherDisherLg);
+        etWasherDisherSamsung = (EditText) findViewById(R.id.etWasherDisherSamsung);
+        etWasherDisherWhirlPool = (EditText) findViewById(R.id.etWasherDisherWhirlPool);
+        etWasherDisherPanasonic = (EditText) findViewById(R.id.etWasherDisherPanasonic);
+        etWasherDisherGodrej = (EditText) findViewById(R.id.etWasherDisherGodrej);
+        etWasherDisherOnida = (EditText) findViewById(R.id.etWasherDisherOnida);
+        etWasherDisherOthers = (EditText) findViewById(R.id.etWasherDisherOthers);
 
         if (!prefManager.getAirConditionerId().equals("")) {
             airItem = prefManager.getAirConditionerId();
@@ -440,12 +486,19 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             tlItem = "0";
         }
 
+        if (!prefManager.getWasherDryerId().equals("")) {
+            washerDyerItem = prefManager.getWasherDryerId();
+        } else {
+            washerDyerItem = "0";
+        }
 
-        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem;
+
+        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem+","+washerDyerItem;
         modelId = model.replaceAll("\\s+", "");
 
 
         tvDate = (TextView) findViewById(R.id.tvDate);
+        tvWasherDisherAdd = (TextView) findViewById(R.id.tvWasherDisherAdd);
 
         if (month.equals("January")) {
             showYear = String.valueOf(y - 1);
@@ -529,23 +582,26 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         }
 
 
-        if (premonth.equals("January")) {
+        if (month.equals("January")) {
             int futureyear = y - 1;
             finalcialchecking = futureyear + "-" + year;
-        } else if (premonth.equals("February")) {
+        } else if (month.equals("February")) {
             int futureyear = y - 1;
             finalcialchecking = futureyear + "-" + year;
-        } else if (premonth.equals("March")) {
+        } else if (month.equals("March")) {
             int futureyear = y - 1;
             finalcialchecking = futureyear + "-" + year;
         } else {
             int futureyear = y + 1;
             finalcialchecking = year + "-" + futureyear;
         }
+        Log.d("finalcialchecking",finalcialchecking);
 
         pd = new ProgressDialog(DisplayMatrixDynamicActivity.this);
         pd.setMessage("Loading");
         pd.setCancelable(false);
+
+
 
 
     }
@@ -556,6 +612,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, AirConditionerDialogActivity.class);
+                intent.putStringArrayListExtra("sendAcModel",sendACModelList);
+                intent.putExtra("previousmonthStatus",previousMonthData);
                 startActivity(intent);
 
 
@@ -566,6 +624,16 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, ClothsDryerDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
+                startActivity(intent);
+
+            }
+        });
+        tvWasherDisherAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DisplayMatrixDynamicActivity.this, WasherDryerDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
                 startActivity(intent);
 
             }
@@ -574,6 +642,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, DishwasherDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
                 startActivity(intent);
             }
         });
@@ -581,6 +650,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, MicroOvenDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
                 startActivity(intent);
             }
         });
@@ -589,6 +659,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, KADialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
                 startActivity(intent);
             }
         });
@@ -597,6 +668,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, WMFLUDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
                 startActivity(intent);
             }
         });
@@ -605,6 +677,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, WMTLDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
                 startActivity(intent);
             }
         });
@@ -1645,9 +1718,14 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                                                                                                                                                                                                         if (etTLGodrej.getText().toString().length() > 0) {
                                                                                                                                                                                                                             if (etTLOnida.getText().toString().length() > 0) {
                                                                                                                                                                                                                                 if (etTLOthers.getText().toString().length() > 0) {
+                                                                                                                                                                                                                                    if (!etAirIFB.getText().toString().equals("0")  || !etClothsIFB.getText().toString().equals("0") || !etDishIFB.getText().toString().equals("0") || !etMicroIfb.getText().toString().equals("0") || !etKAIfb.getText().toString().equals("0") || !etFLUIfb.getText().toString().equals("0") || !etTLIfb.getText().toString().equals("0") || !etWasherDisherIfb.getText().toString().equals("0")) {
 
 
-                                                                                                                                                                                                                                    postDisplaymatrix();
+                                                                                                                                                                                                                                        postDisplaymatrix();
+                                                                                                                                                                                                                                    }else {
+                                                                                                                                                                                                                                        ifbAlert();
+
+                                                                                                                                                                                                                                    }
 
                                                                                                                                                                                                                                 } else {
                                                                                                                                                                                                                                     etTLOthers.setError("Please enter quantity");
@@ -1983,6 +2061,25 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     }*/
 
     private void postDisplaymatrix() {
+        airIfb = "IFBPC1000001" + "-" + "IFBCC000015" + "#" + etAirIFB.getText().toString();
+        clothsIFB = "IFBPC1000005" + "-" + "IFBCC000015" + "#" +etClothsIFB.getText().toString();
+        dishIfb = "IFBPC1000007" + "-" + "IFBCC000015" + "#" + etDishIFB.getText().toString();
+        microIfb = "IFBPC1000011" + "-" + "IFBCC000015" + "#" + etMicroIfb.getText().toString();
+        kaIfb = "IFBPC1000035" + "-" + "IFBCC000015" + "#" + etKAIfb.getText().toString();
+        FLUIfb = "IFBPC1000021" + "-" + "IFBCC000015" + "#" +etFLUIfb.getText().toString();
+        TLIfb = "IFBPC1000025" + "-" + "IFBCC000015" + "#" + etTLIfb.getText().toString();
+
+
+
+        washerIfb = "IFBPC1000039" + "-" + "IFBCC000015" + "#" + etWasherDisherIfb.getText().toString();
+        washerLg = "IFBPC1000039" + "-" + "IFBCC000001" + "#" + etWasherDisherLg.getText().toString();
+        washerSamSung = "IFBPC1000039" + "-" + "IFBCC000002" + "#" + etWasherDisherSamsung.getText().toString();
+        washerWhirlPool = "IFBPC1000039" + "-" + "IFBCC000005" + "#" + etWasherDisherWhirlPool.getText().toString();
+        washerPanasonic = "IFBPC1000039" + "-" + "IFBCC000007" + "#" + etWasherDisherPanasonic.getText().toString();
+        washerGodrej = "IFBPC1000039" + "-" + "IFBCC000006" + "#" + etWasherDisherGodrej.getText().toString();
+        washerOnida = "IFBPC1000039" + "-" + "IFBCC000017" + "#" + etWasherDisherOnida.getText().toString();
+        washerOthers = "IFBPC1000039" + "-" + "IFBCC000004" + "#" + etWasherDisherOthers.getText().toString();
+
         if (!prefManager.getAirConditionerId().equals("")) {
             airItem = prefManager.getAirConditionerId();
 
@@ -2028,12 +2125,18 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             tlItem = "0";
         }
 
-
-        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem;
+        if (!prefManager.getWasherDryerId().equals("")) {
+            washerDyerItem = prefManager.getWasherDryerId();
+        } else {
+            washerDyerItem = "0";
+        }
+        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem+","+washerDyerItem;
         modelId = model.replaceAll("\\s+", "");
+        modelArray.add(model);
+        Log.d("newList",modelArray.toString());
 
-
-        category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers;
+        category=airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers+","+washerIfb + "," + washerLg + "," + washerSamSung + "," + washerWhirlPool + "," + washerPanasonic + "," + washerGodrej + "," + washerOnida + "," + washerOthers ;
+      //  category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers;
         final ProgressDialog pd = new ProgressDialog(DisplayMatrixDynamicActivity.this);
         pd.setMessage("Loading..");
         pd.setCancelable(false);
@@ -2044,8 +2147,6 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                 .addMultipartParameter("Model", modelId)
                 .addMultipartParameter("AEMEmployeeID", userid)
                 .addMultipartParameter("SecurityCode", securitycode)
-
-
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -2071,25 +2172,21 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                             imageAlert();
                             pd.dismiss();
-                            prefManager.saveAirConditionerId("0");
-                            prefManager.saveDishWasherId("0");
-                            prefManager.saveClothsDryerId("0");
-                            prefManager.saveAirIfbSize(0);
-                            prefManager.saveClothsIfbSize(0);
-                            prefManager.saveDishIfbSize(0);
-                            prefManager.saveMicroOvenId("0");
-                            prefManager.saveMicroOvenIfbSize(0);
-                            prefManager.SaveKAItemId("0");
-                            prefManager.saveKAItemSize(0);
-                            prefManager.saveWashingFLUId("0");
-                            prefManager.saveWMFLUIfbSize(0);
-                            prefManager.saveWashingTLId("0");
-                            prefManager.saveWMTLIFBSize(0);
+
                             JSONArray jsonArray = job1.optJSONArray("responseData");
 
                             JSONObject object = jsonArray.optJSONObject(0);
                             String RowNum = object.optString("RowNum");
                             acFlag = RowNum;
+                            sendACModelList.clear();
+                            prefManager.saveAirConditionerId("");
+                            prefManager.saveClothsDryerId("");
+                            prefManager.saveMicroOvenId("");
+                            prefManager.saveDishWasherId("");
+                            prefManager.SaveKAItemId("");
+                            prefManager.saveWasherDryerId("");
+                            prefManager.saveWashingFLUId("");
+                            prefManager.saveWashingTLId("");
 
 
                         } else {
@@ -2150,6 +2247,9 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         Log.d("size", tlIfbSize);
         etTLIfb.setText(tlIfbSize);
 
+        String washerIFBSize= String.valueOf(prefManager.getWasherDryerIfbSize());
+        etWasherDisherIfb.setText(washerIFBSize);
+
 
         if (!prefManager.getAirConditionerId().equals("")) {
             airItem = prefManager.getAirConditionerId();
@@ -2200,33 +2300,27 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         }
 
 
-        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem;
+
+        if (!prefManager.getWasherDryerId().equals("")) {
+            washerDyerItem = prefManager.getWasherDryerId();
+        } else {
+            washerDyerItem = "0";
+        }
+
+
+
+        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem+","+washerDyerItem;
         modelId = model.replaceAll("\\s+", "");
         Log.d("modelid", modelId);
-
-
-        airIfb = "IFBPC1000001" + "-" + "IFBCC000015" + "#" + prefManager.getAirIfbSize();
-        clothsIFB = "IFBPC1000005" + "-" + "IFBCC000015" + "#" + prefManager.getClothsIfbSize();
-        dishIfb = "IFBPC1000007" + "-" + "IFBCC000015" + "#" + prefManager.getDishIfbSize();
-        microIfb = "IFBPC1000011" + "-" + "IFBCC000015" + "#" + prefManager.getMicroOvenIfbSize();
-        kaIfb = "IFBPC1000035" + "-" + "IFBCC000015" + "#" + prefManager.getKAIfbSize();
-        FLUIfb = "IFBPC1000021" + "-" + "IFBCC000015" + "#" + prefManager.getWMFLUIfbSize();
-        TLIfb = "IFBPC1000025" + "-" + "IFBCC000015" + "#" + prefManager.getWMTLIFBSize();
-
-
         category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers;
 
 
     }
 
-    public void updateItemStatus(int position) {
-
-
-    }
 
 
     private void successAlert(String msg) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_success, null);
         dialogBuilder.setView(dialogView);
@@ -2238,59 +2332,9 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 alerDialog1.dismiss();
-                prefManager.saveAirLg(etAirLG.getText().toString());
-                prefManager.saveAirSamsung(etAirSamSung.getText().toString());
-                prefManager.saveAirDaikin(etAirDaikin.getText().toString());
-                prefManager.saveAirCarrier(etCarrier.getText().toString());
-                prefManager.saveAirBlue(etAirBlueStar.getText().toString());
-                prefManager.saveAirVoltas(etAirVoltas.getText().toString());
-                prefManager.saveAirOnida(etAirOnida.getText().toString());
-                prefManager.saveAirPanasonic(etAirPanaSonic.getText().toString());
-                prefManager.saveAirWhirlPool(etAirWhirlPool.getText().toString());
-                prefManager.saveAirGeneral(etAirOGenaral.getText().toString());
-                prefManager.saveAirHaier(etAirHaier.getText().toString());
-                prefManager.saveAirLloyds(etAirLloyds.getText().toString());
-                prefManager.saveAirOthers(etAirOthers.getText().toString());
-                prefManager.saveClothsBosch(etClothsBosch.getText().toString());
-                prefManager.saveDishLg(etDishLg.getText().toString());
-                prefManager.saveDishBosch(etDishBosch.getText().toString());
-                prefManager.saveDishSamsung(etDishSamsung.getText().toString());
-                prefManager.saveDishOthers(etDishOther.getText().toString());
-                prefManager.saveMicroLg(etMicroLg.getText().toString());
-                prefManager.saveMicroSamsung(etMicroSamsung.getText().toString());
-                prefManager.saveMicroWhirlPool(etMicroWhirlPool.getText().toString());
-                prefManager.saveMicroPanasonic(etMicroPanasonic.getText().toString());
-                prefManager.saveMicroGodrej(etMicroGodrej.getText().toString());
-                prefManager.saveMicroOnida(etMicroOnida.getText().toString());
-                prefManager.saveMicroOthers(etMicroOthers.getText().toString());
-                prefManager.saveKAFaber(etKAFaber.getText().toString());
-                prefManager.saveKASunflame(etKASunFlame.getText().toString());
-                prefManager.saveKAElica(etKAElica.getText().toString());
-                prefManager.saveKAKaff(etKAKaff.getText().toString());
-                prefManager.saveKABosch(etKABosch.getText().toString());
-                prefManager.saveKAOthers(etKAOthers.getText().toString());
-                prefManager.saveWMFLULg(etFLULg.getText().toString());
-                prefManager.saveWMFLUSamsung(etFLUSamsung.getText().toString());
-                prefManager.saveWMFLUBosch(etFLUBosch.getText().toString());
-                prefManager.saveWMFLUWhirlpool(etFLUWhirlPool.getText().toString());
-                prefManager.saveWMFLUBeko(etFLUBeko.getText().toString());
-                prefManager.saveWMFLUOthers(etFLUOthers.getText().toString());
-                prefManager.saveWMTLLg(etTLLg.getText().toString());
-                prefManager.saveWMTLSamsung(etTLSamsung.getText().toString());
-                prefManager.saveWMTLBosch(etTLBosch.getText().toString());
-                prefManager.saveWMTLWhirlpool(etTLWhirlPool.getText().toString());
-                prefManager.saveWMTLPanasonic(etTLPanasonic.getText().toString());
-                prefManager.saveWMTLGodrej(etTLGodrej.getText().toString());
-                prefManager.saveWMTLOnida(etTLOnida.getText().toString());
-                prefManager.saveWMTLOthers(etTLOthers.getText().toString());
-                prefManager.saveAirIfbSize(Integer.parseInt(etAirIFB.getText().toString()));
-                prefManager.saveClothsIfbSize(Integer.parseInt(etClothsIFB.getText().toString()));
-                prefManager.saveDishIfbSize(Integer.parseInt(etDishIFB.getText().toString()));
-                prefManager.saveMicroOvenIfbSize(Integer.parseInt(etMicroIfb.getText().toString()));
-                prefManager.saveKAItemSize(Integer.parseInt(etKAIfb.getText().toString()));
-                prefManager.saveWMFLUIfbSize(Integer.parseInt(etFLUIfb.getText().toString()));
-                prefManager.saveWMTLIFBSize(Integer.parseInt(etTLIfb.getText().toString()));
-                Intent intent = new Intent(DisplayMatrixDynamicActivity.this, DashboardActivity.class);
+
+
+                Intent intent = new Intent(DisplayMatrixDynamicActivity.this, DisplayMatrixReportActivity.class);
                 startActivity(intent);
                 finish();
 
@@ -2396,71 +2440,11 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 displayMatrixAlert();
 
-                                /*etAirLG.setText(prefManager.getAirLg());
-                                etAirSamSung.setText(prefManager.getAirSamsung());
-                                etAirDaikin.setText(prefManager.getAirDaikin());
-                                etCarrier.setText(prefManager.getAirCarrier());
-                                etAirBlueStar.setText(prefManager.getAirBlue());
-                                etAirVoltas.setText(prefManager.getAirVoltas());
-                                etAirOnida.setText(prefManager.getAirOnida());
-                                etAirPanaSonic.setText(prefManager.getAirPanasonic());
-                                etAirWhirlPool.setText(prefManager.getAirWhirlPool());
-                                etAirOGenaral.setText(prefManager.getAirGeneral());
-                                etAirHaier.setText(prefManager.getAirHaier());
-                                etAirLloyds.setText(prefManager.getAirLloyds());
-                                etAirOthers.setText(prefManager.getAirOthers());
-                                etClothsBosch.setText(prefManager.getClothsBosch());
-                                etDishLg.setText(prefManager.getDishLg());
-                                etDishBosch.setText(prefManager.getDishBosch());
-                                etDishSamsung.setText(prefManager.getDishSamsung());
-                                etDishOther.setText(prefManager.getDishOthers());
-                                etMicroLg.setText(prefManager.getMicroLg());
-                                etMicroSamsung.setText(prefManager.getMicroSamsung());
-                                etMicroWhirlPool.setText(prefManager.getMicroWhirlPool());
-                                etMicroPanasonic.setText(prefManager.getMicroPanasonic());
-                                etMicroGodrej.setText(prefManager.getMicroGodrej());
-                                etMicroOnida.setText(prefManager.getMicroOnida());
-                                etMicroOthers.setText(prefManager.getMicroOthers());
-                                etKAFaber.setText(prefManager.getKAFaber());
-                                etKASunFlame.setText(prefManager.getKASunflame());
-                                etKAElica.setText(prefManager.getKAElica());
-                                etKAKaff.setText(prefManager.getKAKaff());
-                                etKABosch.setText(prefManager.getKABosch());
-                                etKAOthers.setText(prefManager.getKAOthers());
-                                etFLULg.setText(prefManager.getWMFLULg());
-                                etFLUSamsung.setText(prefManager.getWMFLUSamsung());
-                                etFLUBosch.setText(prefManager.getWMFLUBosch());
-                                etFLUWhirlPool.setText(prefManager.getWMFLUWhirlpool());
-                                etFLUBeko.setText(prefManager.getWMFLUWMFLUBeko());
-                                etFLUOthers.setText(prefManager.getWMFLUOthers());
-                                etTLLg.setText(prefManager.getWMTLLg());
-                                etTLSamsung.setText(prefManager.getWMTLSamsung());
-                                etTLBosch.setText(prefManager.getWMTLBosch());
-                                etTLWhirlPool.setText(prefManager.getWMTLWhirlpool());
-                                etTLPanasonic.setText(prefManager.getWMTLPanasonic());
-                                etTLGodrej.setText(prefManager.getWMTLGodrej());
-                                etTLOnida.setText(prefManager.getWMTLOnida());
-                                etTLOthers.setText(prefManager.getWMTLOthers());
-
-                                //iFB
-                                String size = String.valueOf(prefManager.getAirIfbSize());
-                                Log.d("size", size);
-                                etAirIFB.setText(size);
-
-
-                                etClothsIFB.setText(String.valueOf(prefManager.getClothsIfbSize()));
-                                etDishIFB.setText(String.valueOf(prefManager.getDishIfbSize()));
-                                etMicroIfb.setText(String.valueOf(prefManager.getMicroOvenIfbSize()));
-                                etKAIfb.setText(String.valueOf(prefManager.getKAIfbSize()));
-                                etFLUIfb.setText(String.valueOf(prefManager.getWMFLUIfbSize()));
-                                etTLIfb.setText(String.valueOf(prefManager.getWMTLIFBSize()));
-
-*/
 
 
                             } else {
 
-
+                                displayMatrixAlertForPreviousMonth();
                             }
 
 
@@ -2490,7 +2474,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
 
     private void displayMatrixAlert() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_compsale, null);
         dialogBuilder.setView(dialogView);
@@ -2513,6 +2497,73 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, DashboardActivity.class);
                 startActivity(intent);
                 finish();
+            }
+        });
+        alertDialog = dialogBuilder.create();
+        alertDialog.setCancelable(false);
+        Window window = alertDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alertDialog.show();
+    }
+
+    private void ifbAlert() {
+       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_compsale, null);
+        dialogBuilder.setView(dialogView);
+        Button btnNow = (Button) dialogView.findViewById(R.id.btnNow);
+        TextView tvResponse = (TextView) dialogView.findViewById(R.id.tvResponse);
+        tvResponse.setText("Are You Sure,IFB Models Zero Display In Your Store");
+        btnNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog3.dismiss();
+                postDisplaymatrix();
+
+
+            }
+        });
+
+        Button btnLate = (Button) dialogView.findViewById(R.id.btnLate);
+        btnLate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postDisplaymatrix();
+                alertDialog3.dismiss();
+            }
+        });
+        alertDialog3 = dialogBuilder.create();
+        alertDialog3.setCancelable(false);
+        Window window = alertDialog3.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alertDialog3.show();
+    }
+
+
+    private void displayMatrixAlertForPreviousMonth() {
+       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_compsale, null);
+        dialogBuilder.setView(dialogView);
+        Button btnNow = (Button) dialogView.findViewById(R.id.btnNow);
+        TextView tvResponse = (TextView) dialogView.findViewById(R.id.tvResponse);
+        tvResponse.setText("Will you carry forward the previous month display data?");
+        btnNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                getReportListForPreviousMonth();
+
+            }
+        });
+
+        Button btnLate = (Button) dialogView.findViewById(R.id.btnLate);
+        btnLate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
             }
         });
         alertDialog = dialogBuilder.create();
@@ -2692,10 +2743,32 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                         etTLOnida.setText(Quantity);
                                     }
 
-                                    getReportListForModel();
+                                    //WASHER DRYER
+
+                                    if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etWasherDisherLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etWasherDisherSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etWasherDisherOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etWasherDisherWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etWasherDisherGodrej.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000007")) {
+                                        etWasherDisherPanasonic.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etWasherDisherIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000017")) {
+                                        etWasherDisherOnida.setText(Quantity);
+                                    }
+
+
+
 
 
                                 }
+                                getReportListForModel();
 
 
                             } else {
@@ -2738,6 +2811,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
         pd.show();
 
+
         String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=2";
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -2748,6 +2822,14 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                         Log.d("responsetlreport", response);
 
+                        airConditionerModel.clear();
+                        clothsdryerModel.clear();
+                        dishwasherModel.clear();
+                        microOvenModel.clear();
+                        kitchenModel.clear();
+                        wmFluModel.clear();
+                        wmTLModel.clear();
+                        dryerModel.clear();
                         // attendabceInfiList.clear();
                         pd.dismiss();
 
@@ -2764,9 +2846,11 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     JSONObject obj = responseData.getJSONObject(i);
                                     String CategoryID = obj.optString("CategoryID");
                                     String ModelID = obj.optString("ModelID");
+                                    String ModelName=obj.optString("ModelName");
                                     //Airconditioner
                                     if (CategoryID.equals("IFBPC1000001")) {
                                         airConditionerModel.add(CategoryID + "-" + ModelID);
+                                        //sendACModelList.add(ModelName);
                                     } else if (CategoryID.equals("IFBPC1000005")) {
                                         clothsdryerModel.add(CategoryID + "-" + ModelID);
                                     } else if (CategoryID.equals("IFBPC1000007")) {
@@ -2779,22 +2863,36 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                         wmFluModel.add(CategoryID + "-" + ModelID);
                                     } else if (CategoryID.equals("IFBPC1000025")) {
                                         wmTLModel.add(CategoryID + "-" + ModelID);
+                                    }else if (CategoryID.equals("IFBPC1000039")) {
+                                        dryerModel.add(CategoryID + "-" + ModelID);
                                     }
 
 
                                 }
+
+                                Set<String> set = new HashSet<String>(airConditionerModel);
+                                airConditionerModel.clear();
+                                airConditionerModel.addAll(set);
 
                                 String airConditionerItem = String.valueOf(airConditionerModel);
                                 String refreshairConditionerItem = airConditionerItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
                                 prefManager.saveAirConditionerId(refreshairConditionerItem);
 
                                 //CTOTHS
+                                Set<String> set1 = new HashSet<String>(clothsdryerModel);
+                                clothsdryerModel.clear();
+                                clothsdryerModel.addAll(set1);
 
-                                String ClothsItem = String.valueOf(airConditionerModel);
+
+                                String ClothsItem = String.valueOf(clothsdryerModel);
                                 String refreshairClothsItem = ClothsItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
                                 prefManager.saveClothsDryerId(refreshairClothsItem);
 
                                 //DISHWASHER
+
+                                Set<String> set2 = new HashSet<String>(dishwasherModel);
+                                dishwasherModel.clear();
+                                dishwasherModel.addAll(set2);
 
                                 String dishwasherItem = String.valueOf(dishwasherModel);
                                 String refreshdishwasherItem = dishwasherItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
@@ -2802,11 +2900,19 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 //MICROOVEN
 
+                                Set<String> set3 = new HashSet<String>(microOvenModel);
+                                microOvenModel.clear();
+                                microOvenModel.addAll(set3);
+
                                 String microOvenItem = String.valueOf(microOvenModel);
                                 String refreshmicroOvenItem = microOvenItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
                                 prefManager.saveMicroOvenId(refreshmicroOvenItem);
 
                                 //Kitchen
+
+                                Set<String> set4 = new HashSet<String>(kitchenModel);
+                                kitchenModel.clear();
+                                kitchenModel.addAll(set4);
 
                                 String kaItem = String.valueOf(kitchenModel);
                                 String refreshkaItem = kaItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
@@ -2814,20 +2920,474 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 //WMFLU
 
+                                Set<String> set5 = new HashSet<String>(wmFluModel);
+                                wmFluModel.clear();
+                                wmFluModel.addAll(set5);
+
+
                                 String wmfluItem = String.valueOf(wmFluModel);
                                 String refreshwmfluItem = wmfluItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
                                 prefManager.saveWashingFLUId(refreshwmfluItem);
 
                                 //WMTL
 
+                                Set<String> set6 = new HashSet<String>(wmTLModel);
+                                wmTLModel.clear();
+                                wmTLModel.addAll(set6);
+
+
                                 String wmtlItem = String.valueOf(wmTLModel);
                                 String refreshwmtlItem = wmtlItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
                                 prefManager.saveWashingTLId(refreshwmtlItem);
+
+                                //Dryer
+
+                                Set<String> set7 = new HashSet<String>(dryerModel);
+                                dryerModel.clear();
+                                dryerModel.addAll(set7);
+
+                                String dryerItem= String.valueOf(dryerModel);
+                                String refreshdryerItem = dryerItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveWasherDryerId(refreshdryerItem);
+
 
 
                             } else {
 
 
+                                //    Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(DisplayMatrixDynamicActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pd.dismiss();
+
+
+                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(DisplayMatrixDynamicActivity.this);
+        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                6000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
+
+    private void getReportListForPreviousMonth() {
+        if (premonth.equals("January")) {
+            int futureyear = y - 1;
+            finalcialchecking = futureyear + "-" + year;
+        } else if (premonth.equals("February")) {
+            int futureyear = y - 1;
+            finalcialchecking = futureyear + "-" + year;
+        } else if (premonth.equals("March")) {
+            int futureyear = y - 1;
+            finalcialchecking = futureyear + "-" + year;
+        } else {
+            int futureyear = y + 1;
+            finalcialchecking = year + "-" + futureyear;
+        }
+
+        pd.show();
+
+        String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + premonth + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=1";
+        Log.d("inputtlreportpre", surl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+
+                        Log.d("responsetlreport", response);
+
+                        // attendabceInfiList.clear();
+                        pd.show();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                previousMonthData="true";
+                                //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject obj = responseData.getJSONObject(i);
+                                    String CategoryName = obj.optString("CategoryName");
+                                    String CompanyName = obj.optString("CompanyName");
+                                    String Quantity = obj.optString("Quantity");
+                                    String FinancialYear = obj.optString("FinancialYear");
+                                    String Month = obj.optString("Month");
+                                    String CategoryID = obj.optString("CategoryID");
+                                    String CompetitorCompanyID = obj.optString("CompetitorCompanyID");
+                                    //Airconditioner
+                                    if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etAirLG.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etAirSamSung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etAirOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etAirWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etAirGodrej.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000007")) {
+                                        etAirPanaSonic.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000008")) {
+                                        etAirVoltas.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000009")) {
+                                        etAirDaikin.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000010")) {
+                                        etAirLloyds.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etAirIFB.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000017")) {
+                                        etAirOnida.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000018")) {
+                                        etCarrier.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000019")) {
+                                        etAirBlueStar.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000020")) {
+                                        etAirOGenaral.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000021")) {
+                                        etAirHaier.setText(Quantity);
+                                    }
+
+                                    //CLOTHS DRYER
+
+                                    if (CategoryID.equals("IFBPC1000005") && CompetitorCompanyID.equals("IFBCC000003")) {
+                                        etClothsBosch.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000005") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etClothsIFB.setText(Quantity);
+                                    }
+
+                                    //DISHWASHER
+
+                                    if (CategoryID.equals("IFBPC1000007") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etDishLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000007") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etDishSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000007") && CompetitorCompanyID.equals("IFBCC000003")) {
+                                        etDishBosch.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000007") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etDishOther.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000007") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etDishIFB.setText(Quantity);
+                                    }
+
+                                    //MICROVEN
+
+                                    if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etMicroLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etMicroSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etMicroOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etMicroWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etMicroGodrej.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000007")) {
+                                        etMicroPanasonic.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etMicroIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000017")) {
+                                        etMicroOnida.setText(Quantity);
+                                    }
+
+                                    //KITCHEN APPLIANCE
+
+
+                                    if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000003")) {
+                                        etKABosch.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etKAOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000012")) {
+                                        etKAKaff.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000013")) {
+                                        etKAFaber.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000014")) {
+                                        etKAElica.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etKAIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000022")) {
+                                        etKASunFlame.setText(Quantity);
+                                    }
+
+                                    //WASHING FLU
+
+
+                                    if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etFLULg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etFLUSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000003")) {
+                                        etFLUBosch.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etFLUOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etFLUWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etFLUIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000024")) {
+                                        etFLUBeko.setText(Quantity);
+                                    }
+                                    //WASHING TL
+
+                                    if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etTLLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etTLSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000003")) {
+                                        etTLBosch.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etTLOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etTLWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etTLGodrej.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000007")) {
+                                        etTLPanasonic.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etTLIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000017")) {
+                                        etTLOnida.setText(Quantity);
+                                    }
+                                    //dryer
+
+                                    if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etWasherDisherLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etWasherDisherSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etWasherDisherOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etWasherDisherWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etWasherDisherGodrej.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000007")) {
+                                        etWasherDisherPanasonic.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etWasherDisherIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000017")) {
+                                        etWasherDisherOnida.setText(Quantity);
+                                    }
+
+
+                                    getReportListForModelPreviousMonth();
+
+
+                                }
+
+
+                            } else {
+
+                                previousMonthData="false";
+                                pd.dismiss();
+                                //Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(DisplayMatrixDynamicActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pd.dismiss();
+
+
+                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+       RequestQueue requestQueue = Volley.newRequestQueue(DisplayMatrixDynamicActivity.this);
+        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                6000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
+
+    private void getReportListForModelPreviousMonth() {
+        if (premonth.equals("January")) {
+            int futureyear = y - 1;
+            finalcialchecking = futureyear + "-" + year;
+        } else if (premonth.equals("February")) {
+            int futureyear = y - 1;
+            finalcialchecking = futureyear + "-" + year;
+        } else if (premonth.equals("March")) {
+            int futureyear = y - 1;
+            finalcialchecking = futureyear + "-" + year;
+        } else {
+            int futureyear = y + 1;
+            finalcialchecking = year + "-" + futureyear;
+        }
+
+        pd.show();
+        String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + premonth + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=2";
+        Log.d("inputtlreportpre", surl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                       Log.d("responsetlreport", response);
+                        sendACModelList.clear();
+                        airConditionerModel.clear();
+                        clothsdryerModel.clear();
+                        dishwasherModel.clear();
+                        microOvenModel.clear();
+                        kitchenModel.clear();
+                        wmFluModel.clear();
+                        wmTLModel.clear();
+                        dryerModel.clear();
+                        // attendabceInfiList.clear();
+                        pd.dismiss();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject obj = responseData.getJSONObject(i);
+                                    String CategoryID = obj.optString("CategoryID");
+                                    String ModelID = obj.optString("ModelID");
+                                    String ModelName=obj.optString("ModelName");
+                                    //Airconditioner
+                                    if (CategoryID.equals("IFBPC1000001")) {
+                                        airConditionerModel.add(CategoryID + "-" + ModelID);
+                                        sendACModelList.add(ModelName);
+                                    } else if (CategoryID.equals("IFBPC1000005")) {
+                                        clothsdryerModel.add(CategoryID + "-" + ModelID);
+                                    } else if (CategoryID.equals("IFBPC1000007")) {
+                                        dishwasherModel.add(CategoryID + "-" + ModelID);
+                                    } else if (CategoryID.equals("IFBPC1000011")) {
+                                        microOvenModel.add(CategoryID + "-" + ModelID);
+                                    } else if (CategoryID.equals("IFBPC1000035")) {
+                                        kitchenModel.add(CategoryID + "-" + ModelID);
+                                    } else if (CategoryID.equals("IFBPC1000021")) {
+                                        wmFluModel.add(CategoryID + "-" + ModelID);
+                                    } else if (CategoryID.equals("IFBPC1000025")) {
+                                        wmTLModel.add(CategoryID + "-" + ModelID);
+                                    }else if (CategoryID.equals("IFBPC1000039")) {
+                                        dryerModel.add(CategoryID + "-" + ModelID);
+                                    }
+
+
+                                }
+
+                                Set<String> set = new HashSet<String>(airConditionerModel);
+                                airConditionerModel.clear();
+                                airConditionerModel.addAll(set);
+
+                                String airConditionerItem = String.valueOf(airConditionerModel);
+                                String refreshairConditionerItem = airConditionerItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveAirConditionerId(refreshairConditionerItem);
+
+                                //CTOTHS
+                                Set<String> set1 = new HashSet<String>(clothsdryerModel);
+                                clothsdryerModel.clear();
+                                clothsdryerModel.addAll(set1);
+
+
+                                String ClothsItem = String.valueOf(clothsdryerModel);
+                                String refreshairClothsItem = ClothsItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveClothsDryerId(refreshairClothsItem);
+
+                                //DISHWASHER
+
+                                Set<String> set2 = new HashSet<String>(dishwasherModel);
+                                dishwasherModel.clear();
+                                dishwasherModel.addAll(set2);
+
+                                String dishwasherItem = String.valueOf(dishwasherModel);
+                                String refreshdishwasherItem = dishwasherItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveDishWasherId(refreshdishwasherItem);
+
+                                //MICROOVEN
+
+                                Set<String> set3 = new HashSet<String>(microOvenModel);
+                                microOvenModel.clear();
+                                microOvenModel.addAll(set3);
+
+                                String microOvenItem = String.valueOf(microOvenModel);
+                                String refreshmicroOvenItem = microOvenItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveMicroOvenId(refreshmicroOvenItem);
+
+                                //Kitchen
+
+                                Set<String> set4 = new HashSet<String>(kitchenModel);
+                                kitchenModel.clear();
+                                kitchenModel.addAll(set4);
+
+                                String kaItem = String.valueOf(kitchenModel);
+                                String refreshkaItem = kaItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.SaveKAItemId(refreshkaItem);
+
+                                //WMFLU
+
+                                Set<String> set5 = new HashSet<String>(wmFluModel);
+                                wmFluModel.clear();
+                                wmFluModel.addAll(set5);
+
+
+                                String wmfluItem = String.valueOf(wmFluModel);
+                                String refreshwmfluItem = wmfluItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveWashingFLUId(refreshwmfluItem);
+
+                                //WMTL
+
+                                Set<String> set6 = new HashSet<String>(wmTLModel);
+                                wmTLModel.clear();
+                                wmTLModel.addAll(set6);
+
+
+                                String wmtlItem = String.valueOf(wmTLModel);
+                                String refreshwmtlItem = wmtlItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveWashingTLId(refreshwmtlItem);
+
+                                //Dryer
+
+                                Set<String> set7 = new HashSet<String>(dryerModel);
+                                dryerModel.clear();
+                                dryerModel.addAll(set7);
+
+                                String dryerItem= String.valueOf(dryerModel);
+                                String refreshdryerItem = dryerItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                prefManager.saveWasherDryerId(refreshdryerItem);
+
+
+                            } else {
+
+                                   pd.dismiss();
                                 //    Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
 
                             }
@@ -3131,5 +3691,28 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         }
 
     }
+
+    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list)
+    {
+
+        // Create a new ArrayList
+        ArrayList<T> newList = new ArrayList<T>();
+
+        // Traverse through the first list
+        for (T element : list) {
+
+            // If this element is not present in newList
+            // then add it
+            if (!newList.contains(element)) {
+
+                newList.add(element);
+            }
+        }
+
+        // return the new list
+        return newList;
+    }
+
+
 
 }

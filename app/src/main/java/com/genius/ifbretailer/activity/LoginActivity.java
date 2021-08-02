@@ -125,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/GCLAuthenticateWithEncryption?LoginID=" + etUserID.getText().toString() + "&password=" +base64+"&IMEI=1122&SecurityCode=" + etSecurityCode.getText().toString() + "&DeviceID=1233&DeviceType="+version;
+        String surl = "http://111.93.182.173/IFBiOSApi/api/RTLAuthenticateWithEncryption?LoginID=" + etUserID.getText().toString() + "&password=" +base64+"&IMEI=1122&SecurityCode=" + etSecurityCode.getText().toString() + "&DeviceID=1233&DeviceType="+version;
         Log.d("inputLogin", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button

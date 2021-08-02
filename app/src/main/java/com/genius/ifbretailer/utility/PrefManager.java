@@ -1341,10 +1341,25 @@ public class PrefManager {
     }
 
 
+    public void saveWasherDryerId(String WasherDryerId){
+        _editorPref.putString("WasherDryerId", WasherDryerId);
+        _editorPref.commit();
+    }
+
+    public String getWasherDryerId(){
+        return _pref.getString("WasherDryerId","");
+    }
 
 
 
+    public void saveWasherDryerIfbSize(int WasherDryerIfbSize){
+        _editorPref.putInt("WasherDryerIfbSize", WasherDryerIfbSize);
+        _editorPref.commit();
+    }
 
+    public int getWasherDryerIfbSize(){
+        return _pref.getInt("WasherDryerIfbSize",0);
+    }
 
 
 

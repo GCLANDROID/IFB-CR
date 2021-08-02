@@ -11,6 +11,8 @@
        android:paddingLeft="10dp"
        android:paddingTop="10dp">
        <LinearLayout
+           android:id="@+id/llTick"
+           android:visibility="visible"
            android:layout_width="20dp"
            android:layout_height="20dp"
            android:background="@drawable/ovaldesign1"
@@ -23,15 +25,32 @@
                android:id="@+id/llClick"
                android:visibility="gone"></LinearLayout>
        </LinearLayout>
+       <FrameLayout
+           android:visibility="gone"
+           android:layout_width="30dp"
+           android:layout_height="30dp">
+           <LinearLayout
+               android:orientation="vertical"
+
+               android:layout_width="30dp"
+               android:layout_height="30dp"
+               android:background="@drawable/lldesign"></LinearLayout>
+           <CheckBox
+               android:text=""
+               android:layout_width="30dp"
+               android:layout_height="30dp"
+               android:id="@+id/ckBox"></CheckBox>
+       </FrameLayout>
+
        <TextView
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_gravity="center"
            android:textAppearance="?android:textAppearanceSmall"
-           android:textColor="@color/color1"
+           android:textColor="@color/color5"
            android:id="@+id/tvItem"
            android:layout_marginLeft="5dp"
-           android:fontFamily="sans-serif"/>
+           android:textStyle="italic"/>
    </LinearLayout>
 
 </LinearLayout>

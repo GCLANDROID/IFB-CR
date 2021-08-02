@@ -15,14 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.SurveyActivity"></activity>
+        <activity android:name=".activity.DisplaymatrixDashboardActivity"></activity>
+        <activity android:name=".activity.SurveyActivity" />
         <activity
             android:name=".activity.IncentiveDashboardActivity"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".activity.MonthWiseIncentiveFeddbackActivity"
             android:screenOrientation="userPortrait"
-            android:theme="@style/Theme.AppCompat.Dialog"></activity>
+            android:theme="@style/Theme.AppCompat.Dialog" />
         <activity
             android:name=".activity.ESubCatActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />
@@ -99,8 +100,9 @@
         <activity
             android:name=".activity.ChangePasswordActivity"
             android:screenOrientation="userPortrait" />
-        <activity android:name=".activity.ELearningActivity"
-            android:screenOrientation="userPortrait"></activity>
+        <activity
+            android:name=".activity.ELearningActivity"
+            android:screenOrientation="userPortrait" />
 
         <service android:name=".FCM.MyFirebaseInstanceIDService">
             <intent-filter>
@@ -112,25 +114,37 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <activity android:name=".activity.SalesManageDashboardActivity"
-            android:screenOrientation="userPortrait"></activity>
-        <activity android:name=".activity.DeliveryDetailsActivity"
-            android:screenOrientation="userPortrait"></activity>
-        <activity android:name=".activity.DeliveryAddressUpdateActivity"
-            android:screenOrientation="userPortrait"></activity>
-        <activity android:name=".activity.SalesUpdateActivity"
-            android:screenOrientation="userPortrait"></activity>
-        <activity android:name=".activity.RefNoReportActivity"
-            android:screenOrientation="userPortrait"></activity>
-        <activity android:name=".activity.ConsolidateSalesReportActivity"
-            android:screenOrientation="userPortrait"></activity>
-        <activity android:name=".activity.CompetitorSaleActivity"
-            android:screenOrientation="userPortrait">
-        </activity>
-        <activity android:name=".activity.CompSaleReportActivity"
-            android:screenOrientation="userPortrait">
-        </activity>
 
+        <activity
+            android:name=".activity.SalesManageDashboardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DeliveryDetailsActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DeliveryAddressUpdateActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.SalesUpdateActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.RefNoReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.ConsolidateSalesReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.CompetitorSaleActivity"
+            android:screenOrientation="userPortrait"></activity>
+        <activity
+            android:name=".activity.CompSaleReportActivity"
+            android:screenOrientation="userPortrait"></activity>
+        <activity
+            android:name=".activity.WasherDryerDialogActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DisplayMatrixReportActivity"
+            android:screenOrientation="userPortrait" />
     </application>
 
 </manifest>

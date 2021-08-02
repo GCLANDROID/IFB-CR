@@ -19,9 +19,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
-import com.genius.ifbretailer.adapter.DishWasherDialogItemAdapter;
-import com.genius.ifbretailer.adapter.DishWasherDialogItemForDataAdapter;
+import com.genius.ifbretailer.adapter.WasherDryerDialogForDataItemAdapter;
+import com.genius.ifbretailer.adapter.WasherDryerDialogItemAdapter;
 import com.genius.ifbretailer.model.DialogItemModule;
+import com.genius.ifbretailer.model.DisplayMatrixModel;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -33,16 +34,18 @@ import java.util.Calendar;
 
 
 
-public class DishwasherDialogActivity extends AppCompatActivity {
-    ArrayList<DialogItemModule> itemList=new ArrayList<>();
+public class WasherDryerDialogActivity extends AppCompatActivity {
+    ArrayList<DialogItemModule> itemList = new ArrayList<>();
     RecyclerView rvItem,rvGetItem;
-    DishWasherDialogItemAdapter itemAdapter;
+    WasherDryerDialogItemAdapter itemAdapter;
     LinearLayout llCancel;
-    LinearLayout llMain,llLoader,llAgain,llSave;
+    LinearLayout llLoader, llMain, llAgain, llSave;
     PrefManager prefManager;
-    ArrayList<String> item=new ArrayList<>();
-
-    String categoryID="IFBPC1000007";
+    ArrayList<String> item = new ArrayList<>();
+    String itemId = "";
+    String categoryId;
+    ArrayList<String> sendAcModel=new ArrayList<>();
+    String flag="0";
     String year,month,finalcialchecking;
     String previousmonthStatus,preMonth;
     LinearLayout llEdit;
@@ -63,25 +66,28 @@ public class DishwasherDialogActivity extends AppCompatActivity {
         onClick();
     }
 
-    private void initialize(){
+    private void initialize() {
         previousmonthStatus=getIntent().getStringExtra("previousmonthStatus");
-        prefManager=new PrefManager(getApplicationContext());
-        rvItem=(RecyclerView)findViewById(R.id.rvItem);
-        rvGetItem=(RecyclerView)findViewById(R.id.rvGetItem);
+        prefManager = new PrefManager(WasherDryerDialogActivity.this);
+
+        rvItem = (RecyclerView) findViewById(R.id.rvItem);
         LinearLayoutManager layoutManager
-                = new LinearLayoutManager(DishwasherDialogActivity.this, LinearLayoutManager.VERTICAL, false);
+                = new LinearLayoutManager(WasherDryerDialogActivity.this, LinearLayoutManager.VERTICAL, false);
         rvItem.setLayoutManager(layoutManager);
 
+        rvGetItem = (RecyclerView) findViewById(R.id.rvGetItem);
         LinearLayoutManager layoutManager1
-                = new LinearLayoutManager(DishwasherDialogActivity.this, LinearLayoutManager.VERTICAL, false);
+                = new LinearLayoutManager(WasherDryerDialogActivity.this, LinearLayoutManager.VERTICAL, false);
         rvGetItem.setLayoutManager(layoutManager1);
 
-        llCancel=(LinearLayout) findViewById(R.id.llCancel);
+        llCancel = (LinearLayout) findViewById(R.id.llCancel);
+        llLoader = (LinearLayout) findViewById(R.id.llLoader);
+        llMain = (LinearLayout) findViewById(R.id.llMain);
+        llSave = (LinearLayout) findViewById(R.id.llSave);
+        llAgain = (LinearLayout) findViewById(R.id.llAgain);
+        categoryId="IFBPC1000039";
+       // sendAcModel=getIntent().getExtras().getStringArrayList("sendAcModel");
 
-        llMain=(LinearLayout) findViewById(R.id.llMain);
-        llLoader=(LinearLayout) findViewById(R.id.llLoader);
-        llAgain=(LinearLayout) findViewById(R.id.llAgain);
-        llSave=(LinearLayout) findViewById(R.id.llSave);
 
         int y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
@@ -144,7 +150,6 @@ public class DishwasherDialogActivity extends AppCompatActivity {
                 int futureyear = y + 1;
                 finalcialchecking = year + "-" + futureyear;
             }
-
             getDialogItemList(preMonth,finalcialchecking);
         }else {
             if (preMonth.equals("January")) {
@@ -165,13 +170,14 @@ public class DishwasherDialogActivity extends AppCompatActivity {
 
         llEdit=(LinearLayout)findViewById(R.id.llEdit);
 
+
     }
 
-    private void getDialogItemList(String month, String financialYear){
+    private void getDialogItemList(String month, String financialYear) {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
+        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryId+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -191,10 +197,10 @@ public class DishwasherDialogActivity extends AppCompatActivity {
                             if (responseStatus) {
                                 //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
                                 JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i <responseData.length(); i++) {
+                                for (int i = 0; i < responseData.length(); i++) {
                                     JSONObject obj = responseData.getJSONObject(i);
-                                    String ModelCode=obj.optString("ModelCode");
-                                    String ModelName=obj.optString("ModelName");
+                                    String ModelCode = obj.optString("ModelCode");
+                                    String ModelName = obj.optString("ModelName");
                                     String Mapped_Flag=obj.optString("Mapped_Flag");
 
 
@@ -203,6 +209,7 @@ public class DishwasherDialogActivity extends AppCompatActivity {
                                     if (Mapped_Flag.equals("1")){
                                         itemListForData.add(itemModel);
                                     }
+
 
 
                                 }
@@ -214,6 +221,7 @@ public class DishwasherDialogActivity extends AppCompatActivity {
                                     rvItem.setVisibility(View.VISIBLE);
                                     rvGetItem.setVisibility(View.GONE);
                                 }
+
 
                                 llLoader.setVisibility(View.GONE);
                                 llMain.setVisibility(View.VISIBLE);
@@ -234,7 +242,7 @@ public class DishwasherDialogActivity extends AppCompatActivity {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(DishwasherDialogActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                            Toast.makeText(WasherDryerDialogActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
                         }
 
                     }
@@ -251,33 +259,34 @@ public class DishwasherDialogActivity extends AppCompatActivity {
         }) {
 
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DishwasherDialogActivity.this);
+        RequestQueue requestQueue = Volley.newRequestQueue(WasherDryerDialogActivity.this);
         requestQueue.add(stringRequest);
 
-
-
-
-
     }
 
-    private void setAdapter(){
-        itemAdapter=new DishWasherDialogItemAdapter(itemList, DishwasherDialogActivity.this);
+    private void setAdapter() {
+        itemAdapter = new WasherDryerDialogItemAdapter(itemList, WasherDryerDialogActivity.this);
         rvItem.setAdapter(itemAdapter);
-
         setAdapterForData();
     }
-    private void setAdapterForData(){
-        DishWasherDialogItemForDataAdapter itemAdapter=new DishWasherDialogItemForDataAdapter(itemListForData, DishwasherDialogActivity.this);
+
+    private void setAdapterForData() {
+        WasherDryerDialogForDataItemAdapter itemAdapter  = new WasherDryerDialogForDataItemAdapter(itemListForData, WasherDryerDialogActivity.this);
         rvGetItem.setAdapter(itemAdapter);
     }
 
 
     public void updateItemStatus(int position, boolean status) {
         itemList.get(position).setSelected(status);
-        if (itemList.get(position).isSelected()==true) {
-            item.add("IFBPC1000007"+"-"+itemList.get(position).getItemId());
-            prefManager.saveDishIfbSize(item.size());
-        }else {
+        if (itemList.get(position).isSelected() == true) {
+            item.add("IFBPC1000039" + "-" + itemList.get(position).getItemId());
+            int size=item.size();
+            String itemsize= String.valueOf(size);
+            DisplayMatrixModel model=new DisplayMatrixModel();
+            model.setEditVolume(itemsize);
+            prefManager.saveWasherDryerIfbSize(size);
+
+        } else {
             item.clear();
         }
 
@@ -285,30 +294,22 @@ public class DishwasherDialogActivity extends AppCompatActivity {
         Log.d("arpan", item.toString());
         String i = item.toString();
         String d = i.replace("[", "").replace("]", "");
-        String disId = d.replaceAll("\\s+", "");
-        Log.d("disId", disId);
-        prefManager.saveDishWasherId(disId);
+        itemId = d.replaceAll("\\s+", "");
+        Log.d("commas", itemId);
+        prefManager.saveWasherDryerId(itemId);
 
 
         itemAdapter.notifyDataSetChanged();
     }
 
-    private void onClick(){
-        llEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvGetItem.setVisibility(View.GONE);
-                rvItem.setVisibility(View.VISIBLE);
-            }
-        });
+    private void onClick() {
         llCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
                 item.clear();
-                prefManager.saveDishIfbSize(0);
-                prefManager.saveDishWasherId("");
-
+                prefManager.saveWasherDryerIfbSize(0);
+                prefManager.saveWasherDryerId("");
             }
         });
 
@@ -317,13 +318,19 @@ public class DishwasherDialogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (item.size()>0){
 
-                }else
-                {
-                    prefManager.saveDishIfbSize(itemListForData.size());
-
+                }else {
+                    prefManager.saveWasherDryerIfbSize(itemListForData.size());
                 }
 
                 finish();
+            }
+        });
+
+        llEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rvGetItem.setVisibility(View.GONE);
+                rvItem.setVisibility(View.VISIBLE);
             }
         });
     }

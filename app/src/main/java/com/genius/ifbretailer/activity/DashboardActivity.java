@@ -106,7 +106,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/GCLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" +base64+"&IMEI=1122&SecurityCode=" +prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType="+version;
+        String surl = "http://111.93.182.173/IFBiOSApi/api/RTLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" +base64+"&IMEI=1122&SecurityCode=" +prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType="+version;
         Log.d("inputLogin", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -241,7 +241,7 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (RTLVersion.equals(version)) {
-                    Intent intent = new Intent(DashboardActivity.this, DisplayMatrixDynamicActivity.class);
+                    Intent intent = new Intent(DashboardActivity.this, DisplaymatrixDashboardActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }else {

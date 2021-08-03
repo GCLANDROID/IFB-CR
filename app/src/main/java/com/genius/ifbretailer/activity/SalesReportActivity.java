@@ -128,9 +128,11 @@ public class SalesReportActivity extends AppCompatActivity {
                                     String FranchiseName=obj.optString("FranchiseName");
                                     String FranchiseMobile=obj.optString("FranchiseMobile");
                                     String FranchiseEmail=obj.optString("FranchiseEmail");
+                                    String CSD_Sales=obj.optString("CSD_Sales");
 
                                     SalesModule obj2 = new SalesModule(_SalesDate,TicketNo,TokenNo,ModelName,CategoryName,CustomerName,CustomerPhNo,CustomerEmail,Status,Remarks,InvoiceFileNameURL,SerialNo,FranchiseName,FranchiseMobile,FranchiseEmail);
-                                     itemList.add(obj2);
+                                    obj2.setCsdSale(CSD_Sales);
+                                    itemList.add(obj2);
 
 
                                 }

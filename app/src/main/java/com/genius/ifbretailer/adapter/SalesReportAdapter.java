@@ -43,6 +43,7 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
         myViewHolder.tvCustomerEmail.setText(reportList.get(i).getCustomerEmail());
         myViewHolder.tvStatus.setText(reportList.get(i).getStatus());
         myViewHolder.tvRemarks.setText(reportList.get(i).getRemarks());
+        myViewHolder.tvCSD.setText(reportList.get(i).getCsdSale());
 
         myViewHolder.llCopy.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +71,7 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDate,tvTicketNumber,tvTokenNumber,tvModelName,tvProductCode,tvCustomerName,tvCustomerPhn,tvCustomerEmail,tvStatus,tvRemarks,tvSerialNumber;
+        TextView tvDate,tvTicketNumber,tvTokenNumber,tvModelName,tvProductCode,tvCustomerName,tvCustomerPhn,tvCustomerEmail,tvStatus,tvRemarks,tvSerialNumber,tvCSD;
         LinearLayout llCopy;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -85,6 +86,7 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
             tvStatus=(TextView)itemView.findViewById(R.id.tvStatus);
             tvRemarks=(TextView)itemView.findViewById(R.id.tvRemarks);
             tvSerialNumber=(TextView)itemView.findViewById(R.id.tvSerialNumber);
+            tvCSD=(TextView)itemView.findViewById(R.id.tvCSD);
             llCopy=(LinearLayout)itemView.findViewById(R.id.llCopy);
         }
     }

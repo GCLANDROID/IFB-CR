@@ -63,6 +63,7 @@
             android:layout_weight="0.5"
             android:gravity="center">
             <EditText
+
                 android:id="@+id/etValue"
                 android:textColor="@android:color/black"
                 android:gravity="center"

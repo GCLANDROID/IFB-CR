@@ -34,6 +34,12 @@ public class CompSaleReportAdapter extends RecyclerView.Adapter<CompSaleReportAd
         myViewHolder.tvCategory.setText(itemList.get(i).getCategory());
         myViewHolder.tvQuant.setText(" : "+itemList.get(i).getQuant());
 
+        if (itemList.get(i).getSalesDate().equals("")){
+            myViewHolder.llDate.setVisibility(View.GONE);
+        }else {
+            myViewHolder.llDate.setVisibility(View.VISIBLE);
+        }
+
 
         if (!itemList.get(i).getCategory().equals("")){
 
@@ -52,7 +58,7 @@ public class CompSaleReportAdapter extends RecyclerView.Adapter<CompSaleReportAd
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tvDate, tvCompany, tvCategory, tvQuant;
-        LinearLayout llCategory,llBlank;
+        LinearLayout llCategory,llBlank,llDate;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,6 +69,7 @@ public class CompSaleReportAdapter extends RecyclerView.Adapter<CompSaleReportAd
 
             llBlank=(LinearLayout)itemView.findViewById(R.id.llBlank);
             llCategory=(LinearLayout)itemView.findViewById(R.id.llCategory);
+            llDate=(LinearLayout)itemView.findViewById(R.id.llDate);
 
         }
     }

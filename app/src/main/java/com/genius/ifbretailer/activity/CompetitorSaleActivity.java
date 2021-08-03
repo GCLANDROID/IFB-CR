@@ -438,13 +438,12 @@ public class CompetitorSaleActivity extends AppCompatActivity {
 
 
 
-            item.add(itemList.get(position).getCategoryId() + "-" + itemList.get(position).getCompanyId() + "#" + itemList.get(position).getEditVolume());
+        item.add(itemList.get(position).getCategoryId() + "-" + itemList.get(position).getCompanyId() + "#" + itemList.get(position).getEditVolume());
 
-
-
+        item.remove("#0");
 
         String itemcomp = item.toString();
-        compItem = itemcomp.replace("[", "").replace("]", "");
+        compItem = itemcomp.replace("[", "").replace("]", "").replaceAll("#0","0");
         Log.d("aripitem", compItem);
 
 

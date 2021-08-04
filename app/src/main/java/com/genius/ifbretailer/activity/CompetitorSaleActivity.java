@@ -663,7 +663,7 @@ public class CompetitorSaleActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.dialog_success, null);
         dialogBuilder.setView(dialogView);
         TextView tvInvalidDate = (TextView) dialogView.findViewById(R.id.tvSuccess);
-        tvInvalidDate.setText("You deatils submitted Successfully");
+        tvInvalidDate.setText("You Details Submitted Successfully");
 
         Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
         btnOk.setOnClickListener(new View.OnClickListener() {

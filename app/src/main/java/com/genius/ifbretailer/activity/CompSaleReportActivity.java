@@ -45,7 +45,7 @@ import java.util.Calendar;
 public class CompSaleReportActivity extends AppCompatActivity {
     int y;
     String year, financialYear;
-    String month;
+    String month,previousmonth;
     RecyclerView rvReport;
     LinearLayout llLoader, llMain, llNoData, llAgain, llSearch;
     ImageView imgBack, imgHome;
@@ -88,36 +88,48 @@ public class CompSaleReportActivity extends AppCompatActivity {
         Log.d("month", String.valueOf(m));
         if (m == 1) {
             month = "January";
+            previousmonth="December";
         } else if (m == 2) {
             month = "February";
+            previousmonth="January";
         } else if (m == 3) {
             month = "March";
+            previousmonth="February";
         } else if (m == 4) {
             month = "April";
+            previousmonth="March";
         } else if (m == 5) {
             month = "May";
+            previousmonth="April";
         } else if (m == 6) {
             month = "June";
+            previousmonth="May";
         } else if (m == 7) {
             month = "July";
+            previousmonth="June";
         } else if (m == 8) {
             month = "August";
+            previousmonth="July";
         } else if (m == 9) {
             month = "September";
+            previousmonth="August";
         } else if (m == 10) {
             month = "October";
+            previousmonth="September";
         } else if (m == 11) {
             month = "November";
+            previousmonth="October";
         } else if (m == 12) {
             month = "December";
+            previousmonth="November";
         }
-        if (month.equals("January")) {
+        if (previousmonth.equals("January")) {
             int futureyear = y - 1;
             financialYear = futureyear + "-" + year;
-        } else if (month.equals("February")) {
+        } else if (previousmonth.equals("February")) {
             int futureyear = y - 1;
             financialYear = futureyear + "-" + year;
-        } else if (month.equals("March")) {
+        } else if (previousmonth.equals("March")) {
             int futureyear = y - 1;
             financialYear = futureyear + "-" + year;
         } else {
@@ -136,7 +148,7 @@ public class CompSaleReportActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_CompetitorSalesCheckingByYrMonth?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = "http://111.93.182.173/IFBiOSApi/api/get_CompetitorSalesCheckingByYrMonth?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + previousmonth + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

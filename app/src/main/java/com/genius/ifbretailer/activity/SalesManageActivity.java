@@ -826,7 +826,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
 
                                                                                                                                 } else {
-                                                                                                                                    etMobNumber.setError("Please neter Valid Phone Number");
+                                                                                                                                    etMobNumber.setError("Please enter Valid Phone Number");
                                                                                                                                     etMobNumber.requestFocus();
                                                                                                                                 }
 

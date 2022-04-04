@@ -60,6 +60,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.model.ModelSpinnerModel;
+import com.genius.ifbretailer.model.RcnModel;
 import com.genius.ifbretailer.model.SpinnerItemModule;
 import com.genius.ifbretailer.utility.PrefManager;
 import com.genius.ifbretailer.utility.ValidUtils;
@@ -177,7 +178,10 @@ public class SalesManageActivity extends AppCompatActivity {
     String csdSales;
     ArrayList<String>csdSalesList=new ArrayList<>();
     ArrayList<ModelSpinnerModel>modelcsdSaleslist=new ArrayList<>();
-
+    ArrayList<RcnModel>rcnList=new ArrayList<>();
+    JSONObject outerObject;
+    JSONArray jsonArray;
+    String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1300,7 +1304,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
     private void pincodecheck(final String pincode) {
         Log.d("hitr", "6");
-        String surl = "https://www.cloud.geniusconsultant.com/GeniusPinCodeApi/api/PinCode?id=" + pincode;
+        String surl = "https://cloud.geniusconsultant.com/GeniusPinCodeApi/api/PinCode?id=" + pincode;
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -1364,7 +1368,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
     private void setArea(String pincode) {
         Log.d("hhjjk", "kkkk");
-        String surl = "https://www.cloud.geniusconsultant.com/GeniusPinCodeApi/api/PinCode?id=" + pincode;
+        String surl = "https://cloud.geniusconsultant.com/GeniusPinCodeApi/api/PinCode?id=" + pincode;
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -1720,7 +1724,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
 
-    private void successAlert(String text) {
+    private void successAlert(String text,String tokenNo) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SalesManageActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_success, null);
@@ -2224,10 +2228,12 @@ public class SalesManageActivity extends AppCompatActivity {
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         String responseText = job1.optString("responseText");
+                        String tokenNo=job1.optString("responseData");
+                        token=tokenNo;
                         Log.d("responseText", responseText);
                         boolean responseStatus=job1.optBoolean("responseStatus");
                         if (responseStatus) {
-                            successAlert(responseText);
+                            successAlert(responseText,tokenNo);
                             pd.dismiss();
 
 
@@ -2336,10 +2342,12 @@ public class SalesManageActivity extends AppCompatActivity {
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         String responseText = job1.optString("responseText");
+                        String tokenNo=job1.optString("responseData");
+                        token=tokenNo;
                         Log.d("responseText", responseText);
                         boolean responseStatus=job1.optBoolean("responseStatus");
                         if (responseStatus) {
-                            successAlert(responseText);
+                            successAlert(responseText,tokenNo);
                             pd.dismiss();
 
                         } else {
@@ -2389,6 +2397,694 @@ public class SalesManageActivity extends AppCompatActivity {
 
 
 
+    }
+
+
+    public void getToken(String token) {
+        String surl = "http://111.93.182.173/IFBiOSApi/api/get_CRMDummyTokenByReference?ReferenceNo="+token+"&SecurityCode="+prefManager.getSecurityCode();
+        Log.d("inputCheck", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(false);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseLogin", response);
+                        progressBar.dismiss();
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus){
+                                JSONArray responseData=job1.optJSONArray("responseData");
+                                for (int i=0;i<responseData.length();i++){
+                                    JSONObject object=responseData.optJSONObject(i);
+                                    String TokenNo=object.optString("TokenNo");
+                                    RcnModel rcnModel=new RcnModel();
+                                    rcnModel.setToken(TokenNo);
+                                    rcnList.add(rcnModel);
+                                }
+
+                                getTicketNumber();
+                            }
+
+
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(SalesManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+                Toast.makeText(SalesManageActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(SalesManageActivity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+    private void getTicketNumber() {
+
+        final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("rcn", etMobNumber.getText().toString());
+            jsonObject.put("altno", etMobNumber.getText().toString());
+            jsonObject.put("modelcode", modelId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        AndroidNetworking.post("https://crm.ifbsupport.com/technician/api/v.1/csr/search/ticket")
+
+                .addJSONObjectBody(jsonObject)
+                .addHeaders("Authorization","Bearer Q1NSVVNFUjpjc3JVc2Vy")
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String status = job1.optString("status");
+
+
+                        if (status.equalsIgnoreCase("200")) {
+
+                            pd.dismiss();
+                            JSONArray TicketDetails=job1.optJSONArray("TicketDetails");
+                            for (int i=0;i<TicketDetails.length();i++){
+                                JSONObject obj=TicketDetails.optJSONObject(i);
+                                String Ticketno=obj.optString("Ticketno");
+                                String dealername=obj.optString("dealername");
+                                String DealerPhone=obj.optString("DealerPhone");
+                                String CustomerCode=obj.optString("CustomerCode");
+                                String CustomerName=obj.optString("CustomerName");
+                                String Address=obj.optString("Address");
+                                String Pincode=obj.optString("Pincode");
+                                String CustomerMobile=obj.optString("CustomerMobile");
+                                String CustomerEmail=obj.optString("CustomerEmail");
+                                String DOP=obj.optString("DOP");
+                                String ProductDOI=obj.optString("ProductDOI");
+                                String TicketStatusCode=obj.optString("TicketStatusCode");
+                                String CancelledReason=obj.optString("CancelledReason");
+                                String CancelledReasonDescription=obj.optString("CancelledReasonDescription");
+                                String BranchCode=obj.optString("BranchCode");
+                                String BranchName=obj.optString("BranchName");
+                                String TicketCallType=obj.optString("TicketCallType");
+                                String CallBookDate=obj.optString("CallBookDate");
+                                String CallClosedDateValue=obj.optString("CallClosedDateValue");
+                                String FGCode=obj.optString("FGCode");
+                                RcnModel rcnModel=new RcnModel();
+                                rcnModel.setTicket(Ticketno);
+                                rcnModel.setDelearName(dealername);
+                                rcnModel.setDelearPhone(DealerPhone);
+                                rcnModel.setCustomerCode(CustomerCode);
+                                rcnModel.setCustomerName(CustomerName);
+                                rcnModel.setAddress(Address);
+                                rcnModel.setPincode(Pincode);
+                                rcnModel.setCustomerMobile(CustomerMobile);
+                                rcnModel.setCustomerEmail(CustomerEmail);
+                                rcnModel.setDop(DOP);
+                                rcnModel.setDoi(ProductDOI);
+                                rcnModel.setStatusCode(TicketStatusCode);
+                                rcnModel.setCancelledReason(CancelledReason);
+                                rcnModel.setCancelledReasonDescription(CancelledReasonDescription);
+                                rcnModel.setBranch(BranchCode);
+                                rcnModel.setBranchName(BranchName);
+                                rcnModel.setCallType(TicketCallType);
+                                rcnModel.setCallBookDate(CallBookDate);
+                                rcnModel.setCallClosedDate(CallClosedDateValue);
+                                rcnModel.setModelcode(FGCode);
+                                rcnList.add(rcnModel);
+                            }
+                            setRcnArray();
+
+
+
+
+
+
+
+
+                        } else {
+                            pd.dismiss();
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        Intent intent=new Intent(SalesManageActivity.this,ConsolidateSalesReportActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+    }
+
+    private void setRcnArray(){
+        ArrayList<String>delaernameList=new ArrayList<>();
+        ArrayList<String>tokenList=new ArrayList<>();
+        ArrayList<String>ticketList=new ArrayList<>();
+        ArrayList<String>refList=new ArrayList<>();
+        ArrayList<String>dealerPhnList=new ArrayList<>();
+        ArrayList<String>customerCodeList=new ArrayList<>();
+        ArrayList<String>customerNameList=new ArrayList<>();
+        ArrayList<String>addressList=new ArrayList<>();
+        ArrayList<String>pincodeList=new ArrayList<>();
+        ArrayList<String>cusMobList=new ArrayList<>();
+        ArrayList<String>cusEmailList=new ArrayList<>();
+        ArrayList<String>modelcodeList=new ArrayList<>();
+        ArrayList<String>dopList=new ArrayList<>();
+        ArrayList<String>doiList=new ArrayList<>();
+        ArrayList<String>calltypeList=new ArrayList<>();
+        ArrayList<String>statuscodeList=new ArrayList<>();
+        ArrayList<String>cancelledListList=new ArrayList<>();
+        ArrayList<String>cancelledDescListList=new ArrayList<>();
+        ArrayList<String>branchList=new ArrayList<>();
+        ArrayList<String>branchNameList=new ArrayList<>();
+        ArrayList<String>callBookList=new ArrayList<>();
+        ArrayList<String>callclosedList=new ArrayList<>();
+
+
+        outerObject = new JSONObject();
+        JSONObject innerObj=new JSONObject();
+        jsonArray = new JSONArray();
+
+
+        //token
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getToken();
+            if (rcnList.get(i).getToken()!=null) {
+                tokenList.add(customername);
+            }
+
+        }
+
+        for (int j=tokenList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("TokenNo",tokenList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+
+        //ref
+        for (int i=0;i<rcnList.size();i++){
+
+            refList.add(token);
+
+
+        }
+
+        for (int j=0;j<refList.size();j++){
+            try {
+                innerObj.put("ReferenceNo",refList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+        //Dealername
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getDelearName();
+            if (rcnList.get(i).getDelearName()!=null) {
+                delaernameList.add(customername);
+            }
+
+        }
+        for (int j=delaernameList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("DealerName",delaernameList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+
+        //ticketNumber
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getTicket();
+            if (rcnList.get(i).getTicket()!=null) {
+                ticketList.add(customername);
+            }
+
+        }
+
+        for (int j=ticketList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("TicketNumber",ticketList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+        //dealerPhn
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getDelearPhone();
+            if (rcnList.get(i).getDelearPhone()!=null) {
+                dealerPhnList.add(customername);
+            }
+
+        }
+
+        for (int j=dealerPhnList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("DealerPhone",dealerPhnList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+        //CustomerCode
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCustomerCode();
+            if (rcnList.get(i).getCustomerCode()!=null) {
+                customerCodeList.add(customername);
+            }
+
+        }
+
+        for (int j=customerCodeList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CustomerCode",customerCodeList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        //customername
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCustomerName();
+            if (rcnList.get(i).getCustomerName()!=null) {
+                customerNameList.add(customername);
+            }
+
+        }
+
+        for (int j=customerNameList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CustomerName",customerNameList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //address
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getAddress();
+            if (rcnList.get(i).getAddress()!=null) {
+                addressList.add(customername);
+            }
+
+        }
+
+        for (int j=addressList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CustomerAddress",addressList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //Pincode
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getPincode();
+            if (rcnList.get(i).getPincode()!=null) {
+                pincodeList.add(customername);
+            }
+
+        }
+
+        for (int j=pincodeList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("Pincode",pincodeList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //CustomerMobile
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCustomerMobile();
+            if (rcnList.get(i).getCustomerMobile()!=null) {
+                cusMobList.add(customername);
+            }
+
+        }
+
+        for (int j=cusMobList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CustomerMobile",cusMobList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //CustomerEmail
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCustomerEmail();
+            if (rcnList.get(i).getCustomerEmail()!=null) {
+                cusEmailList.add(customername);
+            }
+
+        }
+
+        for (int j=cusEmailList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CustomerEmail",cusEmailList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //ModelCode
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getModelcode();
+            if (rcnList.get(i).getModelcode()!=null) {
+                modelcodeList.add(customername);
+            }
+
+        }
+
+        for (int j=modelcodeList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("ModelCode",modelcodeList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //DOP
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getDop();
+            if (rcnList.get(i).getDop()!=null) {
+                dopList.add(customername);
+            }
+
+        }
+
+        for (int j=dopList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("DOP",dopList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //DOI
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getDoi();
+            if (rcnList.get(i).getDoi()!=null) {
+                doiList.add(customername);
+            }
+
+        }
+
+        for (int j=doiList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("DOI",doiList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //CallType
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCallType();
+            if (rcnList.get(i).getCallType()!=null) {
+                calltypeList.add(customername);
+            }
+
+        }
+
+        for (int j=calltypeList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CallType",calltypeList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //StatusCode
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getStatusCode();
+            if (rcnList.get(i).getStatusCode()!=null) {
+                statuscodeList.add(customername);
+            }
+
+        }
+
+        for (int j=statuscodeList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("StatusCode",statuscodeList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //CancelledReason
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCancelledReason();
+            if (rcnList.get(i).getCancelledReason()!=null) {
+                cancelledListList.add(customername);
+            }
+
+        }
+
+        for (int j=cancelledListList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CancelledReason",cancelledListList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        //CancelledReasonDescription
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCancelledReasonDescription();
+            if (rcnList.get(i).getCancelledReasonDescription()!=null) {
+                cancelledDescListList.add(customername);
+            }
+
+        }
+
+        for (int j=cancelledDescListList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CancelledReasonDescription",cancelledDescListList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //Branch
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getBranch();
+            if (rcnList.get(i).getBranch()!=null) {
+                branchList.add(customername);
+            }
+
+        }
+
+        for (int j=branchList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("Branch",branchList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //BranchName
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getBranchName();
+            if (rcnList.get(i).getBranchName()!=null) {
+                branchNameList.add(customername);
+            }
+
+        }
+
+        for (int j=branchNameList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("BranchName",branchNameList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //CallBookDate
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCallBookDate();
+            if (rcnList.get(i).getCallBookDate()!=null) {
+                callBookList.add(customername);
+            }
+
+        }
+
+        for (int j=callBookList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CallBookDate",callBookList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //CallClosedDate
+
+        for (int i=0;i<rcnList.size();i++){
+            String customername=rcnList.get(i).getCallClosedDate();
+            if (rcnList.get(i).getCallClosedDate()!=null) {
+                callclosedList.add(customername);
+            }
+
+        }
+
+        for (int j=callclosedList.size()-1;j>=0;j--){
+            try {
+                innerObj.put("CallClosedDate",callclosedList.get(j));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        jsonArray.put(innerObj);
+        try {
+            outerObject.put("CRMData",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        postTicketNo(outerObject.toString());
+    }
+    private void postTicketNo(String CRMData) {
+
+        final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+
+        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_CRMDummyReferenceTicket_V1")
+                .addMultipartParameter("CRMData", CRMData)
+                .addMultipartParameter("UserID", prefManager.getUserId())
+                .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String responseText = job1.optString("responseText");
+                        Log.d("responseText", responseText);
+                        boolean responseStatus=job1.optBoolean("responseStatus");
+                        if (responseStatus) {
+                            Intent intent=new Intent(SalesManageActivity.this,ConsolidateSalesReportActivity.class);
+                            startActivity(intent);
+                            finish();
+                            pd.dismiss();
+
+                        } else {
+                            pd.dismiss();
+                            Toast.makeText(SalesManageActivity.this, responseText, Toast.LENGTH_LONG).show();
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG);
+                    }
+                });
     }
 
 

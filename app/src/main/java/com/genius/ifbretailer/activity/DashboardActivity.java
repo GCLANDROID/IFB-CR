@@ -1,6 +1,8 @@
 package com.genius.ifbretailer.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -30,26 +32,40 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.genius.ifbretailer.R;
+import com.genius.ifbretailer.adapter.TrainingAdapter;
+import com.genius.ifbretailer.model.TrainingModel;
 import com.genius.ifbretailer.utility.PrefManager;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class DashboardActivity extends AppCompatActivity {
-    LinearLayout llSales,llDisplay,llTarget,llE;
-    TextView tvName,tvCounter,tvTime;
+    LinearLayout llSales, llDisplay, llTarget, llE;
+    TextView tvName, tvCounter, tvTime;
     PrefManager prefManager;
-    LinearLayout llLoader,llMain;
+    LinearLayout llLoader, llMain;
     ImageView imgLogout;
     String version;
     AlertDialog al1;
     String RTLMandatory;
-    LinearLayout llIncentive,llQueries,llCP,llElearning;
+    LinearLayout llIncentive, llQueries, llCP, llElearning;
     String RTLVersion;
+    ImageView imgBatch;
+    TextView tvBadge,tvRank,tvPoints;
+    RecyclerView rvTraining;
+    ArrayList<TrainingModel>itemList=new ArrayList<>();
+    TextView tvSeeAll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,26 +76,35 @@ public class DashboardActivity extends AppCompatActivity {
         onClick();
     }
 
-    private void initview(){
-        prefManager=new PrefManager(DashboardActivity.this);
-        llSales=(LinearLayout)findViewById(R.id.llSales);
-        llCP=(LinearLayout)findViewById(R.id.llCP);
-        llDisplay=(LinearLayout)findViewById(R.id.llDisplay);
-        llTarget=(LinearLayout)findViewById(R.id.llTarget);
-        llE=(LinearLayout)findViewById(R.id.llE);
-        llIncentive=(LinearLayout)findViewById(R.id.llIncentive);
-        tvTime=(TextView)findViewById(R.id.tvTime);
-        tvCounter=(TextView)findViewById(R.id.tvCounter);
-        tvName=(TextView)findViewById(R.id.tvName);
+    private void initview() {
+        prefManager = new PrefManager(DashboardActivity.this);
+        rvTraining=(RecyclerView)findViewById(R.id.rvTraining);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(DashboardActivity.this, LinearLayoutManager.VERTICAL, false);
+        rvTraining.setLayoutManager(layoutManager);
+        tvBadge=(TextView)findViewById(R.id.tvBadge);
+        tvSeeAll=(TextView)findViewById(R.id.tvSeeAll);
+        tvRank=(TextView)findViewById(R.id.tvRank);
+        tvPoints=(TextView)findViewById(R.id.tvPoints);
+        imgBatch=(ImageView)findViewById(R.id.imgBatch);
+        llSales = (LinearLayout) findViewById(R.id.llSales);
+        llCP = (LinearLayout) findViewById(R.id.llCP);
+        llDisplay = (LinearLayout) findViewById(R.id.llDisplay);
+        llTarget = (LinearLayout) findViewById(R.id.llTarget);
+        llE = (LinearLayout) findViewById(R.id.llE);
+        llIncentive = (LinearLayout) findViewById(R.id.llIncentive);
+        tvTime = (TextView) findViewById(R.id.tvTime);
+        tvCounter = (TextView) findViewById(R.id.tvCounter);
+        tvName = (TextView) findViewById(R.id.tvName);
         tvName.setText(prefManager.getEmpName());
         tvCounter.setText(prefManager.getCounter());
         tvTime.setText(prefManager.getLoginTime());
-        llMain=(LinearLayout)findViewById(R.id.llMain);
-        llLoader=(LinearLayout)findViewById(R.id.llLoader);
-        llQueries=(LinearLayout)findViewById(R.id.llQueries);
-        llElearning=(LinearLayout)findViewById(R.id.llElearning);
+        llMain = (LinearLayout) findViewById(R.id.llMain);
+        llLoader = (LinearLayout) findViewById(R.id.llLoader);
+        llQueries = (LinearLayout) findViewById(R.id.llQueries);
+        llElearning = (LinearLayout) findViewById(R.id.llElearning);
 
-        imgLogout=(ImageView)findViewById(R.id.imgLogout);
+        imgLogout = (ImageView) findViewById(R.id.imgLogout);
 
         try {
             PackageInfo pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -91,8 +116,8 @@ public class DashboardActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Intent intent=new Intent(DashboardActivity.this,MonthWiseIncentiveFeddbackActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = new Intent(DashboardActivity.this, MonthWiseIncentiveFeddbackActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
 
     }
@@ -104,9 +129,10 @@ public class DashboardActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
+        String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");
+        ;
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/RTLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" +base64+"&IMEI=1122&SecurityCode=" +prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType="+version;
+        String surl = "http://111.93.182.173/IFBiOSApi/api/RTLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" + base64 + "&IMEI=1122&SecurityCode=" + prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType=" + version;
         Log.d("inputLogin", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -134,7 +160,7 @@ public class DashboardActivity extends AppCompatActivity {
                                     prefManager.saveEmpName(UserName);
                                     String LastLogin = obj.optString("LastLogin");
                                     prefManager.saveLoginTime(LastLogin);
-                                    String Counter= obj.optString("Counter");
+                                    String Counter = obj.optString("Counter");
                                     prefManager.saveCounter(Counter);
                                     String BranchId = obj.optString("BranchId");
                                     prefManager.saveBranchId(BranchId);
@@ -153,9 +179,9 @@ public class DashboardActivity extends AppCompatActivity {
                                     prefManager.savePending(Pending);
                                     String MonthlyTarget = obj.optString("MonthlyTarget");
                                     prefManager.saveMonthlyTarget(MonthlyTarget);
-                                    String Sold=obj.optString("Sold");
+                                    String Sold = obj.optString("Sold");
                                     prefManager.saveSold(Sold);
-                                    String Approved=obj.optString("Approved");
+                                    String Approved = obj.optString("Approved");
                                     prefManager.saveApproved(Approved);
                                     String SecurityCode = obj.optString("SecurityCode");
                                     prefManager.saveSecurityCode(SecurityCode);
@@ -163,37 +189,34 @@ public class DashboardActivity extends AppCompatActivity {
                                     prefManager.savePassword(Password);
                                     String WebSalesURL = obj.optString("WebSalesURL");
                                     prefManager.saveWebSales(WebSalesURL);
-                                    String Code=obj.optString("Code");
+                                    String Code = obj.optString("Code");
                                     prefManager.saveUserCode(Code);
-                                    String ZoneID=obj.optString("ZoneID");
+                                    String ZoneID = obj.optString("ZoneID");
                                     prefManager.saveZoneId(ZoneID);
-                                    String HRDeskURL=obj.optString("HRDeskURL");
+                                    String HRDeskURL = obj.optString("HRDeskURL");
                                     prefManager.saveHRDeskURL(HRDeskURL);
-                                    String ManualURL=obj.optString("ManualURL");
+                                    String ManualURL = obj.optString("ManualURL");
                                     prefManager.saveManualURL(ManualURL);
-                                    String LeaveURL=obj.optString("LeaveURL");
+                                    String LeaveURL = obj.optString("LeaveURL");
                                     prefManager.saveLeaveURL(LeaveURL);
-                                    String LeaveEncahURL=obj.optString("LeaveEncahURL");
+                                    String LeaveEncahURL = obj.optString("LeaveEncahURL");
                                     prefManager.saveLeaveEncahURL(LeaveEncahURL);
-                                    String DigitalDocFlag=obj.optString("DigitalDocFlag");
+                                    String DigitalDocFlag = obj.optString("DigitalDocFlag");
                                     prefManager.saveDocFlag(DigitalDocFlag);
-                                    String DailyActivityFlag=obj.optString("DailyActivityFlag");
+                                    String DailyActivityFlag = obj.optString("DailyActivityFlag");
                                     prefManager.saveDailyLogFlag(DailyActivityFlag);
-                                    String CustomerVisitFlag=obj.optString("CustomerVisitFlag");
+                                    String CustomerVisitFlag = obj.optString("CustomerVisitFlag");
                                     prefManager.saveCVFlag(CustomerVisitFlag);
-                                    String SalesInvCopyImgFlag=obj.optString("SalesInvCopyImgFlag");
+                                    String SalesInvCopyImgFlag = obj.optString("SalesInvCopyImgFlag");
                                     prefManager.saveInvoiceFlag(SalesInvCopyImgFlag);
                                     checkBersion();
-
-
-
 
 
                                 }
 
 
                             } else {
-                                Intent intent=new Intent(DashboardActivity.this,LoginActivity.class);
+                                Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 fileList();
 
@@ -211,7 +234,7 @@ public class DashboardActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Intent intent=new Intent(DashboardActivity.this,LoginActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
                 startActivity(intent);
                 fileList();
                 Log.e("ert", error.toString());
@@ -223,7 +246,16 @@ public class DashboardActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
 
     }
-    private void onClick(){
+
+    private void onClick() {
+        tvSeeAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DashboardActivity.this, TrainingActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
         llSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,8 +263,8 @@ public class DashboardActivity extends AppCompatActivity {
                     Intent intent = new Intent(DashboardActivity.this, SaleDashboardActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                }else {
-                    Toast.makeText(DashboardActivity.this,"please update your app",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(DashboardActivity.this, "please update your app", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -244,16 +276,16 @@ public class DashboardActivity extends AppCompatActivity {
                     Intent intent = new Intent(DashboardActivity.this, DisplaymatrixDashboardActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                }else {
-                    Toast.makeText(DashboardActivity.this,"please update your app",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(DashboardActivity.this, "please update your app", Toast.LENGTH_LONG).show();
                 }
             }
         });
         imgLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
                 prefManager.saveRemberFlag("2");
@@ -263,16 +295,16 @@ public class DashboardActivity extends AppCompatActivity {
         llTarget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,SalesTargetActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(DashboardActivity.this, SalesTargetActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
         llElearning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,ELearningActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(DashboardActivity.this, ELearningActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
@@ -280,8 +312,8 @@ public class DashboardActivity extends AppCompatActivity {
         llCP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,ChangePasswordActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(DashboardActivity.this, ChangePasswordActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
@@ -293,8 +325,8 @@ public class DashboardActivity extends AppCompatActivity {
                     Intent intent = new Intent(DashboardActivity.this, IQueriesDashboardActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                }else {
-                    Toast.makeText(DashboardActivity.this,"please update your app",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(DashboardActivity.this, "please update your app", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -302,8 +334,8 @@ public class DashboardActivity extends AppCompatActivity {
         llIncentive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,IncentiveActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(DashboardActivity.this, IncentiveActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
@@ -311,8 +343,8 @@ public class DashboardActivity extends AppCompatActivity {
         llE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,ECatelogActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(DashboardActivity.this, ECatelogActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
@@ -337,22 +369,16 @@ public class DashboardActivity extends AppCompatActivity {
                             JSONArray responseData = job1.optJSONArray("responseData");
                             for (int i = 0; i < responseData.length(); i++) {
                                 JSONObject obj = responseData.getJSONObject(i);
-                                 RTLVersion = obj.optString("RTLVersion");
+                                RTLVersion = obj.optString("RTLVersion");
                                 RTLMandatory = obj.optString("RTLMandatory");
-                                if (RTLVersion.equals(version)){
+                                if (RTLVersion.equals(version)) {
+                                    getTrainingInform();
 
-                                }else {
+                                } else {
                                     upDateAlert();
                                 }
 
                             }
-
-
-
-
-
-
-
 
 
                             // boolean _status = job1.getBoolean("status")
@@ -368,7 +394,7 @@ public class DashboardActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 llLoader.setVisibility(View.GONE);
                 llMain.setVisibility(View.GONE);
-                Intent intent=new Intent(DashboardActivity.this,LoginActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
 
@@ -384,12 +410,12 @@ public class DashboardActivity extends AppCompatActivity {
 
     }
 
-    private void upDateAlert(){
+    private void upDateAlert() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DashboardActivity.this, R.style.CustomDialogNew);
-        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_update_alert, null);
         dialogBuilder.setView(dialogView);
-        Button btnOk=(Button)dialogView.findViewById(R.id.btnOk);
+        Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -409,14 +435,13 @@ public class DashboardActivity extends AppCompatActivity {
                 al1.dismiss();
 
 
-
             }
         });
 
-        TextView tvSkip=(TextView) dialogView.findViewById(R.id.tvSkip);
-        if (RTLMandatory.equals("Y")){
+        TextView tvSkip = (TextView) dialogView.findViewById(R.id.tvSkip);
+        if (RTLMandatory.equals("Y")) {
             tvSkip.setVisibility(View.GONE);
-        }else {
+        } else {
             tvSkip.setVisibility(View.GONE);
         }
         tvSkip.setOnClickListener(new View.OnClickListener() {
@@ -432,5 +457,67 @@ public class DashboardActivity extends AppCompatActivity {
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.CENTER);
         al1.show();
+    }
+
+    private void getTrainingInform() {
+        final ProgressDialog progressDialog=new ProgressDialog(DashboardActivity.this);
+        progressDialog.setMessage("Loading..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        AndroidNetworking.get("https://apps.bsharpcorp.com/infocapture/get_profile")
+                .addHeaders("Cookie", "SESSc893a59ae8d16405a555b676d008054d=LHcmZr4r3WzYbHXX5mGUa5gPC9zgv9WoDYSWlVOuN_I")
+                .addHeaders("X-CSRF-Token", "1Qvlc4FDxHNTL9PJy3L9huqLim6yijZo4BnALDmv7e4")
+                .setTag("test")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        progressDialog.dismiss();
+                        String rank = response.optString("rank");
+                        tvRank.setText("# "+rank);
+                        int points = response.optInt("points");
+                        tvPoints.setText(""+points);
+                        String badge_title = response.optString("badge_title");
+                        tvBadge.setText(badge_title);
+                        String badge_icon = response.optString("badge_icon");
+                        JSONArray modules=response.optJSONArray("modules");
+                        for (int i=0;i<3;i++){
+                            JSONObject obj=modules.optJSONObject(i);
+                            String module_name=obj.optString("module_name");
+                            String module_image=obj.optString("module_image");
+                            String created_on=obj.optString("created_on");
+                            String url=obj.optString("url");
+                            int ratings=obj.optInt("ratings");
+
+                            TrainingModel model=new TrainingModel();
+                            model.setModelImage(module_image);
+                            model.setModelName(module_name);
+                            model.setRating(ratings);
+                            model.setUrl(url);
+                            model.setCreatedOn(created_on);
+                            itemList.add(model);
+                        }
+
+                        TrainingAdapter tAdapter=new TrainingAdapter(itemList,DashboardActivity.this);
+                        rvTraining.setAdapter(tAdapter);
+
+                        try {
+                            Picasso.with(DashboardActivity.this)
+                                    .load(badge_icon)
+                                    .into(imgBatch);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        progressDialog.dismiss();
+                        // handle error
+                    }
+                });
     }
 }

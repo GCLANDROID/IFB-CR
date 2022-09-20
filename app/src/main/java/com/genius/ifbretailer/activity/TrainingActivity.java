@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class TrainingActivity extends AppCompatActivity {
     RecyclerView rvTraining;
     ArrayList<TrainingModel> itemList=new ArrayList<>();
+    String cookie,accessToken;
 
 
     @Override
@@ -35,6 +36,8 @@ public class TrainingActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        accessToken=getIntent().getStringExtra("accessToken");
+        cookie=getIntent().getStringExtra("cookie");
         rvTraining=(RecyclerView)findViewById(R.id.rvTraining);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(TrainingActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -48,8 +51,8 @@ public class TrainingActivity extends AppCompatActivity {
         progressDialog.show();
 
         AndroidNetworking.get("https://apps.bsharpcorp.com/infocapture/get_profile")
-                .addHeaders("Cookie", "SESSc893a59ae8d16405a555b676d008054d=LHcmZr4r3WzYbHXX5mGUa5gPC9zgv9WoDYSWlVOuN_I")
-                .addHeaders("X-CSRF-Token", "1Qvlc4FDxHNTL9PJy3L9huqLim6yijZo4BnALDmv7e4")
+                .addHeaders("Cookie", cookie)
+                .addHeaders("X-CSRF-Token", accessToken)
                 .setTag("test")
                 .setPriority(Priority.HIGH)
                 .build()

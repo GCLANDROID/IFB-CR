@@ -66,6 +66,7 @@ public class DashboardActivity extends AppCompatActivity {
     RecyclerView rvTraining;
     ArrayList<TrainingModel>itemList=new ArrayList<>();
     TextView tvSeeAll;
+    String collaborationCookie,collaborationAccessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -252,6 +253,8 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(DashboardActivity.this, TrainingActivity.class);
+                intent.putExtra("cookie",collaborationCookie);
+                intent.putExtra("accessToken",collaborationAccessToken);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
@@ -372,7 +375,7 @@ public class DashboardActivity extends AppCompatActivity {
                                 RTLVersion = obj.optString("RTLVersion");
                                 RTLMandatory = obj.optString("RTLMandatory");
                                 if (RTLVersion.equals(version)) {
-                                    getTrainingInform();
+                                    collaborationLogin();
 
                                 } else {
                                     upDateAlert();
@@ -459,15 +462,54 @@ public class DashboardActivity extends AppCompatActivity {
         al1.show();
     }
 
-    private void getTrainingInform() {
+    private void collaborationLogin() {
+        final ProgressDialog progressDialog=new ProgressDialog(DashboardActivity.this);
+        progressDialog.setMessage("Loading..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        AndroidNetworking.post("https://apps.bsharpcorp.com/infocapture/access_lead_user/login")
+                .addBodyParameter("api_key", "XZnvWRDDnvpWGGRmWUzLZhkN2jW5XziJEWavhhCFHbkX9jAYjNFNu9MCWoaNtcJr")
+                .addBodyParameter("counter_id", "R"+prefManager.getUserCode())
+                .setTag("test")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        progressDialog.dismiss();
+                        boolean status = response.optBoolean("status");
+                        String message=response.optString("message");
+                        if (status){
+                            String access_token=response.optString("access_token");
+                            collaborationAccessToken=access_token;
+                            String cookie=response.optString("cookie");
+                            collaborationCookie=cookie;
+                            getTrainingInform(cookie,access_token);
+                        }else {
+                            Toast.makeText(DashboardActivity.this,message,Toast.LENGTH_LONG).show();
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        progressDialog.dismiss();
+                        // handle error
+                    }
+                });
+    }
+
+    private void getTrainingInform(String cookie,String accesstoken) {
         final ProgressDialog progressDialog=new ProgressDialog(DashboardActivity.this);
         progressDialog.setMessage("Loading..");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
         AndroidNetworking.get("https://apps.bsharpcorp.com/infocapture/get_profile")
-                .addHeaders("Cookie", "SESSc893a59ae8d16405a555b676d008054d=LHcmZr4r3WzYbHXX5mGUa5gPC9zgv9WoDYSWlVOuN_I")
-                .addHeaders("X-CSRF-Token", "1Qvlc4FDxHNTL9PJy3L9huqLim6yijZo4BnALDmv7e4")
+                .addHeaders("Cookie", cookie)
+                .addHeaders("X-CSRF-Token", accesstoken)
                 .setTag("test")
                 .setPriority(Priority.HIGH)
                 .build()

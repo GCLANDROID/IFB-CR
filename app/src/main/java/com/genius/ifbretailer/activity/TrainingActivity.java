@@ -5,7 +5,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -21,10 +24,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class TrainingActivity extends AppCompatActivity {
+public class TrainingActivity extends AppCompatActivity implements View.OnClickListener {
     RecyclerView rvTraining;
     ArrayList<TrainingModel> itemList=new ArrayList<>();
     String cookie,accessToken;
+    ImageView imgBack,imgHome;
 
 
     @Override
@@ -36,6 +40,8 @@ public class TrainingActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        imgHome=(ImageView)findViewById(R.id.imgHome);
+        imgBack=(ImageView)findViewById(R.id.imgBack);
         accessToken=getIntent().getStringExtra("accessToken");
         cookie=getIntent().getStringExtra("cookie");
         rvTraining=(RecyclerView)findViewById(R.id.rvTraining);
@@ -92,5 +98,16 @@ public class TrainingActivity extends AppCompatActivity {
                         // handle error
                     }
                 });
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view==imgBack){
+            onBackPressed();
+        }else if (view==imgHome){
+            Intent intent=new Intent(TrainingActivity.this,DashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

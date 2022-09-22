@@ -67,6 +67,7 @@ public class DashboardActivity extends AppCompatActivity {
     ArrayList<TrainingModel>itemList=new ArrayList<>();
     TextView tvSeeAll;
     String collaborationCookie,collaborationAccessToken;
+    LinearLayout lnPointEarned,lnCurrentRank;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,8 @@ public class DashboardActivity extends AppCompatActivity {
         Intent intent = new Intent(DashboardActivity.this, MonthWiseIncentiveFeddbackActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        lnCurrentRank=(LinearLayout) findViewById(R.id.lnCurrentRank);
+        lnPointEarned=(LinearLayout) findViewById(R.id.lnPointEarned);
 
     }
 
@@ -249,6 +252,23 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void onClick() {
+        lnCurrentRank.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://ifbcollabor8.bsharpcorp.com/users_dashboard"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+        lnPointEarned.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://ifbcollabor8.bsharpcorp.com/users_dashboard"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
         tvSeeAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

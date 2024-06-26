@@ -1361,6 +1361,15 @@ public class PrefManager {
         return _pref.getInt("WasherDryerIfbSize",0);
     }
 
+    public void saveSubDealerType(String SubDealerType){
+        _editorPref.putString("SubDealerType", SubDealerType);
+        _editorPref.commit();
+    }
+
+    public String getSubDealerType(){
+        return _pref.getString("SubDealerType","");
+    }
+
 
 
 

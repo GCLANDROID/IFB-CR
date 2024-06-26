@@ -34,6 +34,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 
@@ -156,7 +157,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         String Confirmbase64 = Base64.encodeToString(Confitmdata, Base64.DEFAULT).replaceAll("\\s+", "");;
 
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/EmployeeChangedPassword?Code=" + pref.getUserCode() + "&password=" +base64+"&NewPassword="+Confirmbase64+"&SecurityCode=" + pref.getSecurityCode();
+        String surl = AppController.APIURL+"api/EmployeeChangedPassword?Code=" + pref.getUserCode() + "&password=" +base64+"&NewPassword="+Confirmbase64+"&SecurityCode=" + pref.getSecurityCode();
         Log.d("inputLogin", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button

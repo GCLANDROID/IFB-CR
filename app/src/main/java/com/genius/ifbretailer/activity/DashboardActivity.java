@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -12,12 +13,16 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -35,24 +40,43 @@ import com.android.volley.toolbox.Volley;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.dhims.timerview.TimerTextView;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.TrainingAdapter;
 import com.genius.ifbretailer.model.TrainingModel;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
+import com.genius.ifbretailer.utility.TimeDifferenceCalculator;
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.listener.OnRenderListener;
+import com.github.barteksc.pdfviewer.listener.OnTapListener;
+
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class DashboardActivity extends AppCompatActivity {
+import javax.net.ssl.HttpsURLConnection;
+
+import im.delight.android.webview.AdvancedWebView;
+
+public class DashboardActivity extends AppCompatActivity  {
+    private static final String TAG = "DashboardActivity";
     LinearLayout llSales, llDisplay, llTarget, llE;
     TextView tvName, tvCounter, tvTime;
     PrefManager prefManager;
@@ -60,6 +84,7 @@ public class DashboardActivity extends AppCompatActivity {
     ImageView imgLogout;
     String version;
     AlertDialog al1;
+    androidx.appcompat.app.AlertDialog trainingAlertDialog;
     String RTLMandatory;
     LinearLayout llIncentive, llQueries, llCP, llElearning;
     String RTLVersion;
@@ -73,7 +98,12 @@ public class DashboardActivity extends AppCompatActivity {
     String badge_url="";
     LinearLayout lnBadges;
     String link;
-
+    String doc_name="",doc_type="",url="", mid ="",entity_id="",timespent="";
+    PDFView pdfView;
+    LinearLayout llPdfLoading;
+    TextView tvPdfPageNo;
+    Dialog dialog;
+    private final static int INTERVAL = 40000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +117,12 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void initview() {
         prefManager = new PrefManager(DashboardActivity.this);
+        dialog = new Dialog(DashboardActivity.this, R.style.CustomDialogNew2);
+        //LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //View dialogView = inflater.inflate(R.layout.training_popup_layout, null);
+        dialog.setContentView(R.layout.training_popup_layout);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         rvTraining=(RecyclerView)findViewById(R.id.rvTraining);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(DashboardActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -144,7 +180,7 @@ public class DashboardActivity extends AppCompatActivity {
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");
         ;
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/RTLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" + base64 + "&IMEI=1122&SecurityCode=" + prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType=" + version;
+        String surl = AppController.APIURL+"api/RTLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" + base64 + "&IMEI=1122&SecurityCode=" + prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType=" + version;
         Log.d("inputLogin", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -222,26 +258,18 @@ public class DashboardActivity extends AppCompatActivity {
                                     String SalesInvCopyImgFlag = obj.optString("SalesInvCopyImgFlag");
                                     prefManager.saveInvoiceFlag(SalesInvCopyImgFlag);
                                     checkBersion();
-
-
                                 }
-
 
                             } else {
                                 Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 fileList();
-
                             }
-
                             // boolean _status = job1.getBoolean("status");
-
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                             // Toast.makeText(LoginActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
                         }
-
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -256,7 +284,6 @@ public class DashboardActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(DashboardActivity.this);
         requestQueue.add(stringRequest);
-
     }
 
     private void onClick() {
@@ -273,7 +300,6 @@ public class DashboardActivity extends AppCompatActivity {
         lnCurrentRank.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -393,7 +419,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void checkBersion() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/ApkVersionChecking";
+        String surl = AppController.APIURL+"api/ApkVersionChecking";
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
 
@@ -415,16 +441,11 @@ public class DashboardActivity extends AppCompatActivity {
                                 RTLMandatory = obj.optString("RTLMandatory");
                                 if (RTLVersion.equals(version)) {
                                     collaborationLogin();
-
                                 } else {
                                     upDateAlert();
                                 }
-
                             }
-
-
                             // boolean _status = job1.getBoolean("status")
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(DashboardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
@@ -475,8 +496,6 @@ public class DashboardActivity extends AppCompatActivity {
                             Uri.parse("http://play.google.com/store/apps/details?id=" + getApplicationContext().getPackageName())));
                 }
                 al1.dismiss();
-
-
             }
         });
 
@@ -526,11 +545,9 @@ public class DashboardActivity extends AppCompatActivity {
                             String cookie=response.optString("cookie");
                             collaborationCookie=cookie;
                             getTrainingInform(cookie,access_token);
-                        }else {
+                        } else {
                             Toast.makeText(DashboardActivity.this,message,Toast.LENGTH_LONG).show();
                         }
-
-
                     }
 
                     @Override
@@ -541,7 +558,7 @@ public class DashboardActivity extends AppCompatActivity {
                 });
     }
 
-    private void getTrainingInform(String cookie,String accesstoken) {
+    private void getTrainingInform(final String cookie, final String accesstoken) {
         final ProgressDialog progressDialog=new ProgressDialog(DashboardActivity.this);
         progressDialog.setMessage("Loading..");
         progressDialog.setCancelable(false);
@@ -557,6 +574,7 @@ public class DashboardActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         progressDialog.dismiss();
+                        itemList.clear();
                         Log.d("informationresponse",response.toString());
                         String rank = response.optString("rank");
                         tvRank.setText("# "+rank);
@@ -568,13 +586,12 @@ public class DashboardActivity extends AppCompatActivity {
                         badge_url=response.optString("badge_url");
                         JSONArray modules=response.optJSONArray("modules");
                         if (modules.length()>0) {
-
-                            for (int i=0;i<3;i++){
+                            for (int i=0;i<modules.length();i++){
                                 JSONObject obj=modules.optJSONObject(i);
                                 String module_name=obj.optString("module_name");
                                 String module_image=obj.optString("module_image");
                                 String created_on=obj.optString("created_on");
-                                String url=link;
+                                String url=obj.optString("url");;
                                 int ratings=obj.optInt("ratings");
 
                                 TrainingModel model=new TrainingModel();
@@ -590,6 +607,7 @@ public class DashboardActivity extends AppCompatActivity {
                             rvTraining.setAdapter(tAdapter);
                         }
 
+                        getTrainingPopup(cookie,accesstoken);
 
                         try {
                             Picasso.with(DashboardActivity.this)
@@ -598,7 +616,6 @@ public class DashboardActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
                     }
 
                     @Override
@@ -609,8 +626,251 @@ public class DashboardActivity extends AppCompatActivity {
                 });
     }
 
-    public void createLink(){
 
+    private void getTrainingPopup(final String cookie, final String accesstoken) {
+        final ProgressDialog progressDialog=new ProgressDialog(DashboardActivity.this);
+        progressDialog.setMessage("Loading..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        AndroidNetworking.get("https://apps.bsharpcorp.com/infocapture/get_home_doc")
+                .addHeaders("Cookie", cookie)
+                .addHeaders("X-CSRF-Token", accesstoken)
+                .setTag("test")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        progressDialog.dismiss();
+                        Log.d("Information_Response: ",response.toString());
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.toString());
+                            if (jsonObject.getBoolean("status") == true){
+                                Log.d("PDF_URL", jsonObject.getString("uri"));
+                                doc_name = jsonObject.getString("doc_name");
+                                doc_type =  jsonObject.getString("doc_type");
+                                url = jsonObject.getString("uri");
+                                mid = jsonObject.getString("mid");
+                                entity_id = jsonObject.getString("entity_id");
+                                String mid=jsonObject.optString("mid");
+                                String doc_viewed=jsonObject.optString("doc_viewed");
+
+                                JSONArray otherdocs=jsonObject.optJSONArray("otherdocs");
+
+
+
+                                if (doc_type.equalsIgnoreCase("quiz") && doc_viewed.equals("0")){
+                                    Intent intent = new Intent(DashboardActivity.this, QuizWebActivity.class);
+                                    intent.putExtra("mdid", mid);
+                                    intent.putExtra("imageurl", url);
+                                    intent.putExtra("doc_type", doc_type);
+                                    intent.putExtra("entity_id", entity_id);
+                                    intent.putExtra("accessToken", accesstoken);
+                                    intent.putExtra("cookies", cookie);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }else {
+                                    if (doc_viewed.equals("0") ){
+                                        openTrainingPopup(doc_name,doc_type,url,cookie,accesstoken,otherdocs,entity_id);
+                                    }else {
+                                        if (otherdocs.length()>0) {
+                                            for (int i = otherdocs.length() - 1; i >= 0; i--) {
+                                                JSONObject otherDocObj = otherdocs.optJSONObject(i);
+                                                String doc_type = otherDocObj.optString("doc_type");
+                                                String entity_id = otherDocObj.optString("entity_id");
+                                                String docid = otherDocObj.optString("docid");
+                                                String doc_name = otherDocObj.optString("doc_name");
+                                                String docviewed = otherDocObj.optString("doc_viewed");
+                                                String uri = otherDocObj.optString("uri");
+                                                if (doc_type.equalsIgnoreCase("quiz") && docviewed.equals("0")) {
+                                                    Intent intent = new Intent(DashboardActivity.this, QuizWebActivity.class);
+                                                    intent.putExtra("mdid", mid);
+                                                    intent.putExtra("imageurl", uri);
+                                                    intent.putExtra("doc_type", doc_type);
+                                                    intent.putExtra("entity_id", entity_id);
+                                                    intent.putExtra("accessToken", accesstoken);
+                                                    intent.putExtra("cookies", cookie);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(intent);
+                                                }else {
+                                                    if (docviewed.equals("0")){
+                                                        dialog.dismiss();
+                                                        openTrainingPopup(doc_name,doc_type,uri,cookie,accesstoken,otherdocs,entity_id);
+
+
+                                                    }
+                                                }
+                                            }
+                                        }else {
+
+
+
+                                        }
+                                    }
+
+
+                                }
+
+                               /* if (doc_type.equalsIgnoreCase("pdf")){
+
+                                } else {
+                                    openTrainingPopup(doc_name,doc_type,url);
+                                }*/
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        progressDialog.dismiss();
+                        // handle error
+                    }
+                });
+    }
+
+
+
+
+    private void openTrainingPopup(String doc_name, final String doc_type, final String url, final String cookie, final String accesstoken, final JSONArray otherdocs, final String entity_id) {
+
+
+
+        long futureTimestamp = System.currentTimeMillis() + (40000);
+        final TimerTextView timerText = (TimerTextView) dialog.findViewById(R.id.timerText);
+        timerText.setEndTime(futureTimestamp);
+
+
+        TextView textView = dialog.findViewById(R.id.textView);
+        textView.setText(doc_name);
+        final ImageView imgCancel = dialog.findViewById(R.id.imgCancel);
+
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                timerText.setVisibility(View.GONE);
+                imgCancel.setVisibility(View.VISIBLE);
+
+
+            }
+        }, INTERVAL);
+
+        llPdfLoading = dialog.findViewById(R.id.llPdfLoading);
+        tvPdfPageNo = dialog.findViewById(R.id.tvPdfPageNo);
+        pdfView = dialog.findViewById(R.id.pdfView);
+
+        long currentTimestampMillis = System.currentTimeMillis();
+        final String  startTime;
+        final String[] endTime = new String[1];
+        // Create a SimpleDateFormat instance with your desired format
+        final SimpleDateFormat[] dateFormat = {new SimpleDateFormat("HH:mm:ss")};
+        // Format the current timestamp
+        startTime = dateFormat[0].format(new Date(currentTimestampMillis));
+
+
+        Log.e(TAG, "openTrainingPopup: OPEN URL: "+url);
+
+        AdvancedWebView webview=(AdvancedWebView) dialog.findViewById(R.id.webview);
+        if (doc_type.equalsIgnoreCase("pdf")){
+            llPdfLoading.setVisibility(View.VISIBLE);
+            pdfView.setVisibility(View.VISIBLE);
+            new RetrievePdfFromUrl().execute(url);
+        } else {
+            llPdfLoading.setVisibility(View.GONE);
+            pdfView.setVisibility(View.GONE);
+            tvPdfPageNo.setVisibility(View.GONE);
+
+        }
+
+
+        imgCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //dialog.cancel();
+                long currentTimestampMillis = System.currentTimeMillis();
+                endTime[0] = dateFormat[0].format(new Date(currentTimestampMillis));
+
+                    try {
+                        saveTrainingClosePop(startTime,endTime[0],cookie,accesstoken,doc_type,mid,entity_id);
+                    }catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+
+
+
+            }
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void saveTrainingClosePop(String startTime, String endTime, final String cookie, final String accesstoken,String doctype,String mid,String entity_id) throws JSONException {
+        try {
+            Log.e(TAG, "saveTrainingClosePop: startTime: "+startTime+" endTime: "+endTime);
+            Log.e(TAG, "saveTrainingClosePop: Time Difference: "+ TimeDifferenceCalculator.calculateTimeDifference(startTime,endTime));
+            timespent = TimeDifferenceCalculator.calculateTimeDifference(startTime,endTime);
+            String data = "{"+mid+","+entity_id+","+doctype+","+TimeDifferenceCalculator.calculateTimeDifference(startTime,endTime)+"}";
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("mid",mid);
+            jsonObject.put("entity_id",entity_id);
+            jsonObject.put("doc_type",doctype);
+            jsonObject.put("timespent",timespent);
+            Log.e(TAG, "saveTrainingClosePop: ==== "+jsonObject.toString());
+
+
+            final ProgressDialog progressDialog=new ProgressDialog(DashboardActivity.this);
+            progressDialog.setMessage("Loading..");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+            AndroidNetworking.post("https://apps.bsharpcorp.com/infocapture/home_data/upload")
+                    .addHeaders("Cookie", cookie)
+                    .addHeaders("X-CSRF-Token", accesstoken)
+                    .setTag("test")
+                    .addJSONObjectBody(jsonObject)
+                    .setPriority(Priority.HIGH)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            progressDialog.dismiss();
+                            Log.e("Response: ",response.toString());
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.toString());
+                                dialog.cancel();
+                                if (jsonObject.optInt("status") == 200){
+
+                                    dialog.dismiss();
+                                    collaborationLogin();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onError(ANError error) {
+                            progressDialog.dismiss();
+                            // handle error
+                        }
+                    });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createLink(){
         JSONObject obj=new JSONObject();
         try {
             obj.put("access_key","a1dcac1cc6b9ba47asfafaf");
@@ -638,8 +898,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         link="https://apps.bsharpcorp.com/sso_connect/"+hashtoken+"/"+base64data;
         Log.d("ssolink",link);
-
-
     }
 
     public static String sha256String(String source) {
@@ -665,7 +923,114 @@ public class DashboardActivity extends AppCompatActivity {
             }
             hashCode = hashBuilder.toString();
         }
-
         return hashCode;
     }
+
+    class RetrievePdfFromUrl extends AsyncTask<String, Void, InputStream> {
+        @Override
+        protected InputStream doInBackground(String... strings) {
+            // we are using inputstream
+            // for getting out PDF.
+            InputStream inputStream = null;
+            try {
+                URL url = new URL(strings[0]);
+                // below is the step where we are
+                // creating our connection.
+                HttpURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+                if (urlConnection.getResponseCode() == 200) {
+                    // response is success.
+                    // we are getting input stream from url
+                    // and storing it in our variable.
+                    inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                }
+
+            } catch (IOException e) {
+                // this is the method
+                // to handle errors.
+                e.printStackTrace();
+                return null;
+            }
+            return inputStream;
+        }
+
+        @Override
+        protected void onPostExecute(InputStream inputStream) {
+            // after the execution of our async
+            // task we are loading our pdf in our pdf view.
+            //openTrainingPopup(doc_name,doc_type,url,inputStream);
+
+            pdfView.fromStream(inputStream)
+                    .swipeHorizontal(true)
+                    .onPageChange(new OnPageChangeListener() {
+                        @Override
+                        public void onPageChanged(int page, int pageCount) {
+                            Log.e(TAG, "onPageChanged: Current Page: " + page + " Total number of page: " + pageCount);
+                            tvPdfPageNo.setText(page+1+" / "+pageCount);
+                        }
+                    })
+                    .onRender(new OnRenderListener() {
+                        @Override
+                        public void onInitiallyRendered(int nbPages) {
+                            Log.e(TAG, "onInitiallyRendered: nbPages: " + nbPages);
+                            llPdfLoading.setVisibility(View.GONE);
+                            //DocumentLoadingProgress.showDialog(ViewPdfActivity.this,false);
+                            //binding.pageNumber.setVisibility(View.VISIBLE);
+                        }
+                    })
+                    .onTap(new OnTapListener() {
+                        @Override
+                        public boolean onTap(MotionEvent e) {
+                            Log.e(TAG, "onTap: called.");
+                            if (tvPdfPageNo.getVisibility() == View.VISIBLE){
+                                tvPdfPageNo.setVisibility(View.GONE);
+                            } else {
+                                tvPdfPageNo.setVisibility(View.VISIBLE);
+                            }
+                            return false;
+                        }
+                    })
+                    .spacing(15)
+                    .pageSnap(true)
+                    .autoSpacing(true)
+                    .pageFling(true)
+                    .load();
+        }
+    }
+
+    public String createLink(String des){
+        String link;
+        JSONObject obj=new JSONObject();
+        try {
+            obj.put("access_key","a1dcac1cc6b9ba47asfafaf");
+            obj.put("client_id","100001100002357");
+            obj.put("counter_id",prefManager.getUserCode());
+            obj.put("destination",des);
+            obj.put("expires",0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String jsonobj=obj.toString();
+        byte[] data = new byte[0];
+        try {
+            data = jsonobj.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String base64data = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
+        Log.d("jsonobj",jsonobj);
+
+        String token=base64data+"XZnvWRDDnvpWGGRmWUzLZhkN2jW5XziJEWavhhCFHbkX9jAYjNFNu9MCWoaNtcJr";
+        String hashtoken=sha256String(token);
+        Log.d("hashtoken",hashtoken);
+
+        link="https://apps.bsharpcorp.com/sso_connect/"+hashtoken+"/"+base64data;
+        Log.d("ssolink",link);
+        return link;
+
+
+    }
+
+
+
 }

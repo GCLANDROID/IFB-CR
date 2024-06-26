@@ -31,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.CompSaleReportAdapter;
 import com.genius.ifbretailer.model.CompSaleModel;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -148,7 +149,7 @@ public class CompSaleReportActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_CompetitorSalesCheckingByYrMonth?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + previousmonth + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_CompetitorSalesCheckingByYrMonth?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + previousmonth + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

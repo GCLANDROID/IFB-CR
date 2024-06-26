@@ -62,6 +62,7 @@ import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.model.ModelSpinnerModel;
 import com.genius.ifbretailer.model.RcnModel;
 import com.genius.ifbretailer.model.SpinnerItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 import com.genius.ifbretailer.utility.ValidUtils;
 
@@ -77,9 +78,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
-
 
 
 public class SalesManageActivity extends AppCompatActivity {
@@ -109,6 +109,22 @@ public class SalesManageActivity extends AppCompatActivity {
     ArrayList<SpinnerItemModule> moduleScheme = new ArrayList<>();
     ArrayList<String> scheme = new ArrayList<>();
 
+
+    ArrayList<SpinnerItemModule> moduleInstallation = new ArrayList<>();
+    ArrayList<String> installation = new ArrayList<>();
+
+    ArrayList<SpinnerItemModule> moduleSalesType = new ArrayList<>();
+    ArrayList<String> salestype = new ArrayList<>();
+    Spinner spWIFI, spInstallation, spSalesType;
+    LinearLayout lnInstallation, llSalesType, llODU, llODUSerialNumber,lnPedestal;
+    TextView tvSalesType;
+    String installationBY = "";
+    String wifi = "N";
+    String selectedWIFI;
+    String salesType = "";
+    TextView tvMRP, tvInstallation;
+
+
     LinearLayout llSave;
     String stateId = "";
     String STATENAME;
@@ -125,7 +141,8 @@ public class SalesManageActivity extends AppCompatActivity {
     LinearLayout llSubmit;
     String quantity = "1";
     String salesDate;
-    String underExchange = "1";
+    String underExchange = "0";
+    int schemeFlag = 1;
     String remarks = "0";
     AlertDialog alerDialog1;
     String responseText;
@@ -161,7 +178,8 @@ public class SalesManageActivity extends AppCompatActivity {
     LinearLayout llImage;
     Uri uri;
     ImageView imgPic;
-    private static final String SERVER_PATH = "http://111.93.182.173/IFBiOSApi/api/";
+    private static final String SERVER_PATH = AppController.APIURL+"api/";
+    EditText c;
 
     ProgressDialog progressDialog;
     int imageTypeFlag;
@@ -176,12 +194,28 @@ public class SalesManageActivity extends AppCompatActivity {
     ArrayList<KeyPairBoolData> keyModelList = new ArrayList<>();
     Spinner spCSD;
     String csdSales;
-    ArrayList<String>csdSalesList=new ArrayList<>();
-    ArrayList<ModelSpinnerModel>modelcsdSaleslist=new ArrayList<>();
-    ArrayList<RcnModel>rcnList=new ArrayList<>();
+    ArrayList<String> csdSalesList = new ArrayList<>();
+    ArrayList<ModelSpinnerModel> modelcsdSaleslist = new ArrayList<>();
+    ArrayList<RcnModel> rcnList = new ArrayList<>();
     JSONObject outerObject;
     JSONArray jsonArray;
     String token;
+    String product;
+
+    LinearLayout lnDP, lnWIFI;
+    TextView tvDP;
+
+    List<EditText> allODEds = new ArrayList<EditText>();
+    ArrayList<String> oduList = new ArrayList<>();
+    String odunumber = "";
+    String pedestial = "N";
+    String selectedpedestial;
+    Spinner spPedestal;
+
+    JSONArray refArray;
+
+    JSONObject csrOBJ=new JSONObject();
+    String sucessText,currentDate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +227,8 @@ public class SalesManageActivity extends AppCompatActivity {
 
     private void initialize() {
         prefManager = new PrefManager(SalesManageActivity.this);
+        currentDate = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
+
         String next = "<font color='#EE0000'>*</font>";
 
         tvCategory = (TextView) findViewById(R.id.tvCategorySale);
@@ -239,6 +275,11 @@ public class SalesManageActivity extends AppCompatActivity {
         String city = "CITY ";
         tvCity.setText(Html.fromHtml(city + next));
 
+
+        tvSalesType = (TextView) findViewById(R.id.tvSalesType);
+        String salestype = "SALES TYPE ";
+        tvSalesType.setText(Html.fromHtml(salestype + next));
+
         tvArea = (TextView) findViewById(R.id.tvArea);
         String area = "AREA ";
         tvArea.setText(Html.fromHtml(area + next));
@@ -280,10 +321,19 @@ public class SalesManageActivity extends AppCompatActivity {
         llSchNoD = (LinearLayout) findViewById(R.id.llSchNoD);
 
         llScheme = (LinearLayout) findViewById(R.id.llScheme);
-
+        lnPedestal=(LinearLayout)findViewById(R.id.lnPedestal);
         tvScheme = (TextView) findViewById(R.id.tvScheme);
         String scheme = "SELECT FINANCE SCHEME ";
         tvScheme.setText(Html.fromHtml(scheme + next));
+
+
+        tvInstallation = (TextView) findViewById(R.id.tvInstallation);
+        String installation = "INSTALLATION BY:";
+        tvInstallation.setText(Html.fromHtml(installation + next));
+
+        llODU = (LinearLayout) findViewById(R.id.llODU);
+        llODUSerialNumber = (LinearLayout) findViewById(R.id.llODUSerialNumber);
+
 
         spCategory = (Spinner) findViewById(R.id.spCategory);
         spModel = (SingleSpinnerSearch) findViewById(R.id.spModel);
@@ -307,7 +357,6 @@ public class SalesManageActivity extends AppCompatActivity {
         etFirstName = (EditText) findViewById(R.id.etFirstName);
 
         tvCityName = (TextView) findViewById(R.id.tvCityName);
-
 
 
         imgBack = (ImageView) findViewById(R.id.imgBack);
@@ -377,17 +426,16 @@ public class SalesManageActivity extends AppCompatActivity {
         }
 
 
-
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading...");
         llSerialNumber = (LinearLayout) findViewById(R.id.llSerialNumber);
         llSave = (LinearLayout) findViewById(R.id.llSave);
-        spCSD=(Spinner)findViewById(R.id.spCSD);
+        spCSD = (Spinner) findViewById(R.id.spCSD);
         csdSalesList.add("No");
         csdSalesList.add("Yes");
 
-        modelcsdSaleslist.add(new ModelSpinnerModel("N","N",""));
-        modelcsdSaleslist.add(new ModelSpinnerModel("Y","Y",""));
+        modelcsdSaleslist.add(new ModelSpinnerModel("N", "N", ""));
+        modelcsdSaleslist.add(new ModelSpinnerModel("Y", "Y", ""));
 
         ArrayAdapter<String> spinnerCSDArrayAdapter = new ArrayAdapter<String>
                 (SalesManageActivity.this, android.R.layout.simple_spinner_item,
@@ -395,9 +443,29 @@ public class SalesManageActivity extends AppCompatActivity {
         spinnerCSDArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCSD.setAdapter(spinnerCSDArrayAdapter);
 
+        spWIFI = (Spinner) findViewById(R.id.spWIFI);
+        ArrayAdapter<String> spinnerWifiArrayAdapter = new ArrayAdapter<String>
+                (SalesManageActivity.this, android.R.layout.simple_spinner_item,
+                        csdSalesList); //selected item will look like a spinner set from XML
+        spinnerWifiArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spWIFI.setAdapter(spinnerWifiArrayAdapter);
 
+        spInstallation = (Spinner) findViewById(R.id.spInstallation);
+        spSalesType = (Spinner) findViewById(R.id.spSalesType);
+        lnInstallation = (LinearLayout) findViewById(R.id.lnInstallation);
+        llSalesType = (LinearLayout) findViewById(R.id.llSalesType);
+        tvMRP = (TextView) findViewById(R.id.tvMRP);
+        tvDP = (TextView) findViewById(R.id.tvDP);
 
+        lnDP = (LinearLayout) findViewById(R.id.lnDP);
+        lnWIFI = (LinearLayout) findViewById(R.id.lnWIFI);
 
+        spPedestal = (Spinner) findViewById(R.id.spPedestal);
+        ArrayAdapter<String> spinnerPedestalAdapter = new ArrayAdapter<String>
+                (SalesManageActivity.this, android.R.layout.simple_spinner_item,
+                        csdSalesList); //selected item will look like a spinner set from XML
+        spinnerPedestalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spPedestal.setAdapter(spinnerPedestalAdapter);
 
 
     }
@@ -407,7 +475,7 @@ public class SalesManageActivity extends AppCompatActivity {
         spCSD.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                csdSales=modelcsdSaleslist.get(i).getId();
+                csdSales = modelcsdSaleslist.get(i).getId();
             }
 
             @Override
@@ -447,7 +515,9 @@ public class SalesManageActivity extends AppCompatActivity {
                 llSchYesD.setVisibility(View.VISIBLE);
                 llSchNoD.setVisibility(View.GONE);
                 llScheme.setVisibility(View.VISIBLE);
-                setScheme();
+                llSalesType.setVisibility(View.VISIBLE);
+                schemeFlag = 1;
+
             }
         });
 
@@ -457,6 +527,8 @@ public class SalesManageActivity extends AppCompatActivity {
                 llSchYesD.setVisibility(View.GONE);
                 llSchNoD.setVisibility(View.VISIBLE);
                 llScheme.setVisibility(View.GONE);
+                llSalesType.setVisibility(View.GONE);
+                schemeFlag = 0;
             }
         });
 
@@ -468,6 +540,22 @@ public class SalesManageActivity extends AppCompatActivity {
                     categoryId = moduleCategory.get(position).getItemId();
                     Log.d("categoryId", categoryId);
                     setModel(categoryId);
+
+                    if (categoryId.equals("IFBPC1000001")) {
+                        lnWIFI.setVisibility(View.VISIBLE);
+                        lnInstallation.setVisibility(View.VISIBLE);
+                        setInstallation();
+                        llODU.setVisibility(View.VISIBLE);
+                        lnPedestal.setVisibility(View.GONE);
+                    } else if (categoryId.equals("IFBPC1000013") || categoryId.equals("IFBPC1000040")){
+                        lnPedestal.setVisibility(View.VISIBLE);
+                        lnWIFI.setVisibility(View.GONE);
+                    }else {
+                        lnWIFI.setVisibility(View.GONE);
+                        lnInstallation.setVisibility(View.GONE);
+                        llODU.setVisibility(View.GONE);
+                        lnPedestal.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -476,7 +564,51 @@ public class SalesManageActivity extends AppCompatActivity {
 
             }
         });
+        spWIFI.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
+                selectedWIFI = csdSalesList.get(i);
+                if (selectedWIFI.equalsIgnoreCase("NO")) {
+                    wifi = "N";
+                } else if (selectedWIFI.equalsIgnoreCase("YES")) {
+                    wifi = "Y";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        spInstallation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    installationBY = moduleInstallation.get(i).getItemId();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        spSalesType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    salesType = moduleSalesType.get(i).getItemId();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         etFirstName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -526,8 +658,6 @@ public class SalesManageActivity extends AppCompatActivity {
         });
 
 
-
-
         etQuantity.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -557,14 +687,36 @@ public class SalesManageActivity extends AppCompatActivity {
                         allEds.add(b);
                         b.setHint("please enter serial number ");
                         b.setTextSize(14);
+                        b.setInputType(InputType.TYPE_CLASS_TEXT);
                         b.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
                         b.setId(i);
                         b.setSingleLine();
-                        b.setInputType(InputType.TYPE_CLASS_NUMBER);
                         ll.addView(b);
                     }
 
                     llSerialNumber.addView(sv);
+
+                    ScrollView sv1 = new ScrollView(SalesManageActivity.this);
+
+                    sv1.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                    LinearLayout ll1 = new LinearLayout(SalesManageActivity.this);
+                    ll1.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    ll1.setOrientation(LinearLayout.VERTICAL);
+                    sv1.addView(ll1);
+                    for (int i = 0; i < p; i++) {
+                        c = new EditText(SalesManageActivity.this);
+                        c.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        allODEds.add(c);
+                        c.setHint("Please Enter AC ODU number ");
+                        c.setTextSize(14);
+                        c.setInputType(InputType.TYPE_CLASS_TEXT);
+                        c.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
+                        c.setId(i);
+                        c.setSingleLine();
+                        ll1.addView(c);
+                    }
+
+                    llODUSerialNumber.addView(sv1);
                 }
 
             }
@@ -609,6 +761,25 @@ public class SalesManageActivity extends AppCompatActivity {
             }
         });
 
+
+        spPedestal.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                selectedpedestial = csdSalesList.get(i);
+                if (selectedpedestial.equalsIgnoreCase("NO")) {
+                    pedestial = "N";
+                } else if (selectedpedestial.equalsIgnoreCase("YES")) {
+                    pedestial = "Y";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         spModel.setItems(keyModelList, -1, new SpinnerListener() {
 
             @Override
@@ -624,6 +795,8 @@ public class SalesManageActivity extends AppCompatActivity {
                         mrpPrice = Float.parseFloat(mrp);
                         valuePut = mrpPrice / 2;
                         Log.d("valueput", String.valueOf(valuePut));
+                        setDP(modelId);
+                        tvMRP.setText(mrp);
 
 
                     }
@@ -814,14 +987,8 @@ public class SalesManageActivity extends AppCompatActivity {
                                                                                                                             if (!etMobNumber.getText().toString().contains("8888888888")) {
                                                                                                                                 if (!etMobNumber.getText().toString().contains("9999999999")) {
                                                                                                                                     if (etQuantity.getText().toString().length() > 0) {
-                                                                                                                                        if (etQuantity.getText().toString().equals("2") || etQuantity.getText().toString().equals("3") || etQuantity.getText().toString().equals("4") || etQuantity.getText().toString().equals("5")) {
 
-
-                                                                                                                                            quatityalert();
-                                                                                                                                        } else {
-                                                                                                                                            emailcheck1();
-                                                                                                                                        }
-
+                                                                                                                                        instalationChecking();
 
                                                                                                                                     } else {
                                                                                                                                         etQuantity.setError("Please enter quantity");
@@ -980,11 +1147,10 @@ public class SalesManageActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                    ssaleFunction();
+                ssaleFunction();
 
             }
         });
-
 
 
     }
@@ -1073,7 +1239,7 @@ public class SalesManageActivity extends AppCompatActivity {
     private void setCategory() {
         Log.d("hitr", "1");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -1148,7 +1314,9 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
     private void setModel(String categoryId) {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=18&ID=" + categoryId + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        //String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=18&ID=" + categoryId + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=18M&ID=" + categoryId + "&ID1=0&ID2="+prefManager.getBranchId()+"&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1194,8 +1362,6 @@ public class SalesManageActivity extends AppCompatActivity {
                                 }
 
 
-
-
                             } else {
 
 
@@ -1229,7 +1395,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
     private void setTitle() {
         Log.d("hitr", "2");
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -1436,7 +1602,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
     private void setScheme() {
         Log.d("hitr", "5");
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=35&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=35&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -1513,7 +1679,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
     private void setState() {
         Log.d("hitr", "3");
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=2&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=2&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("stateinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -1590,7 +1756,7 @@ public class SalesManageActivity extends AppCompatActivity {
     private void setCity() {
         Log.d("hitr", "4");
         tvCityName.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=14&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=14&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -1621,7 +1787,8 @@ public class SalesManageActivity extends AppCompatActivity {
                                     moduleCity.add(itemModule);
 
                                 }
-
+                                setScheme();
+                                setSalesType();
 
                                 spCity.setVisibility(View.VISIBLE);
                                 tvCityName.setVisibility(View.GONE);
@@ -1669,7 +1836,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
     private void setSalesEntry() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/post_SalesEntry?TransNo=0&AEMEmployeeID=" + prefManager.getUserId() + "&_SalesDate=" + salesDate + "&FinancialYear=" + financialYear + "&Month=" + monthname + "&CategoryID=" + categoryId + "&Quantity=" + quantity + "&xmldata=0&UserID=" + prefManager.getUserId() + "&BranchID=" + prefManager.getBranchId() + "&ModelID=" + modelId + "&CustomerName=" + customerName.replaceAll("\\s+", "-") + "&CustomerPhNo=" + etMobNumber.getText().toString() + "&CustomerPinCode=" + etPinCode.getText().toString() + "&CustomerEmail=" + etEmailId.getText().toString() + "&InvoiceNo=" + etInvoiceNumber.getText().toString() + "&FinanceScheme=" + schemeId + "&DeliveryAddress=" + etHouse.getText().toString() + "-" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&FirstName=" + etFirstName.getText().toString().replaceAll("\\s+", "-") + "&LastName=" + etLastName.getText().toString().replaceAll("\\s+", "-") + "&CustomerAlternateNumber=" + altmob + "&HouseNo=" + etHouse.getText().toString().replaceAll("\\s+", "-") + "&StreetName=" + etStreetName.getText().toString().replaceAll("\\s+", "-") + "&Landmark=" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&Title=" + titleId + "&StateID=" + stateId + "&City=" + tvCityName.getText().toString().replaceAll("\\s+", "-") + "&InvoiceValue=" + etInvoiceValue.getText().toString() + "&Remarks=" + remarks + "&UnderExchange=" + underExchange + "&SalesEntryFlag=-1&Area=" + areaName + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/post_SalesEntry?TransNo=0&AEMEmployeeID=" + prefManager.getUserId() + "&_SalesDate=" + salesDate + "&FinancialYear=" + financialYear + "&Month=" + monthname + "&CategoryID=" + categoryId + "&Quantity=" + quantity + "&xmldata=0&UserID=" + prefManager.getUserId() + "&BranchID=" + prefManager.getBranchId() + "&ModelID=" + modelId + "&CustomerName=" + customerName.replaceAll("\\s+", "-") + "&CustomerPhNo=" + etMobNumber.getText().toString() + "&CustomerPinCode=" + etPinCode.getText().toString() + "&CustomerEmail=" + etEmailId.getText().toString() + "&InvoiceNo=" + etInvoiceNumber.getText().toString() + "&FinanceScheme=" + schemeId + "&DeliveryAddress=" + etHouse.getText().toString() + "-" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&FirstName=" + etFirstName.getText().toString().replaceAll("\\s+", "-") + "&LastName=" + etLastName.getText().toString().replaceAll("\\s+", "-") + "&CustomerAlternateNumber=" + altmob + "&HouseNo=" + etHouse.getText().toString().replaceAll("\\s+", "-") + "&StreetName=" + etStreetName.getText().toString().replaceAll("\\s+", "-") + "&Landmark=" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&Title=" + titleId + "&StateID=" + stateId + "&City=" + tvCityName.getText().toString().replaceAll("\\s+", "-") + "&InvoiceValue=" + etInvoiceValue.getText().toString() + "&Remarks=" + remarks + "&UnderExchange=" + underExchange + "&SalesEntryFlag=-1&Area=" + areaName + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("salesentry", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1724,7 +1891,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
 
-    private void successAlert(String text,String tokenNo) {
+    private void successAlert(String text) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SalesManageActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_success, null);
@@ -1737,9 +1904,8 @@ public class SalesManageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 alerDialog1.dismiss();
-                Intent intent = new Intent(SalesManageActivity.this, ConsolidateSalesReportActivity.class);
-                startActivity(intent);
-                finish();
+                onBackPressed();
+
             }
         });
 
@@ -1814,7 +1980,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
 
     private void emailcheck1() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CheckInvalidEmailID?EmailID=" + etEmailId.getText().toString();
+        String surl = AppController.APIURL+"api/CheckInvalidEmailID?EmailID=" + etEmailId.getText().toString();
         Log.d("emailcheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1866,7 +2032,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
     private void mobNumbercheck() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CheckInvalidMobileNo?MobileNo=" + etMobNumber.getText().toString();
+        String surl = AppController.APIURL+"api/CheckInvalidMobileNo?MobileNo=" + etMobNumber.getText().toString();
         Log.d("phnnumbercheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1922,7 +2088,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
     private void altNumbercheck() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CheckInvalidMobileNo?MobileNo=" + etPhnNumber.getText().toString();
+        String surl = AppController.APIURL+"api/CheckInvalidMobileNo?MobileNo=" + etPhnNumber.getText().toString();
         Log.d("phnnumbercheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -2050,7 +2216,7 @@ public class SalesManageActivity extends AppCompatActivity {
                             imgPic.setImageBitmap(bm);
                             alert1.dismiss();
                             imageTypeFlag = 1;
-                            imgFlag=1;
+                            imgFlag = 1;
                             String contentType = "image/jpg";
                             String[] brkDown = imageurl.split("/");
                             String name = brkDown[5];
@@ -2088,7 +2254,7 @@ public class SalesManageActivity extends AppCompatActivity {
                             imgPic.setImageBitmap(bm);
                             alert1.dismiss();
                             imageTypeFlag = 2;
-                            imgFlag=1;
+                            imgFlag = 1;
                             String contentType = "image/jpg";
                             String[] brkDown = filePath.split("/");
                             String name = brkDown[5];
@@ -2148,7 +2314,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
 
-    private void postSale(String serailNumber) {
+    private void postSale(String serailNumber, String odunumber) {
         llSubmit.setEnabled(false);
         userId = prefManager.getUserId();
         secirityCode = prefManager.getSecurityCode();
@@ -2172,8 +2338,8 @@ public class SalesManageActivity extends AppCompatActivity {
         final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
         pd.setMessage("Loading..");
         pd.setCancelable(false);
-
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeDummySalesWithOutInvoiceCSD")
+        pd.show();
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeDummySalesWithInvoiceCSDV2")
                 .addMultipartParameter("TransNo", transNo)
                 .addMultipartParameter("AEMEmployeeID", userId)
                 .addMultipartParameter("SalesDate", salesDate)
@@ -2194,7 +2360,8 @@ public class SalesManageActivity extends AppCompatActivity {
                 .addMultipartParameter("DeliveryAddress", delivaryAddress)
                 .addMultipartParameter("FirstName", fName)
                 .addMultipartParameter("LastName", lName)
-                .addMultipartParameter("CustomerAlternateNumber", altNumber)
+                .addMultipartParameter("CustomerAlternateNumber", "")
+
                 .addMultipartParameter("HouseNo", houseNo)
                 .addMultipartParameter("StreetName", streetname)
                 .addMultipartParameter("Landmark", landMark)
@@ -2207,7 +2374,12 @@ public class SalesManageActivity extends AppCompatActivity {
                 .addMultipartParameter("Area", areaName)
                 .addMultipartParameter("SalesEntryFlag", saleFlag)
                 .addMultipartParameter("SerialNo", serailNumber)
-                .addMultipartParameter("CSD_Sales",csdSales)
+                .addMultipartParameter("SerialNo1", odunumber)
+                .addMultipartParameter("InstallationBy", installationBY)
+                .addMultipartParameter("SalesType", salesType)
+                .addMultipartParameter("WiFiDeviceStatus", wifi)
+                .addMultipartParameter("CSD_Sales", csdSales)
+                .addMultipartParameter("PedestalSales", pedestial)
                 .addMultipartParameter("SecurityCode", secirityCode)
 
                 .setTag("uploadTest")
@@ -2227,13 +2399,12 @@ public class SalesManageActivity extends AppCompatActivity {
                         llSubmit.setEnabled(true);
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
-                        String responseText = job1.optString("responseText");
-                        String tokenNo=job1.optString("responseData");
-                        token=tokenNo;
-                        Log.d("responseText", responseText);
-                        boolean responseStatus=job1.optBoolean("responseStatus");
+                        sucessText = job1.optString("responseText");
+                        String tokenNo = job1.optString("responseData");
+                        token = tokenNo;
+                        boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
-                            successAlert(responseText,tokenNo);
+                            getToken(token);
                             pd.dismiss();
 
 
@@ -2261,7 +2432,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
 
-    private void postSaleWithImage(String serailNumber) {
+    private void postSaleWithImage(String serailNumber, String odunumber) {
         llSubmit.setEnabled(false);
         userId = prefManager.getUserId();
         secirityCode = prefManager.getSecurityCode();
@@ -2285,8 +2456,8 @@ public class SalesManageActivity extends AppCompatActivity {
         final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
         pd.setMessage("Loading..");
         pd.setCancelable(false);
-
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeDummySalesWithInvoiceCSD")
+        pd.show();
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeDummySalesWithInvoiceCSDV2")
                 .addMultipartParameter("TransNo", transNo)
                 .addMultipartParameter("AEMEmployeeID", userId)
                 .addMultipartParameter("SalesDate", salesDate)
@@ -2307,7 +2478,7 @@ public class SalesManageActivity extends AppCompatActivity {
                 .addMultipartParameter("DeliveryAddress", delivaryAddress)
                 .addMultipartParameter("FirstName", fName)
                 .addMultipartParameter("LastName", lName)
-                .addMultipartParameter("CustomerAlternateNumber", altNumber)
+                .addMultipartParameter("CustomerAlternateNumber", "")
                 .addMultipartParameter("HouseNo", houseNo)
                 .addMultipartParameter("StreetName", streetname)
                 .addMultipartParameter("Landmark", landMark)
@@ -2321,7 +2492,12 @@ public class SalesManageActivity extends AppCompatActivity {
                 .addMultipartParameter("SalesEntryFlag", saleFlag)
                 .addMultipartParameter("Invoicecopy", stringFile)
                 .addMultipartParameter("SerialNo", serailNumber)
-                .addMultipartParameter("CSD_Sales",csdSales)
+                .addMultipartParameter("SerialNo1", odunumber)
+                .addMultipartParameter("InstallationBy", installationBY)
+                .addMultipartParameter("SalesType", salesType)
+                .addMultipartParameter("WiFiDeviceStatus", wifi)
+                .addMultipartParameter("CSD_Sales", csdSales)
+                .addMultipartParameter("PedestalSales", pedestial)
                 .addMultipartParameter("SecurityCode", secirityCode)
 
                 .setTag("uploadTest")
@@ -2341,13 +2517,12 @@ public class SalesManageActivity extends AppCompatActivity {
                         llSubmit.setEnabled(true);
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
-                        String responseText = job1.optString("responseText");
-                        String tokenNo=job1.optString("responseData");
-                        token=tokenNo;
-                        Log.d("responseText", responseText);
-                        boolean responseStatus=job1.optBoolean("responseStatus");
+                        sucessText = job1.optString("responseText");
+                        String tokenNo = job1.optString("responseData");
+                        token = tokenNo;
+                        boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
-                            successAlert(responseText,tokenNo);
+                            getToken(token);
                             pd.dismiss();
 
                         } else {
@@ -2375,7 +2550,7 @@ public class SalesManageActivity extends AppCompatActivity {
     private void ssaleFunction() {
         String serialNumber = "";
         for (int i = 0; i < allEds.size(); i++) {
-            if (allEds.get(i).getText().toString().length() == 18) {
+            if (allEds.get(i).getText().toString().length() > 17) {
                 serialNumberList.add(allEds.get(i).getText().toString());
                 serialNumber = serialNumberList.toString().replace("[", "").replace("]", "").concat(",");
                 Log.d("Value ", serialNumber);
@@ -2383,25 +2558,67 @@ public class SalesManageActivity extends AppCompatActivity {
             }
 
 
+            for (int j = 0; j < allODEds.size(); j++) {
+                if (allODEds.get(j).getText().toString().length() > 17) {
+                    oduList.add(allODEds.get(j).getText().toString());
+                    odunumber = oduList.toString().replace("[", "").replace("]", "").concat(",");
+                    Log.d("Value ", odunumber);
+                } else {
 
+                }
+            }
 
 
         }
 
         if (stringFile.equals("")) {
-            postSale(serialNumber);
+            if (categoryId.equals("IFBPC1000001")) {
+
+                if (installationBY.equalsIgnoreCase("IFB Franchisee")) {
+                    postSale(serialNumber, odunumber);
+                } else {
+                    if (serialNumberList.size() > 0) {
+
+                        //checkSerialNumberForIDU(serialNumber);
+                        postSale(serialNumber, odunumber);
+
+                    } else {
+                        postSale(serialNumber, odunumber);
+                      //  Toast.makeText(SalesManageActivity.this, "Please Enter Serial / AC IDU Number", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+            } else {
+                postSale(serialNumber, odunumber);
+            }
         } else {
-            postSaleWithImage(serialNumber);
+            if (categoryId.equals("IFBPC1000001")) {
+                if (installationBY.equalsIgnoreCase("IFB Franchisee")) {
+                    postSaleWithImage(serialNumber, odunumber);
+                } else {
+                    if (serialNumberList.size() > 0) {
+
+                       // checkSerialNumberForIDUForImage(serialNumber);
+                        postSaleWithImage(serialNumber, odunumber);
+
+
+                    } else {
+                        postSaleWithImage(serialNumber, odunumber);
+                      //  Toast.makeText(SalesManageActivity.this, "Please Enter Serial / AC IDU Number", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+            } else {
+                postSaleWithImage(serialNumber, odunumber);
+            }
         }
-
-
 
 
     }
 
 
     public void getToken(String token) {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_CRMDummyTokenByReference?ReferenceNo="+token+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_CRMDummyTokenByReference?ReferenceNo=" + token + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputCheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -2417,21 +2634,75 @@ public class SalesManageActivity extends AppCompatActivity {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);
                             boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus){
-                                JSONArray responseData=job1.optJSONArray("responseData");
-                                for (int i=0;i<responseData.length();i++){
-                                    JSONObject object=responseData.optJSONObject(i);
-                                    String TokenNo=object.optString("TokenNo");
-                                    RcnModel rcnModel=new RcnModel();
+                            if (responseStatus) {
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                csrOBJ=new JSONObject();
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject object = responseData.optJSONObject(i);
+                                    String TokenNo = object.optString("TokenNo");
+                                    String CategoryShortName = object.optString("CategoryShortName");
+                                    String SerialNo = object.optString("SerialNo");
+                                    String ModelCode=object.optString("ModelCode");
+                                    String FirstName=object.optString("FirstName");
+                                    String LastName=object.optString("LastName");
+                                    String DeliveryAddress=object.optString("DeliveryAddress");
+                                    String StreetName=object.optString("StreetName");
+                                    String CustomerPinCode=object.optString("CustomerPinCode");
+                                    String City=object.optString("City");
+                                    String StateName=object.optString("StateName");
+                                    String CustomerPhNo=object.optString("CustomerPhNo");
+                                    String AlternateNumber=object.optString("AlternateNumber");
+                                    String CustomerEmail=object.optString("CustomerEmail");
+                                    String SalesDate=object.optString("SalesDate");
+                                    String ShipPartyCode=object.optString("ShipPartyCode");
+                                    String MultipleProduct=object.optString("MultipleProduct");
+                                    String WiFiDeviceStatus=object.optString("WiFiDeviceStatus");
+                                    RcnModel rcnModel = new RcnModel();
                                     rcnModel.setToken(TokenNo);
+                                    rcnModel.setSerNumber(SerialNo);
+                                    rcnModel.setShortName(CategoryShortName);
                                     rcnList.add(rcnModel);
+
+                                    csrOBJ.put("MODEL",ModelCode);
+                                    csrOBJ.put("PRODUCT",CategoryShortName);
+                                    csrOBJ.put("CUSTOMERFIRSTNAME",FirstName);
+                                    csrOBJ.put("CUSTOMERLASTNAME",LastName);
+                                    csrOBJ.put("ADDRESS",DeliveryAddress);
+                                    csrOBJ.put("STREET",StreetName);
+                                    csrOBJ.put("PINCODE",CustomerPinCode);
+                                    csrOBJ.put("CITY",City);
+                                    csrOBJ.put("STATE",StateName);
+                                    csrOBJ.put("MOBILENO",CustomerPhNo);
+                                    csrOBJ.put("ALTMOBNO",AlternateNumber);
+                                    csrOBJ.put("EMAIL",CustomerEmail);
+                                    csrOBJ.put("PURCHASEDATE",SalesDate);
+                                    csrOBJ.put("DEALER",ShipPartyCode);
+                                    csrOBJ.put("TOKENNO",TokenNo);
+                                    csrOBJ.put("CREATEDBY","R"+prefManager.getUserCode());
+                                    csrOBJ.put("RELIANCEFRANCH","");
+                                    csrOBJ.put("RELIANCEFLAG","N");
+                                    csrOBJ.put("MULTIPLEQUANTITY",MultipleProduct);
+                                    csrOBJ.put("TOKENCREATED",currentDate);
+                                    csrOBJ.put("INSTALLATIONBY","");
+                                    csrOBJ.put("IDUSERIAL","");
+                                    csrOBJ.put("ODUSERIAL","");
+                                    csrOBJ.put("WIFI",WiFiDeviceStatus);
+                                    csrOBJ.put("FILECREATED",currentDate);
+                                    sendCSRData(csrOBJ,TokenNo);
+                                }
+                                JSONObject obj = responseData.optJSONObject(0);
+                                product = obj.optString("CategoryShortName");
+                                String Ref_Status = obj.optString("Ref_Status");
+                                if (Ref_Status.equalsIgnoreCase("N")){
+                                    getTicketNumber();
+                                }else {
+                                    setRefArray();
                                 }
 
-                                getTicketNumber();
+
+                            }else {
+                                successAlert(sucessText);
                             }
-
-
-
 
 
                         } catch (JSONException e) {
@@ -2455,6 +2726,205 @@ public class SalesManageActivity extends AppCompatActivity {
 
     }
 
+    private void sendCSRData(JSONObject jsonObject, final String token) {
+
+
+        String credentials = "Genius" + ":" + "genius@345&";
+        String auth = "Basic "
+                + Base64.encodeToString(credentials.getBytes(),
+                Base64.NO_WRAP);
+
+        final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.post("https://ifbapi.ifbsupport.com/api/CSRDATA")
+
+                .addJSONObjectBody(jsonObject)
+                .addHeaders("Authorization", auth)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+
+
+                        String Message=response.optString("Message");
+                        Toast.makeText(SalesManageActivity.this,Message,Toast.LENGTH_LONG).show();
+                        postTokenStatus(token,Message);
+
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        onBackPressed();
+                        Toast.makeText(SalesManageActivity.this,"Wrong",Toast.LENGTH_LONG).show();
+
+                    }
+                });
+
+
+
+    }
+
+    private void postTokenStatus(String token,String status) {
+
+
+        final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.upload(AppController.APIURL+"api/post_CRMTokenPushedStatus")
+
+                .addMultipartParameter("TokenNo",token)
+                .addMultipartParameter("Remarks",status)
+                .addMultipartParameter("SecurityCode",prefManager.getSecurityCode())
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+
+                        successAlert(sucessText);
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        onBackPressed();
+                        Toast.makeText(SalesManageActivity.this,"Wrong",Toast.LENGTH_LONG).show();
+
+                    }
+                });
+
+
+
+    }
+
+
+    private void setRefArray() {
+
+        String dop= AppController.changeAnyDateFormat(salesDate,"dd-MMM-yyyy","yyyy-MM-dd");
+
+        ArrayList<String> tokenList = new ArrayList<>();
+        ArrayList<String>serialList=new ArrayList<>();
+        ArrayList<String>shortNameList=new ArrayList<>();
+
+        JSONObject innerObj = new JSONObject();
+        refArray = new JSONArray();
+
+
+        //token
+
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getToken();
+            if (rcnList.get(i).getToken() != null) {
+                tokenList.add(customername);
+            }
+
+        }
+
+
+
+
+        //serial
+
+
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getSerNumber();
+            if (rcnList.get(i).getToken() != null) {
+                serialList.add(customername);
+            }
+
+        }
+
+
+
+        //shortname
+
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getShortName();
+            if (rcnList.get(i).getToken() != null) {
+                shortNameList.add(customername);
+            }
+
+        }
+
+        for (int j = 0; j <shortNameList.size(); j++) {
+            try {
+                innerObj.put("serial", rcnList.get(j).getSerNumber());
+                innerObj.put("token", rcnList.get(j).getToken());
+                innerObj.put("prod_category", shortNameList.get(j));
+                innerObj.put("Method", "I");
+                innerObj.put("csrid", prefManager.getUserCode());
+                innerObj.put("mobile", etMobNumber.getText().toString());
+                innerObj.put("model", modelId);
+                innerObj.put("dealer_code", prefManager.getUserCode());
+                innerObj.put("DOP", dop);
+                innerObj.put("Customer_name", etFirstName.getText().toString()+" "+etLastName.getText().toString());
+                innerObj.put("Customer_address",delivaryAddress);
+                innerObj.put("customer_pincode", etPinCode.getText().toString());
+                refArray.put(innerObj);
+                innerObj=new JSONObject();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+
+        final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.post("https://api.ifbanalytics.com/v1/CRM/ref_cust")
+
+                .addJSONArrayBody(refArray)
+                .addHeaders("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoid2hhdHNhcHAiLCJleHAiOjE3MDkzODMwNzZ9.FijFDU49U8yRgxrRac6cboLI8xTKf6mjmjU03QsUuoc")
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+
+                        getTicketNumber();
+
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        getTicketNumber();
+                        // getInformationFromToken();
+                    }
+                });
+
+
+
+    }
+
     private void getTicketNumber() {
 
         final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
@@ -2464,16 +2934,17 @@ public class SalesManageActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("rcn", etMobNumber.getText().toString());
-            jsonObject.put("altno", etMobNumber.getText().toString());
             jsonObject.put("modelcode", modelId);
+            jsonObject.put("MatGrp", product);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        AndroidNetworking.post("https://crm.ifbsupport.com/technician/api/v.1/csr/search/ticket")
+        AndroidNetworking.post("https://crmapi.ifbsupport.com/api/v.1/csr/search/ticket")
 
                 .addJSONObjectBody(jsonObject)
-                .addHeaders("Authorization","Bearer Q1NSVVNFUjpjc3JVc2Vy")
+                .addHeaders("Authorization", "Bearer Q1NSVVNFUjpjc3JVc2Vy")
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -2481,7 +2952,6 @@ public class SalesManageActivity extends AppCompatActivity {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-
 
 
                         JSONObject job1 = response;
@@ -2492,30 +2962,30 @@ public class SalesManageActivity extends AppCompatActivity {
                         if (status.equalsIgnoreCase("200")) {
 
                             pd.dismiss();
-                            JSONArray TicketDetails=job1.optJSONArray("TicketDetails");
-                            for (int i=0;i<TicketDetails.length();i++){
-                                JSONObject obj=TicketDetails.optJSONObject(i);
-                                String Ticketno=obj.optString("Ticketno");
-                                String dealername=obj.optString("dealername");
-                                String DealerPhone=obj.optString("DealerPhone");
-                                String CustomerCode=obj.optString("CustomerCode");
-                                String CustomerName=obj.optString("CustomerName");
-                                String Address=obj.optString("Address");
-                                String Pincode=obj.optString("Pincode");
-                                String CustomerMobile=obj.optString("CustomerMobile");
-                                String CustomerEmail=obj.optString("CustomerEmail");
-                                String DOP=obj.optString("DOP");
-                                String ProductDOI=obj.optString("ProductDOI");
-                                String TicketStatusCode=obj.optString("TicketStatusCode");
-                                String CancelledReason=obj.optString("CancelledReason");
-                                String CancelledReasonDescription=obj.optString("CancelledReasonDescription");
-                                String BranchCode=obj.optString("BranchCode");
-                                String BranchName=obj.optString("BranchName");
-                                String TicketCallType=obj.optString("TicketCallType");
-                                String CallBookDate=obj.optString("CallBookDate");
-                                String CallClosedDateValue=obj.optString("CallClosedDateValue");
-                                String FGCode=obj.optString("FGCode");
-                                RcnModel rcnModel=new RcnModel();
+                            JSONArray TicketDetails = job1.optJSONArray("TicketDetails");
+                            for (int i = 0; i < TicketDetails.length(); i++) {
+                                JSONObject obj = TicketDetails.optJSONObject(i);
+                                String Ticketno = obj.optString("Ticketno");
+                                String dealername = obj.optString("dealername");
+                                String DealerPhone = obj.optString("DealerPhone");
+                                String CustomerCode = obj.optString("CustomerCode");
+                                String CustomerName = obj.optString("CustomerName");
+                                String Address = obj.optString("Address");
+                                String Pincode = obj.optString("Pincode");
+                                String CustomerMobile = obj.optString("CustomerMobile");
+                                String CustomerEmail = obj.optString("CustomerEmail");
+                                String DOP = obj.optString("DOP");
+                                String ProductDOI = obj.optString("ProductDOI");
+                                String TicketStatusCode = obj.optString("TicketStatusCode");
+                                String CancelledReason = obj.optString("CancelledReason");
+                                String CancelledReasonDescription = obj.optString("CancelledReasonDescription");
+                                String BranchCode = obj.optString("BranchCode");
+                                String BranchName = obj.optString("BranchName");
+                                String TicketCallType = obj.optString("TicketCallType");
+                                String CallBookDate = obj.optString("CallBookDate");
+                                String CallClosedDateValue = obj.optString("CallClosedDateValue");
+                                String FGCode = obj.optString("FGCode");
+                                RcnModel rcnModel = new RcnModel();
                                 rcnModel.setTicket(Ticketno);
                                 rcnModel.setDelearName(dealername);
                                 rcnModel.setDelearPhone(DealerPhone);
@@ -2541,14 +3011,11 @@ public class SalesManageActivity extends AppCompatActivity {
                             setRcnArray();
 
 
-
-
-
-
-
-
                         } else {
                             pd.dismiss();
+                            Intent intent = new Intent(SalesManageActivity.this, ConsolidateSalesReportActivity.class);
+                            startActivity(intent);
+                            finish();
 
 
                         }
@@ -2563,161 +3030,156 @@ public class SalesManageActivity extends AppCompatActivity {
                     @Override
                     public void onError(ANError error) {
                         pd.dismiss();
-                        Intent intent=new Intent(SalesManageActivity.this,ConsolidateSalesReportActivity.class);
+                        Intent intent = new Intent(SalesManageActivity.this, ConsolidateSalesReportActivity.class);
                         startActivity(intent);
                         finish();
                     }
                 });
     }
 
-    private void setRcnArray(){
-        ArrayList<String>delaernameList=new ArrayList<>();
-        ArrayList<String>tokenList=new ArrayList<>();
-        ArrayList<String>ticketList=new ArrayList<>();
-        ArrayList<String>refList=new ArrayList<>();
-        ArrayList<String>dealerPhnList=new ArrayList<>();
-        ArrayList<String>customerCodeList=new ArrayList<>();
-        ArrayList<String>customerNameList=new ArrayList<>();
-        ArrayList<String>addressList=new ArrayList<>();
-        ArrayList<String>pincodeList=new ArrayList<>();
-        ArrayList<String>cusMobList=new ArrayList<>();
-        ArrayList<String>cusEmailList=new ArrayList<>();
-        ArrayList<String>modelcodeList=new ArrayList<>();
-        ArrayList<String>dopList=new ArrayList<>();
-        ArrayList<String>doiList=new ArrayList<>();
-        ArrayList<String>calltypeList=new ArrayList<>();
-        ArrayList<String>statuscodeList=new ArrayList<>();
-        ArrayList<String>cancelledListList=new ArrayList<>();
-        ArrayList<String>cancelledDescListList=new ArrayList<>();
-        ArrayList<String>branchList=new ArrayList<>();
-        ArrayList<String>branchNameList=new ArrayList<>();
-        ArrayList<String>callBookList=new ArrayList<>();
-        ArrayList<String>callclosedList=new ArrayList<>();
+    private void setRcnArray() {
+        ArrayList<String> delaernameList = new ArrayList<>();
+        ArrayList<String> tokenList = new ArrayList<>();
+        ArrayList<String> ticketList = new ArrayList<>();
+        ArrayList<String> refList = new ArrayList<>();
+        ArrayList<String> dealerPhnList = new ArrayList<>();
+        ArrayList<String> customerCodeList = new ArrayList<>();
+        ArrayList<String> customerNameList = new ArrayList<>();
+        ArrayList<String> addressList = new ArrayList<>();
+        ArrayList<String> pincodeList = new ArrayList<>();
+        ArrayList<String> cusMobList = new ArrayList<>();
+        ArrayList<String> cusEmailList = new ArrayList<>();
+        ArrayList<String> modelcodeList = new ArrayList<>();
+        ArrayList<String> dopList = new ArrayList<>();
+        ArrayList<String> doiList = new ArrayList<>();
+        ArrayList<String> calltypeList = new ArrayList<>();
+        ArrayList<String> statuscodeList = new ArrayList<>();
+        ArrayList<String> cancelledListList = new ArrayList<>();
+        ArrayList<String> cancelledDescListList = new ArrayList<>();
+        ArrayList<String> branchList = new ArrayList<>();
+        ArrayList<String> branchNameList = new ArrayList<>();
+        ArrayList<String> callBookList = new ArrayList<>();
+        ArrayList<String> callclosedList = new ArrayList<>();
 
 
         outerObject = new JSONObject();
-        JSONObject innerObj=new JSONObject();
+        JSONObject innerObj = new JSONObject();
         jsonArray = new JSONArray();
 
 
         //token
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getToken();
-            if (rcnList.get(i).getToken()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getToken();
+            if (rcnList.get(i).getToken() != null) {
                 tokenList.add(customername);
             }
 
         }
 
-        for (int j=tokenList.size()-1;j>=0;j--){
+        for (int j = tokenList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("TokenNo",tokenList.get(j));
+                innerObj.put("TokenNo", tokenList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
 
 
         }
 
 
         //ref
-        for (int i=0;i<rcnList.size();i++){
+        for (int i = 0; i < rcnList.size(); i++) {
 
             refList.add(token);
 
 
         }
 
-        for (int j=0;j<refList.size();j++){
+        for (int j = 0; j < refList.size(); j++) {
             try {
-                innerObj.put("ReferenceNo",refList.get(j));
+                innerObj.put("ReferenceNo", refList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
 
 
         }
 
         //Dealername
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getDelearName();
-            if (rcnList.get(i).getDelearName()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getDelearName();
+            if (rcnList.get(i).getDelearName() != null) {
                 delaernameList.add(customername);
             }
 
         }
-        for (int j=delaernameList.size()-1;j>=0;j--){
+        for (int j = delaernameList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("DealerName",delaernameList.get(j));
+                innerObj.put("DealerName", delaernameList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
 
 
         }
 
 
         //ticketNumber
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getTicket();
-            if (rcnList.get(i).getTicket()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getTicket();
+            if (rcnList.get(i).getTicket() != null) {
                 ticketList.add(customername);
             }
 
         }
 
-        for (int j=ticketList.size()-1;j>=0;j--){
+        for (int j = ticketList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("TicketNumber",ticketList.get(j));
+                innerObj.put("TicketNumber", ticketList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
 
 
         }
         //dealerPhn
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getDelearPhone();
-            if (rcnList.get(i).getDelearPhone()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getDelearPhone();
+            if (rcnList.get(i).getDelearPhone() != null) {
                 dealerPhnList.add(customername);
             }
 
         }
 
-        for (int j=dealerPhnList.size()-1;j>=0;j--){
+        for (int j = dealerPhnList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("DealerPhone",dealerPhnList.get(j));
+                innerObj.put("DealerPhone", dealerPhnList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
 
-
         }
         //CustomerCode
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCustomerCode();
-            if (rcnList.get(i).getCustomerCode()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCustomerCode();
+            if (rcnList.get(i).getCustomerCode() != null) {
                 customerCodeList.add(customername);
             }
 
         }
 
-        for (int j=customerCodeList.size()-1;j>=0;j--){
+        for (int j = customerCodeList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CustomerCode",customerCodeList.get(j));
+                innerObj.put("CustomerCode", customerCodeList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2726,17 +3188,17 @@ public class SalesManageActivity extends AppCompatActivity {
 
 
         //customername
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCustomerName();
-            if (rcnList.get(i).getCustomerName()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCustomerName();
+            if (rcnList.get(i).getCustomerName() != null) {
                 customerNameList.add(customername);
             }
 
         }
 
-        for (int j=customerNameList.size()-1;j>=0;j--){
+        for (int j = customerNameList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CustomerName",customerNameList.get(j));
+                innerObj.put("CustomerName", customerNameList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2744,17 +3206,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //address
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getAddress();
-            if (rcnList.get(i).getAddress()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getAddress();
+            if (rcnList.get(i).getAddress() != null) {
                 addressList.add(customername);
             }
 
         }
 
-        for (int j=addressList.size()-1;j>=0;j--){
+        for (int j = addressList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CustomerAddress",addressList.get(j));
+                innerObj.put("CustomerAddress", addressList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2762,17 +3224,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //Pincode
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getPincode();
-            if (rcnList.get(i).getPincode()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getPincode();
+            if (rcnList.get(i).getPincode() != null) {
                 pincodeList.add(customername);
             }
 
         }
 
-        for (int j=pincodeList.size()-1;j>=0;j--){
+        for (int j = pincodeList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("Pincode",pincodeList.get(j));
+                innerObj.put("Pincode", pincodeList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2781,17 +3243,17 @@ public class SalesManageActivity extends AppCompatActivity {
 
         //CustomerMobile
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCustomerMobile();
-            if (rcnList.get(i).getCustomerMobile()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCustomerMobile();
+            if (rcnList.get(i).getCustomerMobile() != null) {
                 cusMobList.add(customername);
             }
 
         }
 
-        for (int j=cusMobList.size()-1;j>=0;j--){
+        for (int j = cusMobList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CustomerMobile",cusMobList.get(j));
+                innerObj.put("CustomerMobile", cusMobList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2799,17 +3261,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //CustomerEmail
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCustomerEmail();
-            if (rcnList.get(i).getCustomerEmail()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCustomerEmail();
+            if (rcnList.get(i).getCustomerEmail() != null) {
                 cusEmailList.add(customername);
             }
 
         }
 
-        for (int j=cusEmailList.size()-1;j>=0;j--){
+        for (int j = cusEmailList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CustomerEmail",cusEmailList.get(j));
+                innerObj.put("CustomerEmail", cusEmailList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2817,17 +3279,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //ModelCode
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getModelcode();
-            if (rcnList.get(i).getModelcode()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getModelcode();
+            if (rcnList.get(i).getModelcode() != null) {
                 modelcodeList.add(customername);
             }
 
         }
 
-        for (int j=modelcodeList.size()-1;j>=0;j--){
+        for (int j = modelcodeList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("ModelCode",modelcodeList.get(j));
+                innerObj.put("ModelCode", modelcodeList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2835,17 +3297,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
 
         //DOP
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getDop();
-            if (rcnList.get(i).getDop()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getDop();
+            if (rcnList.get(i).getDop() != null) {
                 dopList.add(customername);
             }
 
         }
 
-        for (int j=dopList.size()-1;j>=0;j--){
+        for (int j = dopList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("DOP",dopList.get(j));
+                innerObj.put("DOP", dopList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2853,17 +3315,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //DOI
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getDoi();
-            if (rcnList.get(i).getDoi()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getDoi();
+            if (rcnList.get(i).getDoi() != null) {
                 doiList.add(customername);
             }
 
         }
 
-        for (int j=doiList.size()-1;j>=0;j--){
+        for (int j = doiList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("DOI",doiList.get(j));
+                innerObj.put("DOI", doiList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2871,17 +3333,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //CallType
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCallType();
-            if (rcnList.get(i).getCallType()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCallType();
+            if (rcnList.get(i).getCallType() != null) {
                 calltypeList.add(customername);
             }
 
         }
 
-        for (int j=calltypeList.size()-1;j>=0;j--){
+        for (int j = calltypeList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CallType",calltypeList.get(j));
+                innerObj.put("CallType", calltypeList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2889,34 +3351,34 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //StatusCode
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getStatusCode();
-            if (rcnList.get(i).getStatusCode()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getStatusCode();
+            if (rcnList.get(i).getStatusCode() != null) {
                 statuscodeList.add(customername);
             }
 
         }
 
-        for (int j=statuscodeList.size()-1;j>=0;j--){
+        for (int j = statuscodeList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("StatusCode",statuscodeList.get(j));
+                innerObj.put("StatusCode", statuscodeList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         //CancelledReason
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCancelledReason();
-            if (rcnList.get(i).getCancelledReason()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCancelledReason();
+            if (rcnList.get(i).getCancelledReason() != null) {
                 cancelledListList.add(customername);
             }
 
         }
 
-        for (int j=cancelledListList.size()-1;j>=0;j--){
+        for (int j = cancelledListList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CancelledReason",cancelledListList.get(j));
+                innerObj.put("CancelledReason", cancelledListList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2924,17 +3386,17 @@ public class SalesManageActivity extends AppCompatActivity {
         }
         //CancelledReasonDescription
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCancelledReasonDescription();
-            if (rcnList.get(i).getCancelledReasonDescription()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCancelledReasonDescription();
+            if (rcnList.get(i).getCancelledReasonDescription() != null) {
                 cancelledDescListList.add(customername);
             }
 
         }
 
-        for (int j=cancelledDescListList.size()-1;j>=0;j--){
+        for (int j = cancelledDescListList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CancelledReasonDescription",cancelledDescListList.get(j));
+                innerObj.put("CancelledReasonDescription", cancelledDescListList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2943,17 +3405,17 @@ public class SalesManageActivity extends AppCompatActivity {
 
         //Branch
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getBranch();
-            if (rcnList.get(i).getBranch()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getBranch();
+            if (rcnList.get(i).getBranch() != null) {
                 branchList.add(customername);
             }
 
         }
 
-        for (int j=branchList.size()-1;j>=0;j--){
+        for (int j = branchList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("Branch",branchList.get(j));
+                innerObj.put("Branch", branchList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2962,17 +3424,17 @@ public class SalesManageActivity extends AppCompatActivity {
 
         //BranchName
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getBranchName();
-            if (rcnList.get(i).getBranchName()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getBranchName();
+            if (rcnList.get(i).getBranchName() != null) {
                 branchNameList.add(customername);
             }
 
         }
 
-        for (int j=branchNameList.size()-1;j>=0;j--){
+        for (int j = branchNameList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("BranchName",branchNameList.get(j));
+                innerObj.put("BranchName", branchNameList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2981,17 +3443,17 @@ public class SalesManageActivity extends AppCompatActivity {
 
         //CallBookDate
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCallBookDate();
-            if (rcnList.get(i).getCallBookDate()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCallBookDate();
+            if (rcnList.get(i).getCallBookDate() != null) {
                 callBookList.add(customername);
             }
 
         }
 
-        for (int j=callBookList.size()-1;j>=0;j--){
+        for (int j = callBookList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CallBookDate",callBookList.get(j));
+                innerObj.put("CallBookDate", callBookList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -3000,17 +3462,17 @@ public class SalesManageActivity extends AppCompatActivity {
 
         //CallClosedDate
 
-        for (int i=0;i<rcnList.size();i++){
-            String customername=rcnList.get(i).getCallClosedDate();
-            if (rcnList.get(i).getCallClosedDate()!=null) {
+        for (int i = 0; i < rcnList.size(); i++) {
+            String customername = rcnList.get(i).getCallClosedDate();
+            if (rcnList.get(i).getCallClosedDate() != null) {
                 callclosedList.add(customername);
             }
 
         }
 
-        for (int j=callclosedList.size()-1;j>=0;j--){
+        for (int j = callclosedList.size() - 1; j >= 0; j--) {
             try {
-                innerObj.put("CallClosedDate",callclosedList.get(j));
+                innerObj.put("CallClosedDate", callclosedList.get(j));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -3020,13 +3482,14 @@ public class SalesManageActivity extends AppCompatActivity {
 
         jsonArray.put(innerObj);
         try {
-            outerObject.put("CRMData",jsonArray);
+            outerObject.put("CRMData", jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         postTicketNo(outerObject.toString());
     }
+
     private void postTicketNo(String CRMData) {
 
         final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
@@ -3035,7 +3498,7 @@ public class SalesManageActivity extends AppCompatActivity {
         pd.show();
 
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_CRMDummyReferenceTicket_V1")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_CRMDummyReferenceTicket_V1")
                 .addMultipartParameter("CRMData", CRMData)
                 .addMultipartParameter("UserID", prefManager.getUserId())
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
@@ -3054,14 +3517,13 @@ public class SalesManageActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
 
 
-
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         String responseText = job1.optString("responseText");
                         Log.d("responseText", responseText);
-                        boolean responseStatus=job1.optBoolean("responseStatus");
+                        boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
-                            Intent intent=new Intent(SalesManageActivity.this,ConsolidateSalesReportActivity.class);
+                            Intent intent = new Intent(SalesManageActivity.this, ConsolidateSalesReportActivity.class);
                             startActivity(intent);
                             finish();
                             pd.dismiss();
@@ -3087,5 +3549,428 @@ public class SalesManageActivity extends AppCompatActivity {
                 });
     }
 
+    private void setSalesType() {
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=SISY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("modelinput", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(true);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseModel", response);
+                        progressBar.dismiss();
+                        salestype.add("Please Select");
+                        moduleSalesType.add(new SpinnerItemModule("0", "0"));
 
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject obj = responseData.getJSONObject(i);
+                                    String value = obj.optString("value");
+                                    String id = obj.optString("id");
+                                    salestype.add(value);
+                                    SpinnerItemModule itemModule = new SpinnerItemModule(value, id);
+                                    moduleSalesType.add(itemModule);
+
+                                }
+                                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
+                                        (SalesManageActivity.this, android.R.layout.simple_spinner_item,
+                                                salestype); //selected item will look like a spinner set from XML
+                                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                spSalesType.setAdapter(spinnerArrayAdapter);
+
+
+                            } else {
+
+
+                            }
+
+                            // boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(SalesManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+
+                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.d("errort", "model");
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(SalesManageActivity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+    private void setInstallation() {
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=SITY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("modelinput", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(true);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseModel", response);
+                        progressBar.dismiss();
+                        installation.add("Please Select");
+                        moduleInstallation.add(new SpinnerItemModule("0", "0"));
+
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject obj = responseData.getJSONObject(i);
+                                    String value = obj.optString("value");
+                                    String id = obj.optString("id");
+                                    installation.add(value);
+                                    SpinnerItemModule itemModule = new SpinnerItemModule(value, id);
+                                    moduleInstallation.add(itemModule);
+
+                                }
+                                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
+                                        (SalesManageActivity.this, android.R.layout.simple_spinner_item,
+                                                installation); //selected item will look like a spinner set from XML
+                                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                spInstallation.setAdapter(spinnerArrayAdapter);
+                                if (!prefManager.getSubDealerType().equals("") ){
+                                    int index=installation.indexOf(prefManager.getSubDealerType());
+                                    spInstallation.setSelection(index);
+                                    spInstallation.setEnabled(false);
+                                }else {
+
+                                }
+
+
+                            } else {
+
+
+                            }
+
+                            // boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(SalesManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+
+                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.d("errort", "model");
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(SalesManageActivity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+    private void setDP(String modelID) {
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=MDPR&ID=" + modelID + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("modelinput", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(true);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseModel", response);
+                        progressBar.dismiss();
+
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                //Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                                JSONArray responseData = job1.optJSONArray("responseData");
+
+                                JSONObject obj = responseData.getJSONObject(0);
+
+                                String MRP = obj.optString("MRP");
+                                tvDP.setText(MRP);
+                                lnDP.setVisibility(View.VISIBLE);
+
+
+                            } else {
+
+
+                            }
+
+                            // boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(SalesManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+
+                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.d("errort", "model");
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(SalesManageActivity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+
+    private void checkSerialNumberForIDU(final String serialNumber) {
+
+        final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("SerialNumber", serialNumber.replaceAll(",", ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        AndroidNetworking.post("https://crm.ifbsupport.com/technician/api/csr/serialNumberFinder")
+
+                .addJSONObjectBody(jsonObject)
+                .addHeaders("Authorization", "Bearer Q1NSVVNFUjpjc3JVc2Vy")
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        boolean status = job1.optBoolean("status");
+                        pd.dismiss();
+                        serialNumberList.clear();
+
+                        if (status) {
+
+                            JSONArray product = response.optJSONArray("product");
+                            JSONObject productOBJ = product.optJSONObject(0);
+                            String ModelCode = productOBJ.optString("ModelCode");
+                            String MatlGroup = productOBJ.optString("MatlGroup");
+
+
+                            if (MatlGroup.equalsIgnoreCase("IDU") || MatlGroup.equalsIgnoreCase("AC")) {
+
+
+                                postSale(serialNumber, odunumber);
+
+                            } else {
+
+                                Toast.makeText(SalesManageActivity.this, "Please enter correct IDU Number", Toast.LENGTH_LONG).show();
+
+
+                            }
+
+
+                        } else {
+                            Toast.makeText(SalesManageActivity.this, "Please enter correct Serial Number.", Toast.LENGTH_LONG).show();
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        serialNumberList.clear();
+                        Toast.makeText(SalesManageActivity.this, "Please enter correct Serial Number.", Toast.LENGTH_LONG).show();
+
+                        // getInformationFromToken();
+                    }
+                });
+    }
+
+
+    private void checkSerialNumberForIDUForImage(final String serialNumber) {
+
+        final ProgressDialog pd = new ProgressDialog(SalesManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("SerialNumber", serialNumber.replaceAll(",", ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        AndroidNetworking.post("https://crm.ifbsupport.com/technician/api/csr/serialNumberFinder")
+
+                .addJSONObjectBody(jsonObject)
+                .addHeaders("Authorization", "Bearer Q1NSVVNFUjpjc3JVc2Vy")
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        boolean status = job1.optBoolean("status");
+                        pd.dismiss();
+
+                        if (status) {
+
+                            JSONArray product = response.optJSONArray("product");
+                            JSONObject productOBJ = product.optJSONObject(0);
+                            String ModelCode = productOBJ.optString("ModelCode");
+                            String MatlGroup = productOBJ.optString("MatlGroup");
+
+
+                            if (MatlGroup.equalsIgnoreCase("IDU") || MatlGroup.equalsIgnoreCase("AC")) {
+
+
+                                postSaleWithImage(serialNumber, odunumber);
+
+                            } else {
+
+                                Toast.makeText(SalesManageActivity.this, "Please enter correct IDU Number", Toast.LENGTH_LONG).show();
+
+
+                            }
+
+
+                        } else {
+                            Toast.makeText(SalesManageActivity.this, "Please enter correct Serial Number.", Toast.LENGTH_LONG).show();
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        Toast.makeText(SalesManageActivity.this, "Please enter correct Serial Number.", Toast.LENGTH_LONG).show();
+
+                        // getInformationFromToken();
+                    }
+                });
+    }
+
+    private void instalationChecking() {
+        if (categoryId.equals("IFBPC1000001")) {
+            if (!installationBY.equals("")) {
+                if (schemeFlag == 1) {
+                    if (!schemeId.equals("0")) {
+                        if (!salesType.equals("")) {
+                            if (etQuantity.getText().toString().equals("2") || etQuantity.getText().toString().equals("3") || etQuantity.getText().toString().equals("4") || etQuantity.getText().toString().equals("5")) {
+
+
+                                quatityalert();
+                            } else {
+                                emailcheck1();
+                            }
+                        } else {
+                            Toast.makeText(SalesManageActivity.this, "Please Select Sales Type", Toast.LENGTH_LONG).show();
+
+                        }
+                    } else {
+                        Toast.makeText(SalesManageActivity.this, "Please Select Financial Scheme", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    if (etQuantity.getText().toString().equals("2") || etQuantity.getText().toString().equals("3") || etQuantity.getText().toString().equals("4") || etQuantity.getText().toString().equals("5")) {
+
+
+                        quatityalert();
+                    } else {
+                        emailcheck1();
+                    }
+                }
+            } else {
+                 Toast.makeText(SalesManageActivity.this,"Please Select Installation By",Toast.LENGTH_LONG).show();
+            }
+
+        } else {
+            if (schemeFlag == 1) {
+                if (!schemeId.equals("0")) {
+                    if (!salesType.equals("")) {
+                        if (etQuantity.getText().toString().equals("2") || etQuantity.getText().toString().equals("3") || etQuantity.getText().toString().equals("4") || etQuantity.getText().toString().equals("5")) {
+
+
+                            quatityalert();
+                        } else {
+                            emailcheck1();
+                        }
+                    } else {
+                        Toast.makeText(SalesManageActivity.this, "Please Select Sales Type", Toast.LENGTH_LONG).show();
+
+                    }
+                } else {
+                    Toast.makeText(SalesManageActivity.this, "Please Select Financial Scheme", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                if (etQuantity.getText().toString().equals("2") || etQuantity.getText().toString().equals("3") || etQuantity.getText().toString().equals("4") || etQuantity.getText().toString().equals("5")) {
+
+
+                    quatityalert();
+                } else {
+                    emailcheck1();
+                }
+            }
+        }
+    }
 }

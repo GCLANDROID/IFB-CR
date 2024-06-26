@@ -30,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -125,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/RTLAuthenticateWithEncryption?LoginID=" + etUserID.getText().toString() + "&password=" +base64+"&IMEI=1122&SecurityCode=" + etSecurityCode.getText().toString() + "&DeviceID=1233&DeviceType="+version;
+        String surl = AppController.APIURL+"api/RTLAuthenticateWithEncryption?LoginID=" + etUserID.getText().toString() + "&password=" +base64+"&IMEI=1122&SecurityCode=" + etSecurityCode.getText().toString() + "&DeviceID=1233&DeviceType="+version;
         Log.d("inputLogin", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -202,7 +203,8 @@ public class LoginActivity extends AppCompatActivity {
                                     String SalesInvCopyImgFlag=obj.optString("SalesInvCopyImgFlag");
                                     prefManager.saveInvoiceFlag(SalesInvCopyImgFlag);
                                     prefManager.saveRemberFlag("1");
-
+                                    String SubDearlerType= AppController.getFreshValue(obj.optString("SubDearlerType"),"");
+                                    prefManager.saveSubDealerType(SubDearlerType);
 
 
 

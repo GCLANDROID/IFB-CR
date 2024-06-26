@@ -30,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.TargetAdapter;
 import com.genius.ifbretailer.model.TargetModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -129,7 +130,7 @@ public class SalesTargetActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/UserTarget?FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode()+"&LoginID="+prefManager.getUserId();
+        String surl = AppController.APIURL+"api/UserTarget?FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode()+"&LoginID="+prefManager.getUserId();
         Log.d("inputSalesTarget", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

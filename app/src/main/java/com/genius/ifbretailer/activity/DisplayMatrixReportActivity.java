@@ -31,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.DisplayMatrixReportAdapter;
 import com.genius.ifbretailer.model.DisplayMatrixReportModel;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -157,7 +158,7 @@ public class DisplayMatrixReportActivity extends AppCompatActivity {
         llNoData.setVisibility(View.GONE);
         tvMonth.setText("");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixReport?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeDisplayMatrixReport?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

@@ -36,6 +36,7 @@ import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.DeliveyDetailsAdapter;
 import com.genius.ifbretailer.model.DeliveryDetailsModel;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -156,7 +157,7 @@ public class DeliveryDetailsActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=1&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=1&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -245,7 +246,7 @@ public class DeliveryDetailsActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeSalesManage")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeSalesManage")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())

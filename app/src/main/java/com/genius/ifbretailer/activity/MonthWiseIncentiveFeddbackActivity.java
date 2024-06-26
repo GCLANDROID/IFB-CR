@@ -40,6 +40,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.CustomAdapter;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -178,7 +179,7 @@ public class MonthWiseIncentiveFeddbackActivity extends AppCompatActivity {
        progressDialog.setMessage("Loading..");
        progressDialog.setCancelable(false);
        progressDialog.show();
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeIncFeedbackRTL?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeIncFeedbackRTL?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -454,7 +455,7 @@ public class MonthWiseIncentiveFeddbackActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeIncFeedbackRTL")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeIncFeedbackRTL")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("MobileNo", etMob.getText().toString())
                 .addMultipartParameter("R_Status", rstatus)
@@ -546,7 +547,7 @@ public class MonthWiseIncentiveFeddbackActivity extends AppCompatActivity {
         pd.show();
         pd.setCancelable(false);
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=900&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=900&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,

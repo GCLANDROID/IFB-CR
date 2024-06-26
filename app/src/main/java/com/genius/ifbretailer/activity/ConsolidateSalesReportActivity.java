@@ -30,6 +30,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.databinding.ActivityConsolidateSalesReportBinding;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -113,7 +114,7 @@ public class ConsolidateSalesReportActivity extends AppCompatActivity {
 
 
     public void getReport() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=3&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputCheck", surl);
         final ProgressDialog progressDialog=new ProgressDialog(ConsolidateSalesReportActivity.this);
         progressDialog.setMessage("Loading..");

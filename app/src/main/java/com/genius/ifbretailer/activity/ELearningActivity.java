@@ -24,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.ELearningAdapter;
 import com.genius.ifbretailer.model.ELearningModel;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -74,7 +75,7 @@ public class ELearningActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_E_LearningVideo?SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_E_LearningVideo?SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

@@ -43,6 +43,7 @@ public class ECatelougeAdapter extends RecyclerView.Adapter<ECatelougeAdapter.My
                 Intent intent=new Intent(context, ESubCatActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("catId",itemList.get(i).getCatId());
+                intent.putExtra("ECatalogID",itemList.get(i).getECatalogID());
                 context.startActivity(intent);
             }
         });

@@ -31,6 +31,7 @@ import com.genius.ifbretailer.adapter.SalesReportAdapter;
 import com.genius.ifbretailer.adapter.SalesReportDwnldAdapter;
 import com.genius.ifbretailer.model.DownloadModel;
 import com.genius.ifbretailer.model.SalesModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -127,7 +128,7 @@ public class SalesReportDownldActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDummyActualSalesReport?UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month=0&Operation=2&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeDummyActualSalesReport?UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month=0&Operation=2&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

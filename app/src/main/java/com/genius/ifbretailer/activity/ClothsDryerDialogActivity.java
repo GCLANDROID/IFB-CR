@@ -1,10 +1,8 @@
 package com.genius.ifbretailer.activity;
 
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -22,6 +20,7 @@ import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.ClothsDialogItemAdapter;
 import com.genius.ifbretailer.adapter.ClothsDialogItemForDataAdapter;
 import com.genius.ifbretailer.model.DialogItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -30,7 +29,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-
 
 
 public class ClothsDryerDialogActivity extends AppCompatActivity {
@@ -47,14 +45,14 @@ public class ClothsDryerDialogActivity extends AppCompatActivity {
     String previousmonthStatus,preMonth;
     RecyclerView rvGetItem;
     LinearLayout llEdit;
+    String itemId;
+    ArrayList<String>previousitem=new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_air_conditioner_dialog);
-        this.setFinishOnTouchOutside(false);
         initialize();
 
 
@@ -162,11 +160,11 @@ public class ClothsDryerDialogActivity extends AppCompatActivity {
 
     }
 
-    private void getDialogItemList(String month, String financialYear) {
+    private void getDialogItemList(String month,String financialYear) {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
+        String surl = AppController.APIURL+"api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -203,9 +201,15 @@ public class ClothsDryerDialogActivity extends AppCompatActivity {
 
                                 }
 
+                                for (int j=0;j<itemListForData.size();j++){
+                                    previousitem.add("IFBPC1000005-"+itemListForData.get(j).getItemId());
+                                }
+
                                 if (itemListForData.size()>0){
                                     rvItem.setVisibility(View.GONE);
                                     rvGetItem.setVisibility(View.VISIBLE);
+                                    itemId=previousitem.toString().replace("[", "").replace("]", "").replaceAll("\\s+", "");
+
                                 }else {
                                     rvItem.setVisibility(View.VISIBLE);
                                     rvGetItem.setVisibility(View.GONE);
@@ -269,7 +273,7 @@ public class ClothsDryerDialogActivity extends AppCompatActivity {
         if (itemList.get(position).isSelected() == true) {
             item.add("IFBPC1000005"+"-"+itemList.get(position).getItemId());
             int size=item.size();
-            prefManager.saveClothsIfbSize(size);
+
         } else {
             item.clear();
         }
@@ -278,7 +282,7 @@ public class ClothsDryerDialogActivity extends AppCompatActivity {
         Log.d("arpan", item.toString());
         String i = item.toString();
         String d = i.replace("[", "").replace("]", "");
-        String itemId = d.replaceAll("\\s+", "");
+        itemId = d.replaceAll("\\s+", "");
         Log.d("dryerId", itemId);
         prefManager.saveClothsDryerId(itemId);
 
@@ -293,8 +297,9 @@ public class ClothsDryerDialogActivity extends AppCompatActivity {
                 finish();
 
                 item.clear();
-                prefManager.saveClothsIfbSize(0);
-                prefManager.saveClothsDryerId("");
+                AppController.clothsdryedid="0";
+                AppController.ifbclotsdryersize=0;
+
             }
         });
 
@@ -303,9 +308,17 @@ public class ClothsDryerDialogActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if (item.size()>0){
-
+                    AppController.clothsdryedid=itemId;
+                    AppController.ifbclotsdryersize=item.size();
                 }else {
-                    prefManager.saveClothsIfbSize(itemListForData.size());
+                    if (itemListForData.size()>0){
+                        AppController.clothsdryedid=itemId;
+                        AppController.ifbclotsdryersize=itemListForData.size();
+                    }else {
+                        AppController.clothsdryedid="0";
+                        AppController.ifbclotsdryersize=0;
+                    }
+
                 }
 
                 finish();

@@ -1,10 +1,8 @@
 package com.genius.ifbretailer.activity;
 
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -22,6 +20,7 @@ import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.AirConditionerDialogItemAdapter;
 import com.genius.ifbretailer.adapter.AirConditionerDialogItemForDataAdapter;
 import com.genius.ifbretailer.model.DialogItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -51,16 +50,14 @@ public class AirConditionerDialogActivity extends AppCompatActivity {
     String previousmonthStatus;
     RecyclerView rvGetItem;
     LinearLayout llEdit;
-
+    ArrayList<String>previousitem=new ArrayList<>();
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_air_conditioner_dialog);
-        this.setFinishOnTouchOutside(false);
         initialize();
 
 
@@ -88,8 +85,8 @@ public class AirConditionerDialogActivity extends AppCompatActivity {
         llSave = (LinearLayout) findViewById(R.id.llSave);
         llAgain = (LinearLayout) findViewById(R.id.llAgain);
         categoryId="IFBPC1000001";
-        sendAcModel=getIntent().getExtras().getStringArrayList("sendAcModel");
-        Log.d("sendAcModel",sendAcModel.toString());
+
+
 
         int y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
@@ -175,11 +172,11 @@ public class AirConditionerDialogActivity extends AppCompatActivity {
 
     }
 
-    private void getDialogItemList(String month, String financialYear) {
+    private void getDialogItemList(String month,String financialYear) {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryId+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
+        String surl = AppController.APIURL+"api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryId+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -213,12 +210,16 @@ public class AirConditionerDialogActivity extends AppCompatActivity {
 
 
                                 }
-                                int size=itemListForData.size();
-                                Log.d("size", String.valueOf(size));
+
+                                for (int j=0;j<itemListForData.size();j++){
+                                    previousitem.add("IFBPC1000001-"+itemListForData.get(j).getItemId());
+                                }
+
 
                                 if (itemListForData.size()>0){
                                     rvItem.setVisibility(View.GONE);
                                     rvGetItem.setVisibility(View.VISIBLE);
+                                    itemId=previousitem.toString().replace("[", "").replace("]", "").replaceAll("\\s+", "");
                                 }else {
                                     rvItem.setVisibility(View.VISIBLE);
                                     rvGetItem.setVisibility(View.GONE);
@@ -305,8 +306,8 @@ public class AirConditionerDialogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 item.clear();
-                prefManager.saveAirIfbSize(0);
-                prefManager.saveAirConditionerId("");
+                AppController.ifbac=0;
+                AppController.acid="0";
             }
         });
 
@@ -314,9 +315,18 @@ public class AirConditionerDialogActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (item.size()>0){
-
+                    AppController.ifbac=item.size();
+                    AppController.acid=itemId;
                 }else {
-                    prefManager.saveAirIfbSize(itemListForData.size());
+                    if (itemListForData.size()>0){
+                        AppController.ifbac=itemListForData.size();
+                        AppController.acid=itemId;
+                    }else {
+                        AppController.ifbac=0;
+                        AppController.acid="0";
+                    }
+
+
                 }
 
                 finish();

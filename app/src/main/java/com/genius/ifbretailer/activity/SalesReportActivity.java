@@ -30,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.SalesReportAdapter;
 import com.genius.ifbretailer.model.SalesModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -91,7 +92,7 @@ public class SalesReportActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&Operation=2&SubOperation=" + subOperation + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&Operation=2&SubOperation=" + subOperation + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -129,8 +130,9 @@ public class SalesReportActivity extends AppCompatActivity {
                                     String FranchiseMobile=obj.optString("FranchiseMobile");
                                     String FranchiseEmail=obj.optString("FranchiseEmail");
                                     String CSD_Sales=obj.optString("CSD_Sales");
-
+                                    String Cust_Conf_Stats=obj.optString("Cust_Conf_Stats");
                                     SalesModule obj2 = new SalesModule(_SalesDate,TicketNo,TokenNo,ModelName,CategoryName,CustomerName,CustomerPhNo,CustomerEmail,Status,Remarks,InvoiceFileNameURL,SerialNo,FranchiseName,FranchiseMobile,FranchiseEmail);
+                                    obj2.setCust_Conf_Stats(Cust_Conf_Stats);
                                     obj2.setCsdSale(CSD_Sales);
                                     itemList.add(obj2);
 

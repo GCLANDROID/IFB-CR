@@ -644,6 +644,57 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/color5"></LinearLayout>
+//
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:padding="5dp"
+            android:background="@color/color6"
+            >
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/forwardicon"
+                android:layout_gravity="center"/>
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@android:color/black"
+                android:layout_marginLeft="10dp"
+                android:textStyle="bold"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:text="Customer Conf. Status"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/color5"></LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:padding="5dp"
+            android:background="@color/color5"
+            >
+
+            <TextView
+                android:id="@+id/tvCustomerConfStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@android:color/black"
+                android:layout_marginLeft="11dp"
+                android:textSize="10sp"
+                android:text="assigned"
+                android:textAllCaps="true"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/color5"></LinearLayout>
 
 
 

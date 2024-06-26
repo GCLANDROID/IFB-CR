@@ -137,6 +137,126 @@
                     android:layout_marginRight="20dp"
                     android:background="@android:color/black"></LinearLayout>
 
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/black"></LinearLayout>
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/lnDP"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:text="MRP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvMRP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@color/color2"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_marginTop="2dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@android:color/black"></LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:text="Dealer Price (DP)"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvDP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@color/color2"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:layout_marginTop="2dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@android:color/black"></LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/lnWIFI"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:text="With WIFI Sales"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/spWIFI"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="5dp"></Spinner>
+
+                    <LinearLayout
+                        android:layout_marginTop="2dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@android:color/black"></LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/lnPedestal"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:text="With Pedestal Sales"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/spPedestal"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="5dp"></Spinner>
+
+                    <LinearLayout
+                        android:layout_marginTop="2dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@android:color/black"></LinearLayout>
+                </LinearLayout>
                 <TextView
                     android:id="@+id/tvTitle"
                     android:layout_width="wrap_content"
@@ -152,12 +272,6 @@
                     android:layout_height="30dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="20dp"></Spinner>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@android:color/black"></LinearLayout>
 
                 <TextView
                     android:id="@+id/tvFname"
@@ -243,6 +357,7 @@
                     android:background="@android:color/black"></LinearLayout>
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/tvAltMob"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -252,6 +367,7 @@
                     android:textStyle="bold" />
 
                 <EditText
+                    android:visibility="gone"
                     android:id="@+id/etPhnNumber"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -266,12 +382,14 @@
                     android:textColor="@android:color/black" />
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginRight="20dp"
                     android:background="@android:color/black"></LinearLayout>
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -727,8 +845,72 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginTop="2dp"></LinearLayout>
-                </LinearLayout>
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/llODU"
+                        android:layout_marginTop="5dp"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        >
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_weight="1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="AC ODU Number"
+                                android:textAppearance="?android:textAppearanceSmall"
+                                android:textColor="@android:color/black"
+                                android:textStyle="bold" />
+                            <ImageView
+                                android:visibility="gone"
+                                android:id="@+id/imgODUScanner"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                ></ImageView>
+                        </LinearLayout>
 
+                        <LinearLayout
+                            android:id="@+id/llODUSerialNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="2dp"></LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/lnInstallation"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvInstallation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/spInstallation"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="5dp"></Spinner>
+
+                    <LinearLayout
+                        android:layout_marginTop="2dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@android:color/black"></LinearLayout>
+                </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -789,7 +971,7 @@
                             android:layout_height="10dp"
                             android:background="@drawable/ovaldesign2"
                             android:orientation="vertical"
-                            android:visibility="gone"></LinearLayout>
+                            android:visibility="visible"></LinearLayout>
                     </LinearLayout>
 
                     <TextView
@@ -830,7 +1012,7 @@
                             android:layout_height="10dp"
                             android:background="@drawable/ovaldesign2"
                             android:orientation="vertical"
-                            android:visibility="gone"></LinearLayout>
+                            android:visibility="visible"></LinearLayout>
                     </LinearLayout>
 
                     <TextView
@@ -880,7 +1062,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <TextView
                         android:id="@+id/tvScheme"
@@ -893,6 +1075,38 @@
 
                     <Spinner
                         android:id="@+id/spScheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="20dp"></Spinner>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@android:color/black"></LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/llSalesType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/tvSalesType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/spSalesType"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:layout_marginTop="5dp"

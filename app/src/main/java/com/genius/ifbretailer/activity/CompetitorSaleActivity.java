@@ -40,6 +40,7 @@ import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.CompetitorSaleAdapter;
 import com.genius.ifbretailer.model.CompetiorSaleModel;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -68,7 +69,7 @@ public class CompetitorSaleActivity extends AppCompatActivity {
     String branchId = "0";
     String securitycode;
     String compItem = "";
-    private static final String SERVER_PATH = "http://111.93.182.173/IFBiOSApi/api/";
+    private static final String SERVER_PATH = AppController.APIURL+"api/";
     ProgressDialog progressDialog;
     String aemId;
     TextView tvSave;
@@ -283,7 +284,7 @@ public class CompetitorSaleActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_CompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_CompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -487,7 +488,7 @@ public class CompetitorSaleActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_CompitetorSales")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_CompitetorSales")
                 .addMultipartParameter("ZoneID", zoneId)
                 .addMultipartParameter("BranchID", branchId)
                 .addMultipartParameter("AEMEmployeeID", aemId)
@@ -601,7 +602,7 @@ public class CompetitorSaleActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_CompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_CompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

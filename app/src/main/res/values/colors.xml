@@ -8,4 +8,7 @@
     <color name="color1">#FE757473</color>
     <color name="color2">#FEC80A0A</color>
     <color name="color3">#FE003FF8</color>
+    <color name="light_Gray">#E7E4E4</color>
+    <color name="light_Gray_1">#F59898</color>
+    <color name="colorGray">#757474</color>
 </resources>

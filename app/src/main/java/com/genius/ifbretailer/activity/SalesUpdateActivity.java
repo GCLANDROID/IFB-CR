@@ -57,6 +57,7 @@ import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.model.ModelSpinnerModel;
 import com.genius.ifbretailer.model.SpinnerItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 import com.genius.ifbretailer.utility.ValidUtils;
 
@@ -157,7 +158,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     LinearLayout llImage;
     Uri uri;
     ImageView imgPic;
-    private static final String SERVER_PATH = "http://111.93.182.173/IFBiOSApi/api/";
+    private static final String SERVER_PATH = AppController.APIURL+"api/";
 
     ProgressDialog progressDialog;
     int imageTypeFlag;
@@ -1062,7 +1063,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     private void getDetails() {
         Log.d("hitr", "1");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeSalesRefDetails?ReferenceNo=" + refNo + "&UserID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + monthname + "&Operation=1&SubOperation=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeSalesRefDetails?ReferenceNo=" + refNo + "&UserID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + monthname + "&Operation=1&SubOperation=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -1160,7 +1161,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     private void setCategory() {
         Log.d("hitr", "1");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -1239,7 +1240,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     }
 
     private void setModel(String categoryId) {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=18&ID=" + categoryId + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=18&ID=" + categoryId + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1321,7 +1322,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
 
     private void setTitle() {
         Log.d("hitr", "2");
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -1534,7 +1535,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
 
     private void setScheme() {
         Log.d("hitr", "5");
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=35&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=35&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -1611,7 +1612,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
 
     private void setState() {
         Log.d("hitr", "3");
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=2&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=2&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("stateinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -1688,7 +1689,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     private void setCity() {
         Log.d("hitr", "4");
         tvCityName.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=14&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=14&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -1769,7 +1770,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     }
 
     private void setSalesEntry() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/post_SalesEntry?TransNo=0&AEMEmployeeID=" + prefManager.getUserId() + "&_SalesDate=" + salesDate + "&FinancialYear=" + financialYear + "&Month=" + monthname + "&CategoryID=" + categoryId + "&Quantity=" + quantity + "&xmldata=0&UserID=" + prefManager.getUserId() + "&BranchID=" + prefManager.getBranchId() + "&ModelID=" + modelId + "&CustomerName=" + customerName.replaceAll("\\s+", "-") + "&CustomerPhNo=" + etMobNumber.getText().toString() + "&CustomerPinCode=" + etPinCode.getText().toString() + "&CustomerEmail=" + etEmailId.getText().toString() + "&InvoiceNo=" + etInvoiceNumber.getText().toString() + "&FinanceScheme=" + schemeId + "&DeliveryAddress=" + etHouse.getText().toString() + "-" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&FirstName=" + etFirstName.getText().toString().replaceAll("\\s+", "-") + "&LastName=" + etLastName.getText().toString().replaceAll("\\s+", "-") + "&CustomerAlternateNumber=" + altmob + "&HouseNo=" + etHouse.getText().toString().replaceAll("\\s+", "-") + "&StreetName=" + etStreetName.getText().toString().replaceAll("\\s+", "-") + "&Landmark=" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&Title=" + titleId + "&StateID=" + stateId + "&City=" + tvCityName.getText().toString().replaceAll("\\s+", "-") + "&InvoiceValue=" + etInvoiceValue.getText().toString() + "&Remarks=" + remarks + "&UnderExchange=" + underExchange + "&SalesEntryFlag=-1&Area=" + areaName + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/post_SalesEntry?TransNo=0&AEMEmployeeID=" + prefManager.getUserId() + "&_SalesDate=" + salesDate + "&FinancialYear=" + financialYear + "&Month=" + monthname + "&CategoryID=" + categoryId + "&Quantity=" + quantity + "&xmldata=0&UserID=" + prefManager.getUserId() + "&BranchID=" + prefManager.getBranchId() + "&ModelID=" + modelId + "&CustomerName=" + customerName.replaceAll("\\s+", "-") + "&CustomerPhNo=" + etMobNumber.getText().toString() + "&CustomerPinCode=" + etPinCode.getText().toString() + "&CustomerEmail=" + etEmailId.getText().toString() + "&InvoiceNo=" + etInvoiceNumber.getText().toString() + "&FinanceScheme=" + schemeId + "&DeliveryAddress=" + etHouse.getText().toString() + "-" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&FirstName=" + etFirstName.getText().toString().replaceAll("\\s+", "-") + "&LastName=" + etLastName.getText().toString().replaceAll("\\s+", "-") + "&CustomerAlternateNumber=" + altmob + "&HouseNo=" + etHouse.getText().toString().replaceAll("\\s+", "-") + "&StreetName=" + etStreetName.getText().toString().replaceAll("\\s+", "-") + "&Landmark=" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&Title=" + titleId + "&StateID=" + stateId + "&City=" + tvCityName.getText().toString().replaceAll("\\s+", "-") + "&InvoiceValue=" + etInvoiceValue.getText().toString() + "&Remarks=" + remarks + "&UnderExchange=" + underExchange + "&SalesEntryFlag=-1&Area=" + areaName + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("salesentry", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1914,7 +1915,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
 
 
     private void emailcheck1() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CheckInvalidEmailID?EmailID=" + etEmailId.getText().toString();
+        String surl = AppController.APIURL+"api/CheckInvalidEmailID?EmailID=" + etEmailId.getText().toString();
         Log.d("emailcheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1966,7 +1967,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     }
 
     private void mobNumbercheck() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CheckInvalidMobileNo?MobileNo=" + etMobNumber.getText().toString();
+        String surl = AppController.APIURL+"api/CheckInvalidMobileNo?MobileNo=" + etMobNumber.getText().toString();
         Log.d("phnnumbercheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -2019,7 +2020,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
     }
 
     private void altNumbercheck() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CheckInvalidMobileNo?MobileNo=" + etPhnNumber.getText().toString();
+        String surl = AppController.APIURL+"api/CheckInvalidMobileNo?MobileNo=" + etPhnNumber.getText().toString();
         Log.d("phnnumbercheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -2267,7 +2268,7 @@ public class SalesUpdateActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeSalesManage")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeSalesManage")
                 .addMultipartParameter("TransNo", transNo)
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", userId)

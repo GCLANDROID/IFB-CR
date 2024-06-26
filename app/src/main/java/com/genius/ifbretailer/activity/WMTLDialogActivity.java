@@ -1,10 +1,8 @@
 package com.genius.ifbretailer.activity;
 
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -22,6 +20,7 @@ import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.WMTLDialogItemAdapter;
 import com.genius.ifbretailer.adapter.WMTLDialogItemForDataAdapter;
 import com.genius.ifbretailer.model.DialogItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -30,7 +29,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-
 
 
 public class WMTLDialogActivity extends AppCompatActivity {
@@ -49,14 +47,14 @@ public class WMTLDialogActivity extends AppCompatActivity {
     RecyclerView rvGetItem;
     LinearLayout llEdit;
     String preMonth;
+    ArrayList<String>previousitem=new ArrayList<>();
+    String itemId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_air_conditioner_dialog);
-        this.setFinishOnTouchOutside(false);
         initialize();
 
         onClick();
@@ -144,13 +142,13 @@ public class WMTLDialogActivity extends AppCompatActivity {
             }
             getDialogItemList(preMonth,finalcialchecking);
         }else {
-            if (preMonth.equals("January")) {
+            if (month.equals("January")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("February")) {
+            } else if (month.equals("February")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("March")) {
+            } else if (month.equals("March")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
             } else {
@@ -164,11 +162,11 @@ public class WMTLDialogActivity extends AppCompatActivity {
 
     }
 
-    private void getDialogItemList(String month, String financialYear) {
+    private void getDialogItemList(String month,String financialYear) {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
+        String surl = AppController.APIURL+"api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -206,9 +204,15 @@ public class WMTLDialogActivity extends AppCompatActivity {
 
                                 }
 
+                                for (int j=0;j<itemListForData.size();j++){
+                                    previousitem.add(categoryID+"-"+itemListForData.get(j).getItemId());
+                                }
+
                                 if (itemListForData.size()>0){
                                     rvItem.setVisibility(View.GONE);
                                     rvGetItem.setVisibility(View.VISIBLE);
+                                    itemId = previousitem.toString().replace("[", "").replace("]", "").replaceAll("\\s+", "");
+
                                 }else {
                                     rvItem.setVisibility(View.VISIBLE);
                                     rvGetItem.setVisibility(View.GONE);
@@ -281,9 +285,7 @@ public class WMTLDialogActivity extends AppCompatActivity {
         Log.d("arpan", item.toString());
         String i = item.toString();
         String d = i.replace("[", "").replace("]", "");
-        String wmtlId = d.replaceAll("\\s+", "");
-        Log.d("wmtlId", wmtlId);
-        prefManager.saveWashingTLId(wmtlId);
+        itemId= d.replaceAll("\\s+", "");
 
 
         itemAdapter.notifyDataSetChanged();
@@ -302,8 +304,8 @@ public class WMTLDialogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 item.clear();
-                prefManager.saveWMTLIFBSize(0);
-                prefManager.saveWashingTLId("");
+                AppController.ifbtlsize=0;
+                AppController.tlid="0";
             }
         });
 
@@ -312,10 +314,18 @@ public class WMTLDialogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (item.size()>0){
 
-                }else {
-                    prefManager.saveWMTLIFBSize(itemListForData.size());
-                }
+                    AppController.ifbtlsize=item.size();
+                    AppController.tlid=itemId;
 
+                }else {
+                    if (itemListForData.size()>0){
+                        AppController.ifbtlsize=itemListForData.size();
+                        AppController.tlid=itemId;
+                    }else {
+                        AppController.ifbtlsize=0;
+                        AppController.tlid="0";
+                    }
+                }
                 finish();
             }
         });

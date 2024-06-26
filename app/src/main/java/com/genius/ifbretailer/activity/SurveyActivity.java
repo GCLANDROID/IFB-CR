@@ -40,6 +40,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.model.SpinnerItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -166,7 +167,7 @@ public class SurveyActivity extends AppCompatActivity {
     private void setSubmitChecking() {
         Log.d("hitr", "1");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeCRQuestionRTL?EmployeeID="+prefManager.getUserId()+"&Operation=1&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeCRQuestionRTL?EmployeeID="+prefManager.getUserId()+"&Operation=1&SecurityCode="+prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         scMain.setVisibility(View.GONE);
@@ -228,7 +229,7 @@ public class SurveyActivity extends AppCompatActivity {
     private void setCompanyList() {
         Log.d("hitr", "1");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=8002&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=RTL";
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=8002&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=RTL";
         Log.d("ctegoryinput", surl);
         final ProgressDialog progressDialog = new ProgressDialog(SurveyActivity.this);
         progressDialog.setMessage("Loading.");
@@ -558,7 +559,7 @@ public class SurveyActivity extends AppCompatActivity {
         pd.show();
 
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeCRQuestionRTL")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeCRQuestionRTL")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("Q1CID", brandName)
                 .addMultipartParameter("Q1Flag", acYes)

@@ -3,6 +3,7 @@ package com.genius.ifbretailer.model;
 public class RcnModel {
     String token,ticket,delearName,delearPhone,customerCode,customerName,address,pincode,customerMobile,customerEmail,modelcode,dop,doi,callType;
     String statusCode,cancelledReason,CancelledReasonDescription,Branch,BranchName,CallBookDate,CallClosedDate;
+    String serNumber,shortName;
 
     public String getToken() {
         return token;
@@ -170,5 +171,21 @@ public class RcnModel {
 
     public void setCallClosedDate(String callClosedDate) {
         CallClosedDate = callClosedDate;
+    }
+
+    public String getSerNumber() {
+        return serNumber;
+    }
+
+    public void setSerNumber(String serNumber) {
+        this.serNumber = serNumber;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 }

@@ -1,10 +1,8 @@
 package com.genius.ifbretailer.activity;
 
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -22,6 +20,7 @@ import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.DishWasherDialogItemAdapter;
 import com.genius.ifbretailer.adapter.DishWasherDialogItemForDataAdapter;
 import com.genius.ifbretailer.model.DialogItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -40,23 +39,22 @@ public class DishwasherDialogActivity extends AppCompatActivity {
     LinearLayout llCancel;
     LinearLayout llMain,llLoader,llAgain,llSave;
     PrefManager prefManager;
-    ArrayList<String> item=new ArrayList<>();
+    ArrayList<String>item=new ArrayList<>();
+    ArrayList<String>previousitem=new ArrayList<>();
 
     String categoryID="IFBPC1000007";
     String year,month,finalcialchecking;
     String previousmonthStatus,preMonth;
     LinearLayout llEdit;
     ArrayList<DialogItemModule> itemListForData = new ArrayList<>();
-
+   String itemId;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_air_conditioner_dialog);
-        this.setFinishOnTouchOutside(false);
         initialize();
 
 
@@ -147,13 +145,13 @@ public class DishwasherDialogActivity extends AppCompatActivity {
 
             getDialogItemList(preMonth,finalcialchecking);
         }else {
-            if (preMonth.equals("January")) {
+            if (month.equals("January")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("February")) {
+            } else if (month.equals("February")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("March")) {
+            } else if (month.equals("March")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
             } else {
@@ -167,11 +165,11 @@ public class DishwasherDialogActivity extends AppCompatActivity {
 
     }
 
-    private void getDialogItemList(String month, String financialYear){
+    private void getDialogItemList(String month,String financialYear){
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
+        String surl = AppController.APIURL+"api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -205,11 +203,18 @@ public class DishwasherDialogActivity extends AppCompatActivity {
                                     }
 
 
+
+
+                                }
+                                for (int j=0;j<itemListForData.size();j++){
+                                    previousitem.add("IFBPC1000007-"+itemListForData.get(j).getItemId());
                                 }
 
                                 if (itemListForData.size()>0){
                                     rvItem.setVisibility(View.GONE);
                                     rvGetItem.setVisibility(View.VISIBLE);
+                                    itemId = previousitem.toString().replace("[", "").replace("]", "").replaceAll("\\s+", "");
+
                                 }else {
                                     rvItem.setVisibility(View.VISIBLE);
                                     rvGetItem.setVisibility(View.GONE);
@@ -261,13 +266,13 @@ public class DishwasherDialogActivity extends AppCompatActivity {
     }
 
     private void setAdapter(){
-        itemAdapter=new DishWasherDialogItemAdapter(itemList, DishwasherDialogActivity.this);
+        itemAdapter=new DishWasherDialogItemAdapter(itemList,DishwasherDialogActivity.this);
         rvItem.setAdapter(itemAdapter);
 
         setAdapterForData();
     }
     private void setAdapterForData(){
-        DishWasherDialogItemForDataAdapter itemAdapter=new DishWasherDialogItemForDataAdapter(itemListForData, DishwasherDialogActivity.this);
+        DishWasherDialogItemForDataAdapter itemAdapter=new DishWasherDialogItemForDataAdapter(itemListForData,DishwasherDialogActivity.this);
         rvGetItem.setAdapter(itemAdapter);
     }
 
@@ -285,9 +290,9 @@ public class DishwasherDialogActivity extends AppCompatActivity {
         Log.d("arpan", item.toString());
         String i = item.toString();
         String d = i.replace("[", "").replace("]", "");
-        String disId = d.replaceAll("\\s+", "");
-        Log.d("disId", disId);
-        prefManager.saveDishWasherId(disId);
+        itemId = d.replaceAll("\\s+", "");
+
+
 
 
         itemAdapter.notifyDataSetChanged();
@@ -316,11 +321,16 @@ public class DishwasherDialogActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (item.size()>0){
-
-                }else
-                {
-                    prefManager.saveDishIfbSize(itemListForData.size());
-
+                    AppController.ifbdishsize=item.size();
+                    AppController.dishid=itemId;
+                }else {
+                    if (itemListForData.size()>0){
+                        AppController.ifbdishsize=itemListForData.size();
+                        AppController.dishid=itemId;
+                    }else {
+                        AppController.ifbdishsize=0;
+                        AppController.dishid="0";
+                    }
                 }
 
                 finish();

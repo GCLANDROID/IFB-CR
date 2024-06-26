@@ -27,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
+import com.genius.ifbretailer.utility.AppController;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,7 +61,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     public void postFunction() {
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/forgotPassword?UserID=" + etUserId.getText().toString() + "&SecurityCode=" + etSecurityCode.getText().toString() ;
+        String surl = AppController.APIURL+"api/forgotPassword?UserID=" + etUserId.getText().toString() + "&SecurityCode=" + etSecurityCode.getText().toString() ;
         Log.d("inputLogin", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button

@@ -31,6 +31,7 @@ import com.genius.ifbretailer.adapter.IncentiveAdapter;
 import com.genius.ifbretailer.adapter.SalesReportAdapter;
 import com.genius.ifbretailer.model.IncentiveModel;
 import com.genius.ifbretailer.model.SalesModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -131,7 +132,7 @@ public class IncentiveActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_UserTargetIncetiveRTL?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_UserTargetIncetiveRTL?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

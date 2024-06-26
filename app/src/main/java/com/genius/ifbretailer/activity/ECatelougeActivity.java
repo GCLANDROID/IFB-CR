@@ -32,6 +32,7 @@ import com.genius.ifbretailer.adapter.SalesReportAdapter;
 import com.genius.ifbretailer.model.ECatelogModel;
 import com.genius.ifbretailer.model.EcatelougeModel;
 import com.genius.ifbretailer.model.SalesModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -85,7 +86,7 @@ public class ECatelougeActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_ProductCatalog?ECatalogID="+catId+"&CategoryId=0&Operation=2";
+        String surl = AppController.APIURL+"api/get_ProductCatalog?ECatalogID="+catId+"&CategoryId=0&Operation=2";
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -109,8 +110,10 @@ public class ECatelougeActivity extends AppCompatActivity {
                                     JSONObject obj = responseData.getJSONObject(i);
                                     String CategoryID=obj.optString("CategoryID");
                                     String CategoryName=obj.optString("CategoryName");
+                                    String ECatalogID=obj.optString("ECatalogID");
 
                                     ECatelogModel obj2 = new ECatelogModel(CategoryID,CategoryName);
+                                    obj2.setECatalogID(ECatalogID);
                                      itemList.add(obj2);
 
 

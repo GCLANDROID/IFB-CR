@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".activity.DisplayMatrixActivity"></activity>
+        <activity android:name=".activity.RefregeratorDialogActivity"></activity>
+        <activity android:name=".activity.QuizWebActivity"
+            android:screenOrientation="userPortrait"></activity>
         <activity
             android:name=".activity.TrainingActivity"
             android:exported="false" />
@@ -26,8 +30,8 @@
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".activity.MonthWiseIncentiveFeddbackActivity"
-            android:screenOrientation="userPortrait"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+            android:theme="@style/Theme.AppCompat.Dialog"
+            />
         <activity
             android:name=".activity.ESubCatActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />
@@ -75,6 +79,10 @@
         <activity
             android:name=".activity.MicroOvenDialogActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />
+
+        <activity
+            android:name=".activity.RefregeratorFFDialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
         <activity
             android:name=".activity.KADialogActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />
@@ -109,12 +117,14 @@
             android:name=".activity.ELearningActivity"
             android:screenOrientation="userPortrait" />
 
-        <service android:name=".FCM.MyFirebaseInstanceIDService">
+        <service android:name=".FCM.MyFirebaseInstanceIDService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".FCM.MyFirebaseMessagingService">
+        <service android:name=".FCM.MyFirebaseMessagingService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

@@ -41,6 +41,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.model.SpinnerItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -189,7 +190,7 @@ public class IQueryManageActivity extends AppCompatActivity {
     private void setProductList() {
         Log.d("hitr", "1");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=45&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=45&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         scMain.setVisibility(View.GONE);
@@ -266,7 +267,7 @@ public class IQueryManageActivity extends AppCompatActivity {
     private void setTotalIQuery() {
         Log.d("hitr", "1");
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeiQuery?UserID="+prefManager.getUserId()+"&FinancialYear="+finalcialchecking+"&Month="+month+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_EmployeeiQuery?UserID="+prefManager.getUserId()+"&FinancialYear="+finalcialchecking+"&Month="+month+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         scMain.setVisibility(View.GONE);
@@ -333,7 +334,7 @@ public class IQueryManageActivity extends AppCompatActivity {
 
     private void setCategoryList() {
         Log.d("hitr", "2");
-        String surl = "http://111.93.182.173/IFBiOSApi/api/CommonDDL?ModuleNo=44&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=44&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         scMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -525,7 +526,7 @@ public class IQueryManageActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeiQuery")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeiQuery")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("QueryDate", date)
                 .addMultipartParameter("CategoryID", productId)

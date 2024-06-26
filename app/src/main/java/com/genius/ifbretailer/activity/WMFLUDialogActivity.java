@@ -1,10 +1,8 @@
 package com.genius.ifbretailer.activity;
 
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -22,6 +20,7 @@ import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.WMFLUDialogItemAdapter;
 import com.genius.ifbretailer.adapter.WMFLUDialogItemForDataAdapter;
 import com.genius.ifbretailer.model.DialogItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 
+
 public class WMFLUDialogActivity extends AppCompatActivity {
     ArrayList<DialogItemModule> itemList=new ArrayList<>();
     RecyclerView rvItem;
@@ -39,7 +39,7 @@ public class WMFLUDialogActivity extends AppCompatActivity {
     LinearLayout llCancel;
     LinearLayout llMain,llLoader,llAgain,llSave;
     PrefManager prefManager;
-    ArrayList<String> item=new ArrayList<>();
+    ArrayList<String>item=new ArrayList<>();
     String wmfluId="";
     String year,month,finalcialchecking;
     String categoryID="IFBPC1000021";
@@ -49,14 +49,13 @@ public class WMFLUDialogActivity extends AppCompatActivity {
     RecyclerView rvGetItem;
     LinearLayout llEdit;
     String preMonth;
-
+    ArrayList<String>previousitem=new ArrayList<>();
+    String itemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_air_conditioner_dialog);
-        this.setFinishOnTouchOutside(false);
         initialize();
 
         onClick();
@@ -144,13 +143,13 @@ public class WMFLUDialogActivity extends AppCompatActivity {
             }
             getDialogItemList(preMonth,finalcialchecking);
         }else {
-            if (preMonth.equals("January")) {
+            if (month.equals("January")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("February")) {
+            } else if (month.equals("February")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("March")) {
+            } else if (month.equals("March")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
             } else {
@@ -165,11 +164,11 @@ public class WMFLUDialogActivity extends AppCompatActivity {
 
     }
 
-    private void getDialogItemList(String month, String financialYear){
+    private void getDialogItemList(String month,String financialYear){
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
+        String surl = AppController.APIURL+"api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -208,9 +207,16 @@ public class WMFLUDialogActivity extends AppCompatActivity {
 
                                 }
 
+                                for (int j=0;j<itemListForData.size();j++){
+                                    previousitem.add(categoryID+"-"+itemListForData.get(j).getItemId());
+                                }
+
+
                                 if (itemListForData.size()>0){
                                     rvItem.setVisibility(View.GONE);
                                     rvGetItem.setVisibility(View.VISIBLE);
+                                    itemId = previousitem.toString().replace("[", "").replace("]", "").replaceAll("\\s+", "");
+
                                 }else {
                                     rvItem.setVisibility(View.VISIBLE);
                                     rvGetItem.setVisibility(View.GONE);
@@ -260,13 +266,13 @@ public class WMFLUDialogActivity extends AppCompatActivity {
     }
 
     private void setAdapter(){
-        itemAdapter=new WMFLUDialogItemAdapter(itemList, WMFLUDialogActivity.this);
+        itemAdapter=new WMFLUDialogItemAdapter(itemList,WMFLUDialogActivity.this);
         rvItem.setAdapter(itemAdapter);
 
         setAdapterForData();
     }
     private void setAdapterForData(){
-       WMFLUDialogItemForDataAdapter itemAdapter=new WMFLUDialogItemForDataAdapter(itemListForData, WMFLUDialogActivity.this);
+       WMFLUDialogItemForDataAdapter itemAdapter=new WMFLUDialogItemForDataAdapter(itemListForData,WMFLUDialogActivity.this);
         rvGetItem.setAdapter(itemAdapter);
     }
 
@@ -285,9 +291,9 @@ public class WMFLUDialogActivity extends AppCompatActivity {
         Log.d("arpan", item.toString());
         String i = item.toString();
         String d = i.replace("[", "").replace("]", "");
-        wmfluId = d.replaceAll("\\s+", "");
+        itemId = d.replaceAll("\\s+", "");
         Log.d("wmfluId", wmfluId);
-        prefManager.saveWashingFLUId(wmfluId);
+
 
         itemAdapter.notifyDataSetChanged();
     }
@@ -305,8 +311,8 @@ public class WMFLUDialogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 item.clear();
-                prefManager.saveWMFLUIfbSize(0);
-                prefManager.saveWashingFLUId("");
+                AppController.ifbflusize=0;
+                AppController.fluid="0";
             }
         });
 
@@ -315,11 +321,18 @@ public class WMFLUDialogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (item.size()>0){
 
+                    AppController.ifbflusize=item.size();
+                    AppController.fluid=itemId;
+
                 }else {
-                    prefManager.saveWMFLUIfbSize(itemListForData.size());
-
+                    if (itemListForData.size()>0){
+                        AppController.ifbflusize=itemListForData.size();
+                        AppController.fluid=itemId;
+                    }else {
+                        AppController.ifbflusize=0;
+                        AppController.fluid="0";
+                    }
                 }
-
                 finish();
             }
         });

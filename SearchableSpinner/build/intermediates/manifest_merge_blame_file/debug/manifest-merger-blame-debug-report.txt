@@ -6,13 +6,13 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="14"
-8-->C:\GCL Project\IFBRETAILER\IFBRETAILER\IFBRETAILER\SearchableSpinner\src\main\AndroidManifest.xml
+8-->D:\Arpan Saha_Backup\Git Project\IFB Retail\IFB Retail\IFB Retail\SearchableSpinner\src\main\AndroidManifest.xml
 9        android:targetSdkVersion="28" />
-9-->C:\GCL Project\IFBRETAILER\IFBRETAILER\IFBRETAILER\SearchableSpinner\src\main\AndroidManifest.xml
+9-->D:\Arpan Saha_Backup\Git Project\IFB Retail\IFB Retail\IFB Retail\SearchableSpinner\src\main\AndroidManifest.xml
 10
 11    <application android:allowBackup="true" >
-11-->C:\GCL Project\IFBRETAILER\IFBRETAILER\IFBRETAILER\SearchableSpinner\src\main\AndroidManifest.xml:5:5-7:19
-11-->C:\GCL Project\IFBRETAILER\IFBRETAILER\IFBRETAILER\SearchableSpinner\src\main\AndroidManifest.xml:5:18-44
+11-->D:\Arpan Saha_Backup\Git Project\IFB Retail\IFB Retail\IFB Retail\SearchableSpinner\src\main\AndroidManifest.xml:5:5-7:19
+11-->D:\Arpan Saha_Backup\Git Project\IFB Retail\IFB Retail\IFB Retail\SearchableSpinner\src\main\AndroidManifest.xml:5:18-44
 12    </application>
 13
 14</manifest>

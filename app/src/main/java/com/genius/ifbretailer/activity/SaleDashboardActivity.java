@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.genius.ifbretailer.R;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -127,7 +128,7 @@ public class SaleDashboardActivity extends AppCompatActivity {
         }
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/GCLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" +base64+"&IMEI=1122&SecurityCode=" +prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType="+version;
+        String surl = AppController.APIURL+"api/RTLAuthenticateWithEncryption?LoginID=" + prefManager.getMasterId() + "&password=" +base64+"&IMEI=1122&SecurityCode=" +prefManager.getSecurityCode() + "&DeviceID=1233&DeviceType="+version;
         Log.d("inputLogin", surl);
         final ProgressDialog progressDialog=new ProgressDialog(SaleDashboardActivity.this);
         progressDialog.setMessage("Loading..");
@@ -185,7 +186,7 @@ public class SaleDashboardActivity extends AppCompatActivity {
 
 
     private void checkBersion() {
-        String surl = "http://111.93.182.173/IFBiOSApi/api/ApkVersionChecking";
+        String surl = AppController.APIURL+"api/ApkVersionChecking";
         final ProgressDialog progressDialog=new ProgressDialog(SaleDashboardActivity.this);
         progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
@@ -252,6 +253,8 @@ public class SaleDashboardActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
 
     }
+
+
 
 
 }

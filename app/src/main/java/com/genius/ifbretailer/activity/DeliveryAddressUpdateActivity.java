@@ -28,6 +28,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONObject;
@@ -175,7 +176,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_EmployeeSalesManage")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeSalesManage")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())

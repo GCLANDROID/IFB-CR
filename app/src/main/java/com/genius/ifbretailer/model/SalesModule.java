@@ -2,7 +2,7 @@ package com.genius.ifbretailer.model;
 
 public class SalesModule {
     String date,ticketNumber,tokenNumber,modelName,productCode,customerName,customerPhn,customerEmail,status,remarks,fileUrl,serialNumber,franchiseName,franchisePhn,franchiseEmail;
-    String csdSale;
+    String csdSale,Cust_Conf_Stats;
     public SalesModule(String date, String ticketNumber, String tokenNumber, String modelName, String productCode, String customerName, String customerPhn, String customerEmail, String status, String remarks, String fileUrl, String serialNumber, String franchiseName, String franchisePhn, String franchiseEmail) {
         this.date = date;
         this.ticketNumber = ticketNumber;
@@ -147,5 +147,13 @@ public class SalesModule {
 
     public void setCsdSale(String csdSale) {
         this.csdSale = csdSale;
+    }
+
+    public String getCust_Conf_Stats() {
+        return Cust_Conf_Stats;
+    }
+
+    public void setCust_Conf_Stats(String cust_Conf_Stats) {
+        Cust_Conf_Stats = cust_Conf_Stats;
     }
 }

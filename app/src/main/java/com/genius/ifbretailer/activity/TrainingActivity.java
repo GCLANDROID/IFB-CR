@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -17,11 +19,16 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.TrainingAdapter;
 import com.genius.ifbretailer.model.TrainingModel;
+import com.genius.ifbretailer.utility.PrefManager;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class TrainingActivity extends AppCompatActivity implements View.OnClickListener {
@@ -29,6 +36,8 @@ public class TrainingActivity extends AppCompatActivity implements View.OnClickL
     ArrayList<TrainingModel> itemList=new ArrayList<>();
     String cookie,accessToken;
     ImageView imgBack,imgHome;
+    String link;
+    PrefManager prefManager;
 
 
     @Override
@@ -40,6 +49,7 @@ public class TrainingActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void initView(){
+        prefManager=new PrefManager(TrainingActivity.this);
         imgHome=(ImageView)findViewById(R.id.imgHome);
         imgBack=(ImageView)findViewById(R.id.imgBack);
         accessToken=getIntent().getStringExtra("accessToken");
@@ -68,7 +78,7 @@ public class TrainingActivity extends AppCompatActivity implements View.OnClickL
                         progressDialog.dismiss();
 
                         JSONArray modules=response.optJSONArray("modules");
-                        for (int i=3;i<modules.length();i++){
+                        for (int i=0;i<modules.length();i++){
                             JSONObject obj=modules.optJSONObject(i);
                             String module_name=obj.optString("module_name");
                             String module_image=obj.optString("module_image");
@@ -109,5 +119,65 @@ public class TrainingActivity extends AppCompatActivity implements View.OnClickL
             startActivity(intent);
             finish();
         }
+    }
+
+    public void createLink(){
+
+        JSONObject obj=new JSONObject();
+        try {
+            obj.put("access_key","a1dcac1cc6b9ba47asfafaf");
+            obj.put("client_id","100001100002357");
+            obj.put("counter_id","R"+prefManager.getUserCode());
+            obj.put("destination","");
+            obj.put("expires",0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String jsonobj=obj.toString();
+        byte[] data = new byte[0];
+        try {
+            data = jsonobj.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String base64data = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
+        Log.d("jsonobj",base64data);
+
+        String token=base64data+"XZnvWRDDnvpWGGRmWUzLZhkN2jW5XziJEWavhhCFHbkX9jAYjNFNu9MCWoaNtcJr";
+        String hashtoken=sha256String(token);
+        Log.d("hashtoken",hashtoken);
+
+        link="https://apps.bsharpcorp.com/sso_connect/"+hashtoken+"/"+base64data;
+        Log.d("ssolink",link);
+
+
+    }
+
+    public static String sha256String(String source) {
+        byte[] hash = null;
+        String hashCode = null;// w  ww  .  j  a va 2 s.c  o m
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            hash = digest.digest(source.getBytes());
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+
+        if (hash != null) {
+            StringBuilder hashBuilder = new StringBuilder();
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(hash[i]);
+                if (hex.length() == 1) {
+                    hashBuilder.append("0");
+                    hashBuilder.append(hex.charAt(hex.length() - 1));
+                } else {
+                    hashBuilder.append(hex.substring(hex.length() - 2));
+                }
+            }
+            hashCode = hashBuilder.toString();
+        }
+
+        return hashCode;
     }
 }

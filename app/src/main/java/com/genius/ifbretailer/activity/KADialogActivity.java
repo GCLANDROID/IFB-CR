@@ -1,10 +1,9 @@
 package com.genius.ifbretailer.activity;
 
-import android.os.Bundle;
 
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -22,6 +21,7 @@ import com.genius.ifbretailer.R;
 import com.genius.ifbretailer.adapter.HobsDialogItemAdapter;
 import com.genius.ifbretailer.adapter.HobsDialogItemForDataAdapter;
 import com.genius.ifbretailer.model.DialogItemModule;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -49,14 +49,14 @@ public class KADialogActivity extends AppCompatActivity {
     RecyclerView rvGetItem;
     LinearLayout llEdit;
     String preMonth;
-
+    ArrayList<String>previousitem=new ArrayList<>();
+    String itemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_air_conditioner_dialog);
-        this.setFinishOnTouchOutside(false);
+
         initialize();
 
 
@@ -144,13 +144,13 @@ public class KADialogActivity extends AppCompatActivity {
             }
             getDialogItemList(preMonth,finalcialchecking);
         }else {
-            if (preMonth.equals("January")) {
+            if (month.equals("January")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("February")) {
+            } else if (month.equals("February")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
-            } else if (preMonth.equals("March")) {
+            } else if (month.equals("March")) {
                 int futureyear = y - 1;
                 finalcialchecking = futureyear + "-" + year;
             } else {
@@ -166,11 +166,11 @@ public class KADialogActivity extends AppCompatActivity {
 
     }
 
-    private void getDialogItemList(String month, String financialYear) {
+    private void getDialogItemList(String month,String financialYear) {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
+        String surl = AppController.APIURL+"api/get_EmployeeDisplayMatrixModelList?CategoryID="+categoryID+"&SecurityCode="+prefManager.getSecurityCode()+"&FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -208,9 +208,15 @@ public class KADialogActivity extends AppCompatActivity {
 
                                 }
 
+                                for (int j=0;j<itemListForData.size();j++){
+                                    previousitem.add(categoryID+"-"+itemListForData.get(j).getItemId());
+                                }
+
                                 if (itemListForData.size()>0){
                                     rvItem.setVisibility(View.GONE);
                                     rvGetItem.setVisibility(View.VISIBLE);
+                                    itemId = previousitem.toString().replace("[", "").replace("]", "").replaceAll("\\s+", "");
+
                                 }else {
                                     rvItem.setVisibility(View.VISIBLE);
                                     rvGetItem.setVisibility(View.GONE);
@@ -283,13 +289,7 @@ public class KADialogActivity extends AppCompatActivity {
         Log.d("arpan", item.toString());
         String i = item.toString();
         String d = i.replace("[", "").replace("]", "");
-        hobID = d.replaceAll("\\s+", "");
-        Log.d("hobID", hobID);
-        prefManager.SaveKAItemId(hobID);
-        int hobsize=item.size();
-        prefManager.saveKAItemSize(hobsize);
-
-
+        itemId = d.replaceAll("\\s+", "");
         itemAdapter.notifyDataSetChanged();
     }
 
@@ -306,23 +306,32 @@ public class KADialogActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 item.clear();
-                prefManager.saveKAItemSize(0);
-                prefManager.SaveKAItemId("");
+                AppController.ifbkasize=0;
+                AppController.kaid="0";
 
             }
         });
-
         llSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (item.size()>0){
 
-                }else {
-                    prefManager.saveKAItemSize(itemListForData.size());
-                }
+                    AppController.ifbkasize=item.size();
+                    AppController.kaid=itemId;
 
+                }else {
+                    if (itemListForData.size()>0){
+                        AppController.ifbkasize=itemListForData.size();
+                        AppController.kaid=itemId;
+                    }else {
+                        AppController.ifbkasize=0;
+                        AppController.kaid="0";
+                    }
+                }
                 finish();
             }
+
         });
+
     }
 }

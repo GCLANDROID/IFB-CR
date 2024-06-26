@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -26,6 +25,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,10 +44,13 @@ import com.android.volley.toolbox.Volley;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
+import com.androidnetworking.interceptors.HttpLoggingInterceptor;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.genius.ifbretailer.R;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +65,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
+import okhttp3.OkHttpClient;
 
 
 public class DisplayMatrixDynamicActivity extends AppCompatActivity {
@@ -176,8 +179,39 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     String washerGodrej = "IFBPC1000039" + "-" + "IFBCC000006" + "#" + "0";
     String washerOnida = "IFBPC1000039" + "-" + "IFBCC000017" + "#" + "0";
     String washerOthers = "IFBPC1000039" + "-" + "IFBCC000004" + "#" + "0";
-    private static final String SERVER_PATH = "http://111.93.182.173/IFBiOSApi/api/";
 
+
+    //refregerator DC
+
+    EditText etREFRIGERATOROthers,etREFRIGERATORGodrej,etREFRIGERATORHaier,etREFRIGERATORWhirlPool,etREFRIGERATORSamsung,etREFRIGERATORLg,etREFRIGERATORIfb;
+    TextView tvREFRIGERATORAdd;
+
+    String refregeratorIfb = "IFBPC1000013" + "-" + "IFBCC000015" + "#" + "0";
+    String refregeratorLg = "IFBPC1000013" + "-" + "IFBCC000001" + "#" + "0";
+    String refregeratorSamSung = "IFBPC1000013" + "-" + "IFBCC000002" + "#" + "0";
+    String refregeratorWhirlPool = "IFBPC1000013" + "-" + "IFBCC000005" + "#" + "0";
+    String refregeratorHaier = "IFBPC1000013" + "-" + "IFBCC000021" + "#" + "0";
+    String refregeratorGodrej = "IFBPC1000013" + "-" + "IFBCC000006" + "#" + "0";
+    String refregeratorOthers = "IFBPC1000013" + "-" + "IFBCC000004" + "#" + "0";
+
+
+    //refregerator FF
+
+
+
+    EditText etREFRIGERATORFFOthers,etREFRIGERATORFFGodrej,etREFRIGERATORFFHaier,etREFRIGERATORFFWhirlPool,etREFRIGERATORFFSamsung,etREFRIGERATORFFLg,etREFRIGERATORFFIfb;
+    TextView tvREFRIGERATORFFAdd;
+
+    String refregeratorFFIfb = "IFBPC1000040" + "-" + "IFBCC000015" + "#" + "0";
+    String refregeratorFFLg = "IFBPC1000040" + "-" + "IFBCC000001" + "#" + "0";
+    String refregeratorFFSamSung = "IFBPC1000040" + "-" + "IFBCC000002" + "#" + "0";
+    String refregeratorFFWhirlPool = "IFBPC1000040" + "-" + "IFBCC000005" + "#" + "0";
+    String refregeratorFFHaier = "IFBPC1000040" + "-" + "IFBCC000021" + "#" + "0";
+    String refregeratorFFGodrej = "IFBPC1000040" + "-" + "IFBCC000006" + "#" + "0";
+    String refregeratorFFOthers = "IFBPC1000040" + "-" + "IFBCC000004" + "#" + "0";
+
+
+    private static final String SERVER_PATH = AppController.APIURL+"api/";
     ProgressDialog progressDialog;
     String salesdate;
     String msg = "";
@@ -185,7 +219,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     String formattedDate;
 
     String modelId = "";
-    String category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers+","+washerIfb + "," + washerLg + "," + washerSamSung + "," + washerWhirlPool + "," + washerPanasonic + "," + washerGodrej + "," + washerOnida + "," + washerOthers ;
+    String category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers+","+washerIfb + "," + washerLg + "," + washerSamSung + "," + washerWhirlPool + "," + washerPanasonic + "," + washerGodrej + "," + washerOnida + "," + washerOthers+","+refregeratorIfb + "," + refregeratorLg + "," + refregeratorSamSung + "," + refregeratorWhirlPool + "," + refregeratorHaier + "," + refregeratorGodrej + "," + refregeratorOthers+","+refregeratorFFIfb + "," + refregeratorFFLg + "," + refregeratorFFSamSung + "," + refregeratorFFWhirlPool + "," + refregeratorFFHaier + "," + refregeratorFFGodrej + "," + refregeratorFFOthers ;
     String model = "0";
     PrefManager prefManager;
 
@@ -199,6 +233,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     String FLUItem = "0";
     String tlItem = "0";
     String washerDyerItem="0";
+    String refItem="0";
+    String refffItem="0";
 
 
 
@@ -220,6 +256,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     ArrayList<String> wmFluModel = new ArrayList<>();
     ArrayList<String> wmTLModel = new ArrayList<>();
     ArrayList<String> dryerModel = new ArrayList<>();
+    ArrayList<String> refModel = new ArrayList<>();
+    ArrayList<String> refFFModel = new ArrayList<>();
 
     ProgressDialog pd;
     ImageView imgPic1, imgPic2, imgPic3;
@@ -234,11 +272,25 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     int pic2Flag = 0;
     int pic3Flag = 0;
     String acFlag;
-    ArrayList<String> sendACModelList=new ArrayList<>();
+    ArrayList<String>sendACModelList=new ArrayList<>();
     String previousMonthData="false";
     int y;
-    ArrayList<String> modelArray=new ArrayList<>();
+    ArrayList<String>modelArray=new ArrayList<>();
     RecyclerView rvAirModelItem;
+    private static final int ACREQUEST = 300;
+    private static final int CLOTHSDRYERREQUEST = 400;
+    private static final int DISHREQUEST = 401;
+    private static final int WASHERDRYERREQUEST = 402;
+    private static final int MICROOVENREQUEST = 403;
+    private static final int KITCHENREQUEST = 404;
+    private static final int FLUREQUEST = 405;
+    private static final int TLREQUEST = 500;
+    private static final int REFREQUEST = 900;
+    private static final int REFFFREQUEST = 901;
+    AlertDialog cameraAlert;
+    String imageFileName;
+    File pictureFile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -301,6 +353,11 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
         formattedDate = df.format(c);
 
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        // Change base URL to your upload server URL.
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading...");
@@ -310,10 +367,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
         //Air Conditioner
         etAirIFB = (EditText) findViewById(R.id.etAirIFB);
-        etAirIFB.setEnabled(false);
-        String size = String.valueOf(prefManager.getAirIfbSize());
-        Log.d("size", size);
-        etAirIFB.setText(size);
+
 
         etAirLG = (EditText) findViewById(R.id.etAirLG);
         etAirSamSung = (EditText) findViewById(R.id.etAirSamSung);
@@ -338,6 +392,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         tvKAAdd = (TextView) findViewById(R.id.tvKAAdd);
         tvFLUAdd = (TextView) findViewById(R.id.tvFLUAdd);
         tvTLAdd = (TextView) findViewById(R.id.tvTLAdd);
+        tvREFRIGERATORAdd = (TextView) findViewById(R.id.tvREFRIGERATORAdd);
+        tvREFRIGERATORFFAdd = (TextView) findViewById(R.id.tvREFRIGERATORFFAdd);
 
 
         airIfb = "IFBPC1000001" + "-" + "IFBCC000015" + "#" + prefManager.getAirIfbSize();
@@ -440,6 +496,27 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         etWasherDisherGodrej = (EditText) findViewById(R.id.etWasherDisherGodrej);
         etWasherDisherOnida = (EditText) findViewById(R.id.etWasherDisherOnida);
         etWasherDisherOthers = (EditText) findViewById(R.id.etWasherDisherOthers);
+
+        //Refregerator DC
+
+        etREFRIGERATORIfb = (EditText) findViewById(R.id.etREFRIGERATORIfb);
+        etREFRIGERATORLg = (EditText) findViewById(R.id.etREFRIGERATORLg);
+        etREFRIGERATORSamsung = (EditText) findViewById(R.id.etREFRIGERATORSamsung);
+        etREFRIGERATORWhirlPool = (EditText) findViewById(R.id.etREFRIGERATORWhirlPool);
+        etREFRIGERATORHaier = (EditText) findViewById(R.id.etREFRIGERATORHaier);
+        etREFRIGERATORGodrej = (EditText) findViewById(R.id.etREFRIGERATORGodrej);
+        etREFRIGERATOROthers = (EditText) findViewById(R.id.etREFRIGERATOROthers);
+
+
+        //REF FF
+
+        etREFRIGERATORFFIfb = (EditText) findViewById(R.id.etREFRIGERATORFFIfb);
+        etREFRIGERATORFFLg = (EditText) findViewById(R.id.etREFRIGERATORFFLg);
+        etREFRIGERATORFFSamsung = (EditText) findViewById(R.id.etREFRIGERATORFFSamsung);
+        etREFRIGERATORFFWhirlPool = (EditText) findViewById(R.id.etREFRIGERATORFFWhirlPool);
+        etREFRIGERATORFFHaier = (EditText) findViewById(R.id.etREFRIGERATORFFHaier);
+        etREFRIGERATORFFGodrej = (EditText) findViewById(R.id.etREFRIGERATORFFGodrej);
+        etREFRIGERATORFFOthers = (EditText) findViewById(R.id.etREFRIGERATORFFOthers);
 
         if (!prefManager.getAirConditionerId().equals("")) {
             airItem = prefManager.getAirConditionerId();
@@ -612,9 +689,29 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, AirConditionerDialogActivity.class);
-                intent.putStringArrayListExtra("sendAcModel",sendACModelList);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,ACREQUEST);
+
+
+            }
+        });
+        tvREFRIGERATORAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DisplayMatrixDynamicActivity.this, RefregeratorDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
+                startActivityForResult(intent,REFREQUEST);
+
+
+            }
+        });
+
+        tvREFRIGERATORFFAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DisplayMatrixDynamicActivity.this, RefregeratorFFDialogActivity.class);
+                intent.putExtra("previousmonthStatus",previousMonthData);
+                startActivityForResult(intent,REFFFREQUEST);
 
 
             }
@@ -625,7 +722,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, ClothsDryerDialogActivity.class);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,CLOTHSDRYERREQUEST);
 
             }
         });
@@ -634,7 +731,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, WasherDryerDialogActivity.class);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,WASHERDRYERREQUEST);
 
             }
         });
@@ -643,7 +740,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, DishwasherDialogActivity.class);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,DISHREQUEST);
             }
         });
         tvMicroAdd.setOnClickListener(new View.OnClickListener() {
@@ -651,7 +748,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, MicroOvenDialogActivity.class);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,MICROOVENREQUEST);
             }
         });
 
@@ -660,7 +757,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, KADialogActivity.class);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,KITCHENREQUEST);
             }
         });
 
@@ -669,7 +766,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, WMFLUDialogActivity.class);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,FLUREQUEST);
             }
         });
 
@@ -678,7 +775,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayMatrixDynamicActivity.this, WMTLDialogActivity.class);
                 intent.putExtra("previousmonthStatus",previousMonthData);
-                startActivity(intent);
+                startActivityForResult(intent,TLREQUEST);
             }
         });
 
@@ -2068,6 +2165,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         kaIfb = "IFBPC1000035" + "-" + "IFBCC000015" + "#" + etKAIfb.getText().toString();
         FLUIfb = "IFBPC1000021" + "-" + "IFBCC000015" + "#" +etFLUIfb.getText().toString();
         TLIfb = "IFBPC1000025" + "-" + "IFBCC000015" + "#" + etTLIfb.getText().toString();
+        refregeratorIfb = "IFBPC1000013" + "-" + "IFBCC000015" + "#" + etREFRIGERATORIfb.getText().toString();
+        refregeratorFFIfb = "IFBPC1000040" + "-" + "IFBCC000015" + "#" + etREFRIGERATORFFIfb.getText().toString();
 
 
 
@@ -2080,68 +2179,34 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         washerOnida = "IFBPC1000039" + "-" + "IFBCC000017" + "#" + etWasherDisherOnida.getText().toString();
         washerOthers = "IFBPC1000039" + "-" + "IFBCC000004" + "#" + etWasherDisherOthers.getText().toString();
 
-        if (!prefManager.getAirConditionerId().equals("")) {
-            airItem = prefManager.getAirConditionerId();
-
-        } else {
-            airItem = "0";
-
-        }
-
-        if (!prefManager.getClothsDryerId().equals("")) {
-            clothsItem = prefManager.getClothsDryerId();
-        } else {
-            clothsItem = "0";
-        }
-
-        if (!prefManager.getDishWasherId().equals("")) {
-            dishItem = prefManager.getDishWasherId();
-        } else {
-            dishItem = "0";
-        }
-
-        if (!prefManager.getMicroOvenId().equals("")) {
-            microItem = prefManager.getMicroOvenId();
-        } else {
-            microItem = "0";
-        }
+        refregeratorLg = "IFBPC1000013" + "-" + "IFBCC000001" + "#" + etREFRIGERATORLg.getText().toString();
+        refregeratorSamSung = "IFBPC1000013" + "-" + "IFBCC000002" + "#" + etREFRIGERATORSamsung.getText().toString();
+        refregeratorWhirlPool = "IFBPC1000013" + "-" + "IFBCC000005" + "#" + etREFRIGERATORWhirlPool.getText().toString();
+        refregeratorHaier = "IFBPC1000013" + "-" + "IFBCC000021" + "#" + etREFRIGERATORHaier.getText().toString();
+        refregeratorGodrej = "IFBPC1000013" + "-" + "IFBCC000006" + "#" + etREFRIGERATORGodrej.getText().toString();
+        refregeratorOthers = "IFBPC1000013" + "-" + "IFBCC000004" + "#" + etREFRIGERATOROthers.getText().toString();
 
 
-        if (!prefManager.getKAItemId().equals("")) {
-            KAItem = prefManager.getKAItemId();
-        } else {
-            KAItem = "0";
-        }
+        refregeratorFFLg = "IFBPC1000040" + "-" + "IFBCC000001" + "#" + etREFRIGERATORFFLg.getText().toString();
+        refregeratorFFSamSung = "IFBPC1000040" + "-" + "IFBCC000002" + "#" + etREFRIGERATORFFSamsung.getText().toString();
+        refregeratorFFWhirlPool = "IFBPC1000040" + "-" + "IFBCC000005" + "#" + etREFRIGERATORFFWhirlPool.getText().toString();
+        refregeratorFFHaier = "IFBPC1000040" + "-" + "IFBCC000021" + "#" + etREFRIGERATORFFHaier.getText().toString();
+        refregeratorFFGodrej = "IFBPC1000040" + "-" + "IFBCC000006" + "#" + etREFRIGERATORFFGodrej.getText().toString();
+        refregeratorFFOthers = "IFBPC1000040" + "-" + "IFBCC000004" + "#" + etREFRIGERATORFFOthers.getText().toString();
 
-        if (!prefManager.getWashingFLUId().equals("")) {
-            FLUItem = prefManager.getWashingFLUId();
-        } else {
-            FLUItem = "0";
-        }
 
-        if (!prefManager.getWashingTLId().equals("")) {
-            tlItem = prefManager.getWashingTLId();
-        } else {
-            tlItem = "0";
-        }
 
-        if (!prefManager.getWasherDryerId().equals("")) {
-            washerDyerItem = prefManager.getWasherDryerId();
-        } else {
-            washerDyerItem = "0";
-        }
-        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem+","+washerDyerItem;
+        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem+","+washerDyerItem+","+refItem+","+refffItem;
         modelId = model.replaceAll("\\s+", "");
         modelArray.add(model);
         Log.d("newList",modelArray.toString());
-
-        category=airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers+","+washerIfb + "," + washerLg + "," + washerSamSung + "," + washerWhirlPool + "," + washerPanasonic + "," + washerGodrej + "," + washerOnida + "," + washerOthers ;
+        category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers+","+washerIfb + "," + washerLg + "," + washerSamSung + "," + washerWhirlPool + "," + washerPanasonic + "," + washerGodrej + "," + washerOnida + "," + washerOthers+","+refregeratorIfb + "," + refregeratorLg + "," + refregeratorSamSung + "," + refregeratorWhirlPool + "," + refregeratorHaier + "," + refregeratorGodrej + "," + refregeratorOthers +","+refregeratorFFIfb + "," + refregeratorFFLg + "," + refregeratorFFSamSung + "," + refregeratorFFWhirlPool + "," + refregeratorFFHaier + "," + refregeratorFFGodrej + "," + refregeratorFFOthers ;
       //  category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers;
         final ProgressDialog pd = new ProgressDialog(DisplayMatrixDynamicActivity.this);
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_DisplayMatrix")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_DisplayMatrix")
                 .addMultipartParameter("SalesDate", salesdate)
                 .addMultipartParameter("Category", category)
                 .addMultipartParameter("Model", modelId)
@@ -2169,9 +2234,13 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                         boolean responseStatus = job1.optBoolean("responseStatus");
                         Log.d("responseText", responseText);
                         if (responseStatus) {
-
-                            imageAlert();
                             pd.dismiss();
+
+
+
+
+
+
 
                             JSONArray jsonArray = job1.optJSONArray("responseData");
 
@@ -2188,7 +2257,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                             prefManager.saveWashingFLUId("");
                             prefManager.saveWashingTLId("");
 
-
+                            successAlert(responseText);
                         } else {
                             pd.dismiss();
                             Toast.makeText(DisplayMatrixDynamicActivity.this, responseText, Toast.LENGTH_LONG).show();
@@ -2211,116 +2280,11 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        etAirIFB.setEnabled(false);
-        String size = String.valueOf(prefManager.getAirIfbSize());
-        Log.d("size", size);
-        etAirIFB.setText(size);
-
-        String clothsifbsize1 = String.valueOf(prefManager.getClothsIfbSize());
-        Log.d("size", clothsifbsize1);
-        etClothsIFB.setText(clothsifbsize1);
-
-        etDishIFB = (EditText) findViewById(R.id.etDishIFB);
-        String dishifbsize = String.valueOf(prefManager.getDishIfbSize());
-        etDishIFB.setText(dishifbsize);
-
-        etMicroIfb = (EditText) findViewById(R.id.etMicroIfb);
-        String microifbsize = String.valueOf(prefManager.getMicroOvenIfbSize());
-        Log.d("size", microifbsize);
-        etMicroIfb.setText(microifbsize);
-
-        etKAIfb = (EditText) findViewById(R.id.etKAIfb);
-        String kaifbsize = String.valueOf(prefManager.getKAIfbSize());
-        Log.d("size", kaifbsize);
-        etKAIfb.setText(kaifbsize);
-
-
-        String FLUIfbSize = String.valueOf(prefManager.getWMFLUIfbSize());
-        Log.d("size", FLUIfbSize);
-        etFLUIfb.setText(FLUIfbSize);
-
-        String tlIfbSize = String.valueOf(prefManager.getWMTLIFBSize());
-        Log.d("size", tlIfbSize);
-        etTLIfb.setText(tlIfbSize);
-
-        String washerIFBSize= String.valueOf(prefManager.getWasherDryerIfbSize());
-        etWasherDisherIfb.setText(washerIFBSize);
-
-
-        if (!prefManager.getAirConditionerId().equals("")) {
-            airItem = prefManager.getAirConditionerId();
-
-
-        } else {
-            airItem = "0";
-
-        }
-
-        if (!prefManager.getClothsDryerId().equals("")) {
-            clothsItem = prefManager.getClothsDryerId();
-        } else {
-            clothsItem = "0";
-        }
-
-
-        if (!prefManager.getDishWasherId().equals("")) {
-            dishItem = prefManager.getDishWasherId();
-        } else {
-            dishItem = "0";
-        }
-
-
-        if (!prefManager.getMicroOvenId().equals("")) {
-            microItem = prefManager.getMicroOvenId();
-        } else {
-            microItem = "0";
-        }
-
-
-        if (!prefManager.getKAItemId().equals("")) {
-            KAItem = prefManager.getKAItemId();
-        } else {
-            KAItem = "0";
-        }
-
-        if (!prefManager.getWashingFLUId().equals("")) {
-            FLUItem = prefManager.getWashingFLUId();
-        } else {
-            FLUItem = "0";
-        }
-
-        if (!prefManager.getWashingTLId().equals("")) {
-            tlItem = prefManager.getWashingTLId();
-        } else {
-            tlItem = "0";
-        }
-
-
-
-        if (!prefManager.getWasherDryerId().equals("")) {
-            washerDyerItem = prefManager.getWasherDryerId();
-        } else {
-            washerDyerItem = "0";
-        }
-
-
-
-        model = airItem + "," + clothsItem + "," + dishItem + "," + microItem + "," + KAItem + "," + FLUItem + "," + tlItem+","+washerDyerItem;
-        modelId = model.replaceAll("\\s+", "");
-        Log.d("modelid", modelId);
-        category = airDaikin + "," + airIfb + "," + "," + airLg + "," + airLloyds + "," + airOthers + "," + airVoltas + "," + airSAMSUNG + "," + airCARRIER + "," + airBLUESTAR + "," + airONIDA + "," + airPANASONIC + "," + airWHIRLPOOL + "," + airOGENERAL + "," + airGODREJ + "," + airHAIER + "," + clothsIFB + "," + clothsBOSCH + "," + dishIfb + "," + dishBosch + "," + dishLg + "," + dishSamsung + "," + dishOthers + "," + microIfb + "," + microLg + "," + microSamSung + "," + microWhirlPool + "," + microPanasonic + "," + microGodrej + "," + microOnida + "," + microOthers + "," + kaIfb + "," + KaFaber + "," + KaSunFlame + "," + KaElica + "," + KaKaff + "," + KaBosch + "," + KaOthers + "," + FLUIfb + "," + FLULg + "," + FLUSamsung + "," + FLUBosch + "," + FLUWhirlPool + "," + FLUBeko + "," + FLUOthers + "," + TLIfb + "," + TLLg + "," + TLSamsung + "," + TLBosch + "," + TLWhirlPool + "," + TLPanasonic + "," + TLGodrej + "," + TLOnida + "," + TLOthers;
-
-
-    }
 
 
 
     private void successAlert(String msg) {
-       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_success, null);
         dialogBuilder.setView(dialogView);
@@ -2351,64 +2315,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     }
 
 
-    private void imageAlert() {
-       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogView = inflater.inflate(R.layout.dialog_display_camera, null);
-        dialogBuilder.setView(dialogView);
 
-        imgPic1 = (ImageView) dialogView.findViewById(R.id.imgPic1);
-        imgPic2 = (ImageView) dialogView.findViewById(R.id.imgPic2);
-        imgPic3 = (ImageView) dialogView.findViewById(R.id.imgPic3);
-
-        imgPic1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraIntentforPic1();
-            }
-        });
-        imgPic2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraIntentforPic2();
-            }
-        });
-
-        imgPic3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraIntentforPic3();
-            }
-        });
-
-        Button btnSave = (Button) dialogView.findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pic1Flag == 1) {
-                    if (pic2Flag == 1) {
-                        acChecking();
-
-                    } else {
-                        Toast.makeText(DisplayMatrixDynamicActivity.this, "Please Upload Image 2", Toast.LENGTH_LONG).show();
-
-                    }
-
-                } else {
-                    Toast.makeText(DisplayMatrixDynamicActivity.this, "Please Upload Image 1", Toast.LENGTH_LONG).show();
-                }
-
-            }
-        });
-
-
-        alertDialog2 = dialogBuilder.create();
-        alertDialog2.setCancelable(false);
-        Window window = alertDialog2.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.CENTER);
-        alertDialog2.show();
-    }
 
 
     private void displayMatrixChecking() {
@@ -2416,7 +2323,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixReport?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/get_DisplayMatrixReport?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -2474,7 +2381,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
 
     private void displayMatrixAlert() {
-       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_compsale, null);
         dialogBuilder.setView(dialogView);
@@ -2508,7 +2415,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     }
 
     private void ifbAlert() {
-       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_compsale, null);
         dialogBuilder.setView(dialogView);
@@ -2543,7 +2450,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
 
     private void displayMatrixAlertForPreviousMonth() {
-       AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayMatrixDynamicActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_compsale, null);
         dialogBuilder.setView(dialogView);
@@ -2578,7 +2485,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
         pd.show();
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=1";
+        String surl = AppController.APIURL+"api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=1";
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -2763,6 +2670,44 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                         etWasherDisherOnida.setText(Quantity);
                                     }
 
+                                    //refregerator dc
+
+                                    if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etREFRIGERATORLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etREFRIGERATORSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etREFRIGERATOROthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etREFRIGERATORWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etREFRIGERATORGodrej.setText(Quantity);
+                                    }  else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etREFRIGERATORIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000021")) {
+                                        etREFRIGERATORHaier.setText(Quantity);
+                                    }
+
+
+                                    //refregerator ff
+
+                                    if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etREFRIGERATORFFLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etREFRIGERATORFFSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etREFRIGERATORFFOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etREFRIGERATORFFWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etREFRIGERATORFFGodrej.setText(Quantity);
+                                    }  else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etREFRIGERATORFFIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000021")) {
+                                        etREFRIGERATORFFHaier.setText(Quantity);
+                                    }
+
+
 
 
 
@@ -2812,7 +2757,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         pd.show();
 
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=2";
+        String surl = AppController.APIURL+"api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + month + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=2";
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -2830,6 +2775,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                         wmFluModel.clear();
                         wmTLModel.clear();
                         dryerModel.clear();
+                        refModel.clear();
                         // attendabceInfiList.clear();
                         pd.dismiss();
 
@@ -2865,6 +2811,10 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                         wmTLModel.add(CategoryID + "-" + ModelID);
                                     }else if (CategoryID.equals("IFBPC1000039")) {
                                         dryerModel.add(CategoryID + "-" + ModelID);
+                                    }else if (CategoryID.equals("IFBPC1000013")){
+                                        refModel.add(CategoryID + "-" + ModelID);
+                                    }else if (CategoryID.equals("IFBPC1000040")){
+                                        refFFModel.add(CategoryID + "-" + ModelID);
                                     }
 
 
@@ -2876,7 +2826,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String airConditionerItem = String.valueOf(airConditionerModel);
                                 String refreshairConditionerItem = airConditionerItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveAirConditionerId(refreshairConditionerItem);
+                                airItem=refreshairConditionerItem;
 
                                 //CTOTHS
                                 Set<String> set1 = new HashSet<String>(clothsdryerModel);
@@ -2886,7 +2836,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String ClothsItem = String.valueOf(clothsdryerModel);
                                 String refreshairClothsItem = ClothsItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveClothsDryerId(refreshairClothsItem);
+                                clothsItem=refreshairClothsItem;
 
                                 //DISHWASHER
 
@@ -2896,7 +2846,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String dishwasherItem = String.valueOf(dishwasherModel);
                                 String refreshdishwasherItem = dishwasherItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveDishWasherId(refreshdishwasherItem);
+                                dishItem=refreshdishwasherItem;
 
                                 //MICROOVEN
 
@@ -2906,7 +2856,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String microOvenItem = String.valueOf(microOvenModel);
                                 String refreshmicroOvenItem = microOvenItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveMicroOvenId(refreshmicroOvenItem);
+                                microItem=refreshmicroOvenItem;
 
                                 //Kitchen
 
@@ -2916,7 +2866,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String kaItem = String.valueOf(kitchenModel);
                                 String refreshkaItem = kaItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.SaveKAItemId(refreshkaItem);
+                                KAItem=refreshkaItem;
 
                                 //WMFLU
 
@@ -2927,7 +2877,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String wmfluItem = String.valueOf(wmFluModel);
                                 String refreshwmfluItem = wmfluItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveWashingFLUId(refreshwmfluItem);
+                                FLUItem=refreshwmfluItem;
 
                                 //WMTL
 
@@ -2938,7 +2888,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String wmtlItem = String.valueOf(wmTLModel);
                                 String refreshwmtlItem = wmtlItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveWashingTLId(refreshwmtlItem);
+                                tlItem=refreshwmtlItem;
 
                                 //Dryer
 
@@ -2948,7 +2898,28 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String dryerItem= String.valueOf(dryerModel);
                                 String refreshdryerItem = dryerItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveWasherDryerId(refreshdryerItem);
+                                washerDyerItem=refreshdryerItem;
+
+                                //refregrator dc
+
+                                Set<String> set8 = new HashSet<String>(refModel);
+                                refModel.clear();
+                                refModel.addAll(set8);
+
+                                String referegeritorItem = String.valueOf(refModel);
+                                String refreshrefItem = referegeritorItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                refItem=refreshrefItem;
+
+                                //refregrator FF
+
+                                Set<String> set9 = new HashSet<String>(refFFModel);
+                                refFFModel.clear();
+                                refFFModel.addAll(set9);
+
+                                String referegeritorFFItem = String.valueOf(refFFModel);
+                                String refreshrefFFItem = referegeritorFFItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                refffItem=refreshrefFFItem;
+
 
 
 
@@ -3005,7 +2976,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
         pd.show();
 
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + premonth + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=1";
+        String surl = AppController.APIURL+"api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + premonth + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=1";
         Log.d("inputtlreportpre", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -3190,6 +3161,40 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                         etWasherDisherOnida.setText(Quantity);
                                     }
 
+                                    //refregerator DC
+                                    if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etREFRIGERATORLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etREFRIGERATORSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etREFRIGERATOROthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etREFRIGERATORWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etREFRIGERATORGodrej.setText(Quantity);
+                                    }  else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etREFRIGERATORIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000021")) {
+                                        etREFRIGERATORHaier.setText(Quantity);
+                                    }
+
+                                    //refregerator FF
+                                    if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000001")) {
+                                        etREFRIGERATORFFLg.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000002")) {
+                                        etREFRIGERATORFFSamsung.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000004")) {
+                                        etREFRIGERATORFFOthers.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000005")) {
+                                        etREFRIGERATORFFWhirlPool.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000006")) {
+                                        etREFRIGERATORFFGodrej.setText(Quantity);
+                                    }  else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000015")) {
+                                        etREFRIGERATORFFIfb.setText(Quantity);
+                                    } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000021")) {
+                                        etREFRIGERATORFFHaier.setText(Quantity);
+                                    }
+
 
                                     getReportListForModelPreviousMonth();
 
@@ -3200,7 +3205,6 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                             } else {
 
                                 previousMonthData="false";
-                                pd.dismiss();
                                 //Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
 
                             }
@@ -3248,7 +3252,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         }
 
         pd.show();
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + premonth + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=2";
+        String surl = AppController.APIURL+"api/get_DisplayMatrixForUpdate?AEMEmployeeID=" + prefManager.getUserId() + "&FinancialYear=" + finalcialchecking + "&Month=" + premonth + "&SecurityCode=" + prefManager.getSecurityCode() + "&Opertaion=2";
         Log.d("inputtlreportpre", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -3264,6 +3268,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                         wmFluModel.clear();
                         wmTLModel.clear();
                         dryerModel.clear();
+                        refModel.clear();
                         // attendabceInfiList.clear();
                         pd.dismiss();
 
@@ -3299,6 +3304,10 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                         wmTLModel.add(CategoryID + "-" + ModelID);
                                     }else if (CategoryID.equals("IFBPC1000039")) {
                                         dryerModel.add(CategoryID + "-" + ModelID);
+                                    }else if (CategoryID.equals("IFBPC1000013")) {
+                                        refModel.add(CategoryID + "-" + ModelID);
+                                    }else if (CategoryID.equals("IFBPC1000040")) {
+                                        refFFModel.add(CategoryID + "-" + ModelID);
                                     }
 
 
@@ -3330,7 +3339,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String dishwasherItem = String.valueOf(dishwasherModel);
                                 String refreshdishwasherItem = dishwasherItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveDishWasherId(refreshdishwasherItem);
+                                dishItem=refreshdishwasherItem;
 
                                 //MICROOVEN
 
@@ -3340,7 +3349,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String microOvenItem = String.valueOf(microOvenModel);
                                 String refreshmicroOvenItem = microOvenItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveMicroOvenId(refreshmicroOvenItem);
+                                microItem=refreshmicroOvenItem;
 
                                 //Kitchen
 
@@ -3350,7 +3359,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String kaItem = String.valueOf(kitchenModel);
                                 String refreshkaItem = kaItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.SaveKAItemId(refreshkaItem);
+                                KAItem=refreshkaItem;
 
                                 //WMFLU
 
@@ -3361,7 +3370,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String wmfluItem = String.valueOf(wmFluModel);
                                 String refreshwmfluItem = wmfluItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveWashingFLUId(refreshwmfluItem);
+                                FLUItem=refreshwmfluItem;
 
                                 //WMTL
 
@@ -3372,7 +3381,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String wmtlItem = String.valueOf(wmTLModel);
                                 String refreshwmtlItem = wmtlItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveWashingTLId(refreshwmtlItem);
+                                tlItem=refreshwmtlItem;
 
                                 //Dryer
 
@@ -3382,12 +3391,31 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                 String dryerItem= String.valueOf(dryerModel);
                                 String refreshdryerItem = dryerItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
-                                prefManager.saveWasherDryerId(refreshdryerItem);
+                                washerDyerItem=refreshdryerItem;
+
+                                //refregerator DC
+                                Set<String> set8 = new HashSet<String>(refModel);
+                                refModel.clear();
+                                refModel.addAll(set8);
+
+                                String refregeratorItem= String.valueOf(refModel);
+                                String refreshrefregeratorItemItem = refregeratorItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                refItem=refreshrefregeratorItemItem;
+
+
+                                //refregerator FF
+                                Set<String> set9 = new HashSet<String>(refFFModel);
+                                refFFModel.clear();
+                                refFFModel.addAll(set9);
+
+                                String refregeratorFFItem= String.valueOf(refFFModel);
+                                String refreshrefregeratorFFItemItem = refregeratorFFItem.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+                                refffItem=refreshrefregeratorFFItemItem;
 
 
                             } else {
 
-                                   pd.dismiss();
+
                                 //    Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
 
                             }
@@ -3483,6 +3511,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                             String name = brkDown[5];
                             stringFile = name + "_" + encodedImage + "_" + contentType;
                             pic1Flag = 1;
+                            cameraAlert.dismiss();
 
 
                             // _pref.saveImage(encodedImage);
@@ -3498,6 +3527,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                 }
                 break;
+
+
             case CAMERA_REQUEST1:
 
                 if (resultCode == Activity.RESULT_OK) {
@@ -3520,6 +3551,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                             String name = brkDown[5];
                             stringFile1 = name + "_" + encodedImage1 + "_" + contentType;
                             pic2Flag = 1;
+                            cameraAlert.dismiss();
 
 
                             // _pref.saveImage(encodedImage);
@@ -3535,6 +3567,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                 }
                 break;
+
+
             case CAMERA_REQUEST2:
 
                 if (resultCode == Activity.RESULT_OK) {
@@ -3557,6 +3591,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                             String name = brkDown[5];
                             stringFile2 = name + "_" + encodedImage2 + "_" + contentType;
                             pic3Flag = 1;
+                            cameraAlert.dismiss();
 
 
                             // _pref.saveImage(encodedImage);
@@ -3574,10 +3609,179 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                 break;
 
 
+            case ACREQUEST:
+
+                try {
+
+                    Log.d("acsize", String.valueOf(AppController.ifbac));
+                    etAirIFB.setText(String.valueOf(AppController.ifbac));
+                    etAirIFB.setEnabled(false);
+                    airItem=AppController.acid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case CLOTHSDRYERREQUEST:
+
+                try {
+
+
+                    etClothsIFB.setText(String.valueOf(AppController.ifbclotsdryersize));
+                    etClothsIFB.setEnabled(false);
+                    clothsItem= AppController.clothsdryedid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case DISHREQUEST:
+
+                try {
+
+
+                    etDishIFB.setText(String.valueOf(AppController.ifbdishsize));
+                    etDishIFB.setEnabled(false);
+                    dishItem=AppController.dishid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case WASHERDRYERREQUEST:
+
+                try {
+
+
+                    etWasherDisherIfb.setText(String.valueOf(AppController.ifbwashersize));
+                    etWasherDisherIfb.setEnabled(false);
+                    washerDyerItem=AppController.washerid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case MICROOVENREQUEST:
+
+                try {
+
+
+                    etMicroIfb.setText(String.valueOf(AppController.ifbovensize));
+                    etMicroIfb.setEnabled(false);
+                    microItem=AppController.ovenid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case KITCHENREQUEST:
+
+                try {
+
+
+                    etKAIfb.setText(String.valueOf(AppController.ifbkasize));
+                    etKAIfb.setEnabled(false);
+                    KAItem=AppController.kaid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case FLUREQUEST:
+
+                try {
+
+
+                    etFLUIfb.setText(String.valueOf(AppController.ifbflusize));
+                    etFLUIfb.setEnabled(false);
+                    FLUItem=AppController.fluid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case TLREQUEST:
+
+                try {
+
+
+                    etTLIfb.setText(String.valueOf(AppController.ifbtlsize));
+                    etTLIfb.setEnabled(false);
+                    tlItem=AppController.tlid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+
+            case REFREQUEST:
+
+                try {
+
+
+                    etREFRIGERATORIfb.setText(String.valueOf(AppController.ifbrefsize));
+                    etREFRIGERATORIfb.setEnabled(false);
+                    refItem=AppController.refid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case REFFFREQUEST:
+
+                try {
+
+
+                    etREFRIGERATORFFIfb.setText(String.valueOf(AppController.ifbrefffsize));
+                    etREFRIGERATORFFIfb.setEnabled(false);
+                    refffItem=AppController.refffid;
+
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+
+
+
+
+
+
+
+
         }
 
 
     }
+
 
 
     public String getRealPathFromURI(Uri contentUri) {
@@ -3623,7 +3827,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         pd.setCancelable(false);
         Log.d("shubusen", "1");
 
-        AndroidNetworking.upload("http://111.93.182.173/IFBiOSApi/api/post_DisplayMatrixWithProductCopy")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_DisplayMatrixWithProductCopy")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("CategoryID1", "IFBPC1000024")
                 .addMultipartParameter("ProductCopy1", stringFile)
@@ -3712,6 +3916,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         // return the new list
         return newList;
     }
+
+
 
 
 

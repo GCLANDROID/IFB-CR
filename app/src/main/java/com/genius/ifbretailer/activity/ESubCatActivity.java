@@ -26,6 +26,7 @@ import com.genius.ifbretailer.adapter.ECatelougeAdapter;
 import com.genius.ifbretailer.adapter.ESubCatelougeAdapter;
 import com.genius.ifbretailer.model.ECatelogModel;
 import com.genius.ifbretailer.model.EcatelougeModel;
+import com.genius.ifbretailer.utility.AppController;
 import com.genius.ifbretailer.utility.PrefManager;
 
 import org.json.JSONArray;
@@ -45,7 +46,7 @@ public class ESubCatActivity extends AppCompatActivity {
     AlertDialog alertDialog,alertDialog1,alertDialog2;
     TextView tvYear,tvMonth;
     ImageView imgBack,imgHome;
-    String catId;
+    String catId,ECatalogID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class ESubCatActivity extends AppCompatActivity {
         imgBack=(ImageView)findViewById(R.id.imgBack);
         imgHome=(ImageView)findViewById(R.id.imgHome);
         catId=getIntent().getStringExtra("catId");
+        ECatalogID=getIntent().getStringExtra("ECatalogID");
     }
 
     private void getItemlist(){
@@ -80,7 +82,7 @@ public class ESubCatActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl = "http://111.93.182.173/IFBiOSApi/api/get_ProductCatalog?ECatalogID=0&CategoryId="+catId+"&Operation=3";
+        String surl = AppController.APIURL+"api/get_ProductCatalog?ECatalogID="+ECatalogID+"&CategoryId="+catId+"&Operation=3";
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {

@@ -2657,6 +2657,7 @@ public class SalesManageActivity extends AppCompatActivity {
                                     String ShipPartyCode=object.optString("ShipPartyCode");
                                     String MultipleProduct=object.optString("MultipleProduct");
                                     String WiFiDeviceStatus=object.optString("WiFiDeviceStatus");
+                                    String RELIANCEFLAG=object.optString("RELIANCEFLAG");
                                     RcnModel rcnModel = new RcnModel();
                                     rcnModel.setToken(TokenNo);
                                     rcnModel.setSerNumber(SerialNo);
@@ -2680,7 +2681,7 @@ public class SalesManageActivity extends AppCompatActivity {
                                     csrOBJ.put("TOKENNO",TokenNo);
                                     csrOBJ.put("CREATEDBY","R"+prefManager.getUserCode());
                                     csrOBJ.put("RELIANCEFRANCH","");
-                                    csrOBJ.put("RELIANCEFLAG","N");
+                                    csrOBJ.put("RELIANCEFLAG",RELIANCEFLAG);
                                     csrOBJ.put("MULTIPLEQUANTITY",MultipleProduct);
                                     csrOBJ.put("TOKENCREATED",currentDate);
                                     csrOBJ.put("INSTALLATIONBY","");
@@ -2688,6 +2689,7 @@ public class SalesManageActivity extends AppCompatActivity {
                                     csrOBJ.put("ODUSERIAL","");
                                     csrOBJ.put("WIFI",WiFiDeviceStatus);
                                     csrOBJ.put("FILECREATED",currentDate);
+
                                     sendCSRData(csrOBJ,TokenNo);
                                 }
                                 JSONObject obj = responseData.optJSONObject(0);

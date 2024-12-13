@@ -104,6 +104,7 @@ public class DashboardActivity extends AppCompatActivity  {
     TextView tvPdfPageNo;
     Dialog dialog;
     private final static int INTERVAL = 40000;
+    LinearLayout llCollaboar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +118,7 @@ public class DashboardActivity extends AppCompatActivity  {
 
     private void initview() {
         prefManager = new PrefManager(DashboardActivity.this);
+        llCollaboar=(LinearLayout)findViewById(R.id.llCollaboar);
         dialog = new Dialog(DashboardActivity.this, R.style.CustomDialogNew2);
         //LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //View dialogView = inflater.inflate(R.layout.training_popup_layout, null);
@@ -148,7 +150,7 @@ public class DashboardActivity extends AppCompatActivity  {
         llLoader = (LinearLayout) findViewById(R.id.llLoader);
         llQueries = (LinearLayout) findViewById(R.id.llQueries);
         llElearning = (LinearLayout) findViewById(R.id.llElearning);
-
+        llCollaboar=(LinearLayout) findViewById(R.id.llCollaboar);
         imgLogout = (ImageView) findViewById(R.id.imgLogout);
 
         try {
@@ -546,7 +548,8 @@ public class DashboardActivity extends AppCompatActivity  {
                             collaborationCookie=cookie;
                             getTrainingInform(cookie,access_token);
                         } else {
-                            Toast.makeText(DashboardActivity.this,message,Toast.LENGTH_LONG).show();
+                            //Toast.makeText(DashboardActivity.this,message,Toast.LENGTH_LONG).show();
+                            llCollaboar.setVisibility(View.GONE);
                         }
                     }
 

@@ -1149,6 +1149,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
                 ssaleFunction();
 
+
             }
         });
 
@@ -2410,7 +2411,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
                         } else {
                             pd.dismiss();
-                            Toast.makeText(SalesManageActivity.this, responseText, Toast.LENGTH_LONG).show();
+                            Toast.makeText(SalesManageActivity.this, ""+responseText, Toast.LENGTH_LONG).show();
 
                         }
 
@@ -2527,7 +2528,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
                         } else {
                             pd.dismiss();
-                            Toast.makeText(SalesManageActivity.this, responseText, Toast.LENGTH_LONG).show();
+                            Toast.makeText(SalesManageActivity.this, ""+responseText, Toast.LENGTH_LONG).show();
 
                         }
 
@@ -2642,6 +2643,7 @@ public class SalesManageActivity extends AppCompatActivity {
                                     String TokenNo = object.optString("TokenNo");
                                     String CategoryShortName = object.optString("CategoryShortName");
                                     String SerialNo = object.optString("SerialNo");
+                                    String SerialNo2 = object.optString("SerialNo2");
                                     String ModelCode=object.optString("ModelCode");
                                     String FirstName=object.optString("FirstName");
                                     String LastName=object.optString("LastName");
@@ -2658,6 +2660,7 @@ public class SalesManageActivity extends AppCompatActivity {
                                     String MultipleProduct=object.optString("MultipleProduct");
                                     String WiFiDeviceStatus=object.optString("WiFiDeviceStatus");
                                     String RELIANCEFLAG=object.optString("RELIANCEFLAG");
+                                    String InstallationBy=object.optString("InstallationBy");
                                     RcnModel rcnModel = new RcnModel();
                                     rcnModel.setToken(TokenNo);
                                     rcnModel.setSerNumber(SerialNo);
@@ -2684,9 +2687,9 @@ public class SalesManageActivity extends AppCompatActivity {
                                     csrOBJ.put("RELIANCEFLAG",RELIANCEFLAG);
                                     csrOBJ.put("MULTIPLEQUANTITY",MultipleProduct);
                                     csrOBJ.put("TOKENCREATED",currentDate);
-                                    csrOBJ.put("INSTALLATIONBY","");
-                                    csrOBJ.put("IDUSERIAL","");
-                                    csrOBJ.put("ODUSERIAL","");
+                                    csrOBJ.put("INSTALLATIONBY",InstallationBy);
+                                    csrOBJ.put("IDUSERIAL",SerialNo);
+                                    csrOBJ.put("ODUSERIAL",SerialNo2);
                                     csrOBJ.put("WIFI",WiFiDeviceStatus);
                                     csrOBJ.put("FILECREATED",currentDate);
 
@@ -2708,6 +2711,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
 
                         } catch (JSONException e) {
+                            successAlert(sucessText);
                             e.printStackTrace();
                             Toast.makeText(SalesManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
                         }
@@ -2767,7 +2771,8 @@ public class SalesManageActivity extends AppCompatActivity {
                     @Override
                     public void onError(ANError error) {
                         pd.dismiss();
-                        onBackPressed();
+                        String errormessgae=error.getMessage();
+                        postTokenStatus(token,errormessgae);
                         Toast.makeText(SalesManageActivity.this,"Wrong",Toast.LENGTH_LONG).show();
 
                     }
@@ -2807,7 +2812,7 @@ public class SalesManageActivity extends AppCompatActivity {
                     @Override
                     public void onError(ANError error) {
                         pd.dismiss();
-                        onBackPressed();
+                        successAlert(sucessText);
                         Toast.makeText(SalesManageActivity.this,"Wrong",Toast.LENGTH_LONG).show();
 
                     }
@@ -3015,9 +3020,7 @@ public class SalesManageActivity extends AppCompatActivity {
 
                         } else {
                             pd.dismiss();
-                            Intent intent = new Intent(SalesManageActivity.this, ConsolidateSalesReportActivity.class);
-                            startActivity(intent);
-                            finish();
+                            successAlert(sucessText);
 
 
                         }
@@ -3032,9 +3035,7 @@ public class SalesManageActivity extends AppCompatActivity {
                     @Override
                     public void onError(ANError error) {
                         pd.dismiss();
-                        Intent intent = new Intent(SalesManageActivity.this, ConsolidateSalesReportActivity.class);
-                        startActivity(intent);
-                        finish();
+                        successAlert(sucessText);
                     }
                 });
     }
@@ -3525,9 +3526,7 @@ public class SalesManageActivity extends AppCompatActivity {
                         Log.d("responseText", responseText);
                         boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
-                            Intent intent = new Intent(SalesManageActivity.this, ConsolidateSalesReportActivity.class);
-                            startActivity(intent);
-                            finish();
+                            successAlert(sucessText);
                             pd.dismiss();
 
                         } else {

@@ -7,7 +7,7 @@
     android:background="@android:color/white"
     tools:context=".activity.DisplayMatrixDynamicActivity"
     android:orientation="vertical"
-    >
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:background="@android:color/white"

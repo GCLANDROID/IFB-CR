@@ -43,6 +43,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -77,8 +78,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -216,6 +219,10 @@ public class SalesManageActivity extends AppCompatActivity {
 
     JSONObject csrOBJ=new JSONObject();
     String sucessText,currentDate;
+    String AddressUpdateFlag;
+    AlertDialog existingAddressFlag;
+    EditText etMoreAddress;
+    String crmArea;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -289,7 +296,7 @@ public class SalesManageActivity extends AppCompatActivity {
         tvHouse.setText(Html.fromHtml(house + next));
 
         tvStreet = (TextView) findViewById(R.id.tvStreet);
-        String street = "STREET NAME ";
+        String street = "BUILDING NAME/STREET NAME  ";
         tvStreet.setText(Html.fromHtml(street + next));
 
         tvLand = (TextView) findViewById(R.id.tvLand);
@@ -466,6 +473,7 @@ public class SalesManageActivity extends AppCompatActivity {
                         csdSalesList); //selected item will look like a spinner set from XML
         spinnerPedestalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPedestal.setAdapter(spinnerPedestalAdapter);
+        etMoreAddress=(EditText) findViewById(R.id.etMoreAddress);
 
 
     }
@@ -656,6 +664,26 @@ public class SalesManageActivity extends AppCompatActivity {
 
             }
         });
+        etMobNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (etMobNumber.getText().toString().length() == 10) {
+                    String mobnumber = etMobNumber.getText().toString();
+                    getCusDetail(mobnumber);
+                }
+
+            }
+        });
 
 
         etQuantity.addTextChangedListener(new TextWatcher() {
@@ -825,7 +853,7 @@ public class SalesManageActivity extends AppCompatActivity {
         spArea.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                areaName = moduleArea.get(position).getItem();
+                areaName = area.get(position);
             }
 
             @Override
@@ -943,6 +971,25 @@ public class SalesManageActivity extends AppCompatActivity {
                     altmob = "0000000000";
                 }
 
+            }
+        });
+
+
+        etLandMark.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    AddressUpdateFlag="Y";
+                }
+            }
+        });
+
+        etMoreAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    AddressUpdateFlag="Y";
+                }
             }
         });
 
@@ -1147,7 +1194,8 @@ public class SalesManageActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                ssaleFunction();
+                addressConfirmation(etMoreAddress.getText().toString(),tvCityName.getText().toString(),etPinCode.getText().toString(),areaName,etStreetName.getText().toString(),etLandMark.getText().toString(),etHouse.getText().toString());
+
 
 
             }
@@ -1471,10 +1519,11 @@ public class SalesManageActivity extends AppCompatActivity {
 
     private void pincodecheck(final String pincode) {
         Log.d("hitr", "6");
-        String surl = "https://cloud.geniusconsultant.com/GeniusPinCodeApi/api/PinCode?id=" + pincode;
+        String surl = "https://crmapi.ifbsupport.com/api/wa/find-area?PinCode=" + pincode;
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
+        progressBar.show();
         progressBar.show();
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -1489,10 +1538,12 @@ public class SalesManageActivity extends AppCompatActivity {
 
                             for (int i = 0; i < job1.length(); i++) {
                                 JSONObject obj = job1.getJSONObject(i);
-                                STATENAME = obj.getString("STATENAME");
+                                STATENAME = obj.getString("State").toUpperCase();
                                 Log.d("statename", STATENAME);
-                                PINCODE = obj.optString("PINCODE");
-                                REGIONNAME = obj.optString("REGIONNAME");
+                                PINCODE = obj.optString("PinCode");
+                                REGIONNAME = obj.optString("City");
+                                String Area = obj.optString("Area");
+                                area.add(Area);
 
 
                             }
@@ -1504,7 +1555,17 @@ public class SalesManageActivity extends AppCompatActivity {
                             spCity.setVisibility(View.GONE);
                             tvCityName.setText(REGIONNAME);
                             spState.setEnabled(false);
-                            setArea(pincode);
+                            spArea.setVisibility(View.VISIBLE);
+
+
+
+                            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
+                                    (SalesManageActivity.this, android.R.layout.simple_spinner_item,
+                                            area); //selected item will look like a spinner set from XML
+                            spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            spArea.setAdapter(spinnerArrayAdapter);
+                            int pos=area.indexOf(crmArea);
+                            spArea.setSelection(pos);
 
                             // boolean _status = job1.getBoolean("status");
 
@@ -1525,6 +1586,13 @@ public class SalesManageActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer V0hBVFNBUFA6d2FVU0VS");
+                params.put("Cookie", "TS013f4d0e=0175b9c4a690ee000d09f27c739e8ddc6598c7da8e3b96ffc2c170e8d24c349a15cf26ed8188e9728e693bc57722ad375fc741c358");
+                return params;
+            }
 
         };
         RequestQueue requestQueue = Volley.newRequestQueue(SalesManageActivity.this);
@@ -1689,8 +1757,8 @@ public class SalesManageActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("responsestate", response);
-                        llLoader.setVisibility(View.VISIBLE);
-                        llMain.setVisibility(View.GONE);
+                        llLoader.setVisibility(View.GONE);
+                        llMain.setVisibility(View.VISIBLE);
                         state.clear();
                         moduleState.clear();
 
@@ -1712,7 +1780,10 @@ public class SalesManageActivity extends AppCompatActivity {
                                     moduleState.add(itemModule);
 
                                 }
-                                setCity();
+                              //  setCity();
+
+                                setScheme();
+                                setSalesType();
 
                                 spState.setVisibility(View.VISIBLE);
                                 spCity.setVisibility(View.VISIBLE);
@@ -1788,8 +1859,7 @@ public class SalesManageActivity extends AppCompatActivity {
                                     moduleCity.add(itemModule);
 
                                 }
-                                setScheme();
-                                setSalesType();
+
 
                                 spCity.setVisibility(View.VISIBLE);
                                 tvCityName.setVisibility(View.GONE);
@@ -2340,7 +2410,7 @@ public class SalesManageActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
         pd.show();
-        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeDummySalesWithInvoiceCSDV2")
+        AndroidNetworking.upload(AppController.APIURL+"api/post_EmployeeDummySalesWithInvoiceCSDV3")
                 .addMultipartParameter("TransNo", transNo)
                 .addMultipartParameter("AEMEmployeeID", userId)
                 .addMultipartParameter("SalesDate", salesDate)
@@ -2381,6 +2451,8 @@ public class SalesManageActivity extends AppCompatActivity {
                 .addMultipartParameter("WiFiDeviceStatus", wifi)
                 .addMultipartParameter("CSD_Sales", csdSales)
                 .addMultipartParameter("PedestalSales", pedestial)
+                .addMultipartParameter("DeliveryAddress2", etMoreAddress.getText().toString())
+                .addMultipartParameter("AddressUpdateFlag", AddressUpdateFlag)
                 .addMultipartParameter("SecurityCode", secirityCode)
 
                 .setTag("uploadTest")
@@ -2647,8 +2719,13 @@ public class SalesManageActivity extends AppCompatActivity {
                                     String ModelCode=object.optString("ModelCode");
                                     String FirstName=object.optString("FirstName");
                                     String LastName=object.optString("LastName");
-                                    String DeliveryAddress=object.optString("DeliveryAddress");
-                                    String StreetName=object.optString("StreetName");
+                                    String DeliveryAddress = object.optString("DeliveryAddress");
+                                    String Landmark = object.optString("Landmark");
+                                    String Area = object.optString("Area");
+                                    String HouseNo=object.optString("HouseNo");
+                                    String DeliveryAddress2 = object.optString("DeliveryAddress2");
+                                    String AddressUpdateFlag = object.optString("AddressUpdateFlag");
+
                                     String CustomerPinCode=object.optString("CustomerPinCode");
                                     String City=object.optString("City");
                                     String StateName=object.optString("StateName");
@@ -2672,7 +2749,7 @@ public class SalesManageActivity extends AppCompatActivity {
                                     csrOBJ.put("CUSTOMERFIRSTNAME",FirstName);
                                     csrOBJ.put("CUSTOMERLASTNAME",LastName);
                                     csrOBJ.put("ADDRESS",DeliveryAddress);
-                                    csrOBJ.put("STREET",StreetName);
+                                    csrOBJ.put("STREET",Area);
                                     csrOBJ.put("PINCODE",CustomerPinCode);
                                     csrOBJ.put("CITY",City);
                                     csrOBJ.put("STATE",StateName);
@@ -2692,6 +2769,10 @@ public class SalesManageActivity extends AppCompatActivity {
                                     csrOBJ.put("ODUSERIAL",SerialNo2);
                                     csrOBJ.put("WIFI",WiFiDeviceStatus);
                                     csrOBJ.put("FILECREATED",currentDate);
+                                    csrOBJ.put("ADDRESS2", DeliveryAddress2);
+                                    csrOBJ.put("HOUSENO", HouseNo);
+                                    csrOBJ.put("LANDMARK", Landmark);
+                                    csrOBJ.put("ADDRESSUPDATEDFLAG", AddressUpdateFlag);
 
                                     sendCSRData(csrOBJ,TokenNo);
                                 }
@@ -3621,7 +3702,7 @@ public class SalesManageActivity extends AppCompatActivity {
     }
 
     private void setInstallation() {
-        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=SITY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=717&ID="+prefManager.getSalesPartyCode()+"&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -3658,13 +3739,6 @@ public class SalesManageActivity extends AppCompatActivity {
                                                 installation); //selected item will look like a spinner set from XML
                                 spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                                 spInstallation.setAdapter(spinnerArrayAdapter);
-                                if (!prefManager.getSubDealerType().equals("") ){
-                                    int index=installation.indexOf(prefManager.getSubDealerType());
-                                    spInstallation.setSelection(index);
-                                    spInstallation.setEnabled(false);
-                                }else {
-
-                                }
 
 
                             } else {
@@ -3974,4 +4048,250 @@ public class SalesManageActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void getCusDetail(String contactNumber) {
+
+        String surl = "https://crmapi.ifbsupport.com/api/v1/customers/search?contact=" + contactNumber;
+        Log.d("emailcheck", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(true);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseCategory", response);
+                        progressBar.dismiss();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Boolean Status = job1.optBoolean("Status");
+
+                            JSONArray Data = job1.optJSONArray("Data");
+                            if (Data != null) {
+                                if (Data.length() > 0) {
+                                    JSONObject jobj = Data.getJSONObject(0);
+                                    String emailID = jobj.optString("zzemail");
+                                    // etEmailId.setText(emailID);
+                                    String postalCode = jobj.optString("zzpost_code1");
+
+
+
+                                    String area = jobj.optString("zzstreet");
+
+
+                                    String street = jobj.optString("zzstr_suppl1");
+
+
+
+
+                                    String landMark = jobj.optString("zzstr_suppl3");
+
+
+                                    String city1 = jobj.optString("city1");
+
+
+                                    String addressTwo = jobj.optString("zzstr_suppl2");
+
+
+
+                                    String House_num1 = jobj.optString("House_num1");
+
+
+                                    existingAddressAlert(addressTwo,city1,postalCode,area,street,landMark,House_num1);
+
+
+
+                                }else {
+                                    AddressUpdateFlag="Y";
+                                }
+                            }
+
+
+                            //boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.d("errort", e.toString());
+                            Toast.makeText(SalesManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+
+                Toast.makeText(SalesManageActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer ZW55dXNlcjplbnl1JGVy");
+                return params;
+            }
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(SalesManageActivity.this);
+        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                MY_SOCKET_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
+
+
+    private void existingAddressAlert( String addressTwo,String city,String pincode,String area,String streetName,String landMark,String House_num1) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SalesManageActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_existing_address, null);
+        dialogBuilder.setView(dialogView);
+
+       /* TextView tvState = (TextView) dialogView.findViewById(R.id.tvState);
+        tvState.setText(state);*/
+
+        TextView tvCity = (TextView) dialogView.findViewById(R.id.tvCity);
+        tvCity.setText(city);
+
+        TextView tvArea = (TextView) dialogView.findViewById(R.id.tvArea);
+        tvArea.setText(area);
+
+        TextView tvPincode = (TextView) dialogView.findViewById(R.id.tvPincode);
+        tvPincode.setText(pincode);
+
+
+
+        TextView tvAddressTwo = (TextView) dialogView.findViewById(R.id.tvAddressTwo);
+        tvAddressTwo.setText(addressTwo);
+
+        TextView tvStreetName = (TextView) dialogView.findViewById(R.id.tvStreetName);
+        tvStreetName.setText(streetName);
+
+        TextView tvLandMark = (TextView) dialogView.findViewById(R.id.tvLandMark);
+        tvLandMark.setText(landMark);
+
+        Button btnContinue=(Button)dialogView.findViewById(R.id.btnContinue);
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                etPinCode.setText(pincode);
+                etPinCode.setEnabled(false);
+                crmArea=area;
+                etStreetName.setText(streetName);
+                etStreetName.setEnabled(false);
+                etLandMark.setText(landMark);
+                REGIONNAME=city;
+                tvCityName.setText(REGIONNAME);
+                etHouse.setText(House_num1);
+                etHouse.setEnabled(false);
+                etMoreAddress.setText(addressTwo);
+                pincodecheck(pincode);
+                existingAddressFlag.dismiss();
+                AddressUpdateFlag="N";
+            }
+        });
+
+        Button btnChange=(Button)dialogView.findViewById(R.id.btnChange);
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                existingAddressFlag.dismiss();
+                AddressUpdateFlag="Y";
+                etPinCode.setText(pincode);
+                etStreetName.setText(streetName);
+                etLandMark.setText(landMark);
+                REGIONNAME=city;
+                tvCityName.setText(REGIONNAME);
+                etHouse.setText(House_num1);
+                etMoreAddress.setText(addressTwo);
+                crmArea=area;
+                pincodecheck(pincode);
+            }
+        });
+
+
+
+
+        existingAddressFlag = dialogBuilder.create();
+        existingAddressFlag.setCancelable(false);
+        Window window = existingAddressFlag.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        existingAddressFlag.show();
+    }
+
+
+    private void addressConfirmation( String addressTwo,String city,String pincode,String area,String streetName,String landMark,String House_num1) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SalesManageActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_address_confirmation, null);
+        dialogBuilder.setView(dialogView);
+
+       /* TextView tvState = (TextView) dialogView.findViewById(R.id.tvState);
+        tvState.setText(state);*/
+
+        TextView tvCity = (TextView) dialogView.findViewById(R.id.tvCity);
+        tvCity.setText(city);
+
+        TextView tvArea = (TextView) dialogView.findViewById(R.id.tvArea);
+        tvArea.setText(area);
+
+        TextView tvPincode = (TextView) dialogView.findViewById(R.id.tvPincode);
+        tvPincode.setText(pincode);
+
+
+        TextView tvHouseNo = (TextView) dialogView.findViewById(R.id.tvHouseNo);
+        tvHouseNo.setText(House_num1);
+
+
+
+        TextView tvAddressTwo = (TextView) dialogView.findViewById(R.id.tvAddressTwo);
+        tvAddressTwo.setText(addressTwo);
+
+        TextView tvStreetName = (TextView) dialogView.findViewById(R.id.tvStreetName);
+        tvStreetName.setText(streetName);
+
+        TextView tvLandMark = (TextView) dialogView.findViewById(R.id.tvLandMark);
+        tvLandMark.setText(landMark);
+
+        Button btnContinue=(Button)dialogView.findViewById(R.id.btnContinue);
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                existingAddressFlag.dismiss();
+                ssaleFunction();
+            }
+        });
+
+        Button btnChange=(Button)dialogView.findViewById(R.id.btnChange);
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                existingAddressFlag.dismiss();
+                etPinCode.setEnabled(true);
+                etStreetName.setEnabled(true);
+                etHouse.setEnabled(true);
+                AddressUpdateFlag="Y";
+
+
+            }
+        });
+
+
+
+
+        existingAddressFlag = dialogBuilder.create();
+        existingAddressFlag.setCancelable(false);
+        Window window = existingAddressFlag.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        existingAddressFlag.show();
+    }
+
+
 }

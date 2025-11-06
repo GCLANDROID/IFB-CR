@@ -1373,7 +1373,14 @@ public class PrefManager {
 
 
 
+    public void saveSalesPartyCode(String SalesPartyCode){
+        _editorPref.putString("SalesPartyCode", SalesPartyCode);
+        _editorPref.commit();
+    }
 
+    public String getSalesPartyCode(){
+        return _pref.getString("SalesPartyCode","");
+    }
 
 
 

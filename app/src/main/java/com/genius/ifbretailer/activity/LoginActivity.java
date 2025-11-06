@@ -205,6 +205,8 @@ public class LoginActivity extends AppCompatActivity {
                                     prefManager.saveRemberFlag("1");
                                     String SubDearlerType= AppController.getFreshValue(obj.optString("SubDearlerType"),"");
                                     prefManager.saveSubDealerType(SubDearlerType);
+                                    String SalesPartyCode=obj.optString("SalesPartyCode");
+                                    prefManager.saveSalesPartyCode(SalesPartyCode);
 
 
 

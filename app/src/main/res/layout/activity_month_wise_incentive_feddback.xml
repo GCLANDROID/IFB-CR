@@ -7,7 +7,8 @@
     android:orientation="vertical"
     android:layout_gravity="center"
     android:background="@android:color/white"
-    tools:context=".activity.MonthWiseIncentiveFeddbackActivity">
+    tools:context=".activity.MonthWiseIncentiveFeddbackActivity"
+    android:fitsSystemWindows="true">
     <LinearLayout
         android:visibility="gone"
         android:layout_width="match_parent"

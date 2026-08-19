@@ -1242,17 +1242,17 @@ public class SalesManageActivity extends AppCompatActivity {
                 } else if (month == 2) {
                     monthname = "Feb";
                 } else if (month == 3) {
-                    monthname = "March";
+                    monthname = "Mar";
                 } else if (month == 4) {
-                    monthname = "April";
+                    monthname = "Apr";
                 } else if (month == 5) {
                     monthname = "May";
                 } else if (month == 6) {
-                    monthname = "June";
+                    monthname = "Jun";
                 } else if (month == 7) {
-                    monthname = "July";
+                    monthname = "Jul";
                 } else if (month == 8) {
-                    monthname = "August";
+                    monthname = "Aug";
                 } else if (month == 9) {
                     monthname = "Sep";
                 } else if (month == 10) {
